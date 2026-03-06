@@ -94,6 +94,19 @@ pnpm preview
 ```
 Serves the `dist/` folder locally at **http://localhost:4173** for final verification.
 
+### Running with Docker
+
+To build and run the application in a Docker container, use the following commands:
+
+```bash
+# 1. Build the Docker image
+docker build -t ai-games .
+
+# 2. Run the Docker container
+docker run -p 8080:80 ai-games
+```
+The application will be available at **http://localhost:8080**.
+
 ---
 
 ## Project Structure
