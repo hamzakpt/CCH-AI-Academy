@@ -83,10 +83,10 @@ export function FinalSummary({ onBack }: { onBack?: () => void } = {}) {
           </div>
 
           <h1 className="text-2xl font-bold text-gray-900 mb-1">
-            The "Aha!" Moment: Impact Metrics
+            The "Aha!" Moment: Close Velocity
           </h1>
           <p className="text-sm text-gray-600 max-w-2xl mx-auto">
-            You've experienced both the manual struggle and the AI-powered solution. 
+            You've experienced both the email chase and the AI-powered solution. 
             Here's the transformation in numbers.
           </p>
         </motion.div>
@@ -94,30 +94,30 @@ export function FinalSummary({ onBack }: { onBack?: () => void } = {}) {
         {/* Metrics Grid */}
         <div className="grid grid-cols-2 gap-3 mb-4">
           <MetricCard
-            label="Daily Audit Time"
-            manual="120-180 Minutes"
-            agentic="0 Minutes (Automated)"
+            label="Month-End Close Speed"
+            manual="5 Days"
+            agentic="2 Days (3 days saved)"
             icon={<Clock className="w-4 h-4" />}
           />
           
           <MetricCard
-            label="Audit Frequency"
-            manual="Once Daily (Sampled)"
-            agentic="Real-time (Continuous)"
+            label="Data Gathering Effort"
+            manual="40+ Emails"
+            agentic="0 (Automated Scan)"
             icon={<Zap className="w-4 h-4" />}
           />
           
           <MetricCard
-            label="Response Time"
-            manual="24+ Hours"
-            agentic="< 5 Minutes"
+            label="Accrual Detection"
+            manual="Sampled (Manual)"
+            agentic="100% Coverage"
             icon={<TrendingDown className="w-4 h-4" />}
           />
           
           <MetricCard
-            label="Financial Impact"
-            manual="High Promo Leakage"
-            agentic="Optimized Trade Spend"
+            label="Financial Accuracy"
+            manual="Email-Dependent"
+            agentic="Evidence-Based"
             icon={<DollarSign className="w-4 h-4" />}
           />
         </div>
@@ -138,30 +138,30 @@ export function FinalSummary({ onBack }: { onBack?: () => void } = {}) {
               <thead className="bg-gray-50 border-b-2 border-gray-200">
                 <tr>
                   <th className="text-left p-2 font-bold text-gray-900 text-xs">Metric</th>
-                  <th className="text-left p-2 font-bold text-red-700 text-xs">The Manual Struggle</th>
+                  <th className="text-left p-2 font-bold text-red-700 text-xs">The Email Chase</th>
                   <th className="text-left p-2 font-bold text-green-700 text-xs">The Agentic Shift</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 <tr className="hover:bg-gray-50 transition-colors">
                   <td className="p-2 font-semibold text-gray-900 text-xs">Cognitive Load</td>
-                  <td className="p-2 text-red-700 text-xs">High (Searching & Typing)</td>
-                  <td className="p-2 text-green-700 text-xs">Low (Reviewing & Deciding)</td>
+                  <td className="p-2 text-red-700 text-xs">High (Chasing & Compiling)</td>
+                  <td className="p-2 text-green-700 text-xs">Low (Reviewing & Approving)</td>
                 </tr>
                 <tr className="hover:bg-gray-50 transition-colors">
                   <td className="p-2 font-semibold text-gray-900 text-xs">User Role</td>
-                  <td className="p-2 text-red-700 text-xs">Data Entry Clerk</td>
-                  <td className="p-2 text-green-700 text-xs">Strategic Relationship Manager</td>
+                  <td className="p-2 text-red-700 text-xs">Email Chaser</td>
+                  <td className="p-2 text-green-700 text-xs">Strategic Financial Controller</td>
                 </tr>
                 <tr className="hover:bg-gray-50 transition-colors">
-                  <td className="p-2 font-semibold text-gray-900 text-xs">Accuracy</td>
-                  <td className="p-2 text-red-700 text-xs">Prone to Human Error</td>
-                  <td className="p-2 text-green-700 text-xs">100% Evidence-Based</td>
+                  <td className="p-2 font-semibold text-gray-900 text-xs">Coverage</td>
+                  <td className="p-2 text-red-700 text-xs">Sampled (Response-dependent)</td>
+                  <td className="p-2 text-green-700 text-xs">100% Continuous (All POs)</td>
                 </tr>
                 <tr className="hover:bg-gray-50 transition-colors">
                   <td className="p-2 font-semibold text-gray-900 text-xs">Daily Time Investment</td>
-                  <td className="p-2 text-red-700 text-xs">4+ hours</td>
-                  <td className="p-2 text-green-700 text-xs">5-10 minutes</td>
+                  <td className="p-2 text-red-700 text-xs">24+ hours/month</td>
+                  <td className="p-2 text-green-700 text-xs">30 minutes/month</td>
                 </tr>
               </tbody>
             </table>
@@ -180,15 +180,15 @@ export function FinalSummary({ onBack }: { onBack?: () => void } = {}) {
             <div>
               <h4 className="text-[#E41E2B] font-bold mb-1 text-sm">🕒 Time</h4>
               <p className="text-gray-300 leading-relaxed text-xs">
-                You are no longer a <strong>"Data Collector."</strong> You are now a <strong>"Strategic Auditor."</strong> 
-                Let the Agent do the window shopping while you do the negotiating.
+                You are no longer an <strong>"Email Chaser."</strong> You are now a <strong>"Strategic Financial Controller."</strong> 
+                Let the Agent mine the data while you focus on close quality and analysis.
               </p>
             </div>
             <div>
-              <h4 className="text-[#E41E2B] font-bold mb-1 text-sm">🤝 Fear</h4>
+              <h4 className="text-[#E41E2B] font-bold mb-1 text-sm">🤝 Control</h4>
               <p className="text-gray-300 leading-relaxed text-xs">
-                Removing the friction of confrontation. The AI provides the <strong>"Hard Truth"</strong> (the data), 
-                so you can focus on the <strong>"Soft Skill"</strong> (the relationship).
+                Automating tedious monthly routines, not replacing judgment. The AI provides <strong>"Complete Evidence"</strong>, 
+                so you can focus on <strong>"Financial Judgment."</strong>
               </p>
             </div>
           </div>
@@ -341,7 +341,7 @@ export function FinalSummary({ onBack }: { onBack?: () => void } = {}) {
                       <textarea
                         value={suggestion}
                         onChange={(e) => setSuggestion(e.target.value)}
-                        placeholder="Example: Automating monthly contract renewals in procurement, where we spend hours manually tracking expiration dates and emailing vendors..."
+                        placeholder="Example: Automating variance analysis in FP&A, where we spend hours manually comparing actuals vs. budget across 50+ cost centers..."
                         className="w-full h-40 px-4 py-3 border-2 border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:border-[#E41E2B] focus:outline-none resize-none"
                       />
                       <p className="text-sm text-gray-500 mt-2">

@@ -34,10 +34,10 @@ export function Phase2Agentic({ onComplete, onBack }: Phase2AgenticProps) {
     // Initial greeting
     setTimeout(() => {
       addAIMessage(
-        "Daily audit complete across 12 retailers. Found 3 price discrepancies.",
+        "Daily supplier risk scan complete. 2 critical alerts detected across 50 suppliers.",
         [
-          { label: 'Show me the highest priority leak', value: 'show-priority' },
-          { label: 'Show all discrepancies', value: 'show-all' },
+          { label: 'Show me the alerts', value: 'show-alerts' },
+          { label: 'What\'s the priority level?', value: 'priority' },
         ]
       );
     }, 500);
@@ -73,159 +73,227 @@ export function Phase2Agentic({ onComplete, onBack }: Phase2AgenticProps) {
     addUserMessage(label);
 
     setTimeout(() => {
-      if (value === 'show-priority') {
+      if (value === 'show-alerts' || value === 'priority') {
         addAIMessage(
-          "Here's the highest priority compliance issue:",
+          "Here are the 2 critical supplier risks detected:",
           undefined,
           {
-            retailer: 'Carrefour',
-            product: 'Coca-Cola Zero 4-Pack',
-            sku: 'CCZ4PK-GR',
-            status: 'Non-Compliant',
-            agreedPrice: '€3.99',
-            actualPrice: '€4.50',
-            loss: '€1,200/day',
-          }
-        );
-        setTimeout(() => {
-          addAIMessage(
-            'They are charging €4.50; the agreed promo is €3.99. Estimated loss: €1,200/day.',
-            [
-              { label: 'Draft a correction request', value: 'draft-request' },
-              { label: 'Show evidence screenshot', value: 'show-evidence' },
-            ]
-          );
-        }, 1000);
-      } else if (value === 'show-all') {
-        addAIMessage(
-          "Here are all 3 discrepancies found today:",
-          undefined,
-          {
-            type: 'all-issues',
-            issues: [
-              { retailer: 'Carrefour', product: 'Coca-Cola Zero 4-Pack', agreedPrice: '€3.99', actualPrice: '€4.50', loss: '€1,200/day' },
-              { retailer: 'Jumbo', product: 'Fanta Orange 6-Pack', agreedPrice: '€5.49', actualPrice: '€5.99', loss: '€450/day' },
-              { retailer: 'AB Vassilopoulos', product: 'Sprite 2L', agreedPrice: '€1.79', actualPrice: '€1.99', loss: '€280/day' }
+            type: 'all-risks',
+            risks: [
+              { 
+                supplier: 'GlassCo Romania', 
+                status: 'At Risk', 
+                severity: 'HIGH',
+                reason: 'Glass factory explosion detected',
+                capacity: '40% at risk',
+                backups: '3 Ready'
+              },
+              { 
+                supplier: 'PackTech Poland', 
+                status: 'Unknown', 
+                severity: 'MEDIUM',
+                reason: 'Quality investigation reported',
+                capacity: '25% at risk',
+                backups: '2 Ready'
+              }
             ]
           }
         );
         setTimeout(() => {
           addAIMessage(
-            'Total estimated daily loss: €1,930. Which would you like to address first?',
+            'Total capacity at risk: 65%. I\'ve already mapped backup suppliers. Which issue should we address first?',
             [
-              { label: 'Start with highest priority', value: 'show-priority' },
+              { label: 'Address GlassCo Romania (Highest Risk)', value: 'glassco' },
+              { label: 'Show backup supplier options', value: 'backups' },
             ]
           );
         }, 1000);
-      } else if (value === 'show-evidence') {
+      } else if (value === 'glassco' || value === 'show-priority') {
         addAIMessage(
-          "Here's the timestamped screenshot evidence from Carrefour's website:",
+          "Focusing on GlassCo Romania - the highest priority risk:",
           undefined,
           {
-            type: 'screenshot',
-            timestamp: '2026-02-18 09:15 AM',
-            url: 'carrefour.gr/coca-cola-zero-4pack',
-            price: '€4.50',
+            type: 'single-risk',
+            supplier: 'GlassCo Romania',
+            status: 'At Risk',
+            severity: 'HIGH',
+            reason: 'Reuters: Major explosion at glass factory in Romania',
+            capacityAtRisk: '40%',
+            impactAnalysis: 'Production halt expected for 2-3 weeks',
+            backupSuppliers: '3 Ready',
+            responseTime: '72 sec'
           }
         );
         setTimeout(() => {
           addAIMessage(
-            'Screenshot captured and ready to attach. What would you like to do next?',
+            'I\'ve identified 3 backup suppliers with capacity. What would you like to do?',
             [
-              { label: 'Draft a correction request', value: 'draft-request' },
+              { label: 'Contact backup supplier now', value: 'contact-backup' },
+              { label: 'Show backup supplier details', value: 'backup-details' },
             ]
           );
         }, 1000);
-      } else if (value === 'draft-request') {
+      } else if (value === 'backups' || value === 'backup-details') {
         addAIMessage(
-          "I've drafted this correction request email:",
+          "Here are the pre-qualified backup suppliers I found:",
+          undefined,
+          {
+            type: 'backup-list',
+            backups: [
+              { name: 'CrystalGlass Hungary', capacity: '500K units/month', leadTime: '2 weeks', status: 'Available' },
+              { name: 'EuroGlass Bulgaria', capacity: '350K units/month', leadTime: '3 weeks', status: 'Available' },
+              { name: 'Vidrala Spain', capacity: '800K units/month', leadTime: '4 weeks', status: 'Partial Availability' }
+            ]
+          }
+        );
+        setTimeout(() => {
+          addAIMessage(
+            'CrystalGlass Hungary has the fastest lead time and confirmed availability. Should I proceed?',
+            [
+              { label: 'Yes, contact CrystalGlass Hungary', value: 'contact-backup' },
+            ]
+          );
+        }, 1000);
+      } else if (value === 'contact-backup') {
+        addAIMessage(
+          "I've drafted this outreach email to CrystalGlass Hungary:",
           undefined,
           {
             type: 'email',
-            to: 'dimitris.papadopoulos@carrefour.gr',
-            subject: 'Urgent: Promo Compliance Issue - Coca-Cola Zero 4-Pack',
-            body: `Dear Dimitris,
+            to: 'procurement@crystalglass.hu',
+            subject: 'Urgent: Emergency Glass Bottle Supply Request - Coca-Cola Hellenic',
+            body: `Dear CrystalGlass Procurement Team,
 
-I hope this email finds you well. I'm reaching out regarding a pricing discrepancy we've identified on our Joint Business Plan promotion.
+I hope this message finds you well. We have an urgent sourcing requirement due to an unexpected production disruption at one of our primary suppliers.
 
-**Issue Details:**
-• Product: Coca-Cola Zero 4-Pack (SKU: CCZ4PK-GR)
-• Agreed Promotional Price: €3.99
-• Current Price on Website: €4.50
-• Variance: +€0.51 (12.8% above agreed price)
+**Requirement Details:**
+• Product: 500ml Glass Bottles (Coca-Cola Standard Spec)
+• Volume Needed: 400,000 units
+• Timeline: Delivery within 2 weeks
+• Quality Standards: ISO 9001 certified, food-grade compliance
 
-Our monitoring system detected this discrepancy at 09:15 this morning. I've attached a timestamped screenshot from your webshop as evidence.
+**Background:**
+Our primary supplier (GlassCo Romania) has experienced a production halt due to a facility incident. We need to secure alternative capacity immediately to maintain our production schedule.
 
-This pricing gap is impacting our joint promotional performance and estimated to result in approximately €1,200 in daily revenue loss.
+CrystalGlass Hungary was identified as a pre-qualified backup supplier in our risk mitigation database based on:
+• Capacity availability (500K units/month confirmed)
+• 2-week lead time capability
+• Previous quality certifications on file
 
-Could we please arrange to correct this as soon as possible? I'm happy to discuss any questions or concerns.
+Could you please confirm availability and provide:
+1. Pricing quote for 400K units
+2. Earliest delivery date
+3. Quality certification documentation
 
-Looking forward to your prompt response.
+We would appreciate a response within 24 hours given the urgency.
 
 Best regards,
-Account Manager - CCH`
+Supply Chain Manager - CCH`
           }
         );
         setTimeout(() => {
           addAIMessage(
-            "Would you like me to send this to the Category Manager, adjust the tone, or would you prefer to edit it yourself?",
+            "Would you like me to send this now, or would you prefer to adjust the tone or add specific requirements?",
             [
-              { label: 'Make it Firmer', value: 'tone-firm' },
-              { label: 'Keep it Collaborative', value: 'tone-collaborative' },
-              { label: 'Edit Message Myself', value: 'edit-myself' },
               { label: 'Send Now', value: 'send-now' },
+              { label: 'Add pricing negotiation note', value: 'add-pricing' },
+              { label: 'Make it more urgent', value: 'make-urgent' },
             ]
           );
         }, 1000);
-      } else if (value === 'edit-myself') {
+      } else if (value === 'add-pricing') {
         addAIMessage(
-          "Opening draft in your email client. I'll monitor for responses.",
-          [{ label: 'Continue to Summary', value: 'send-now' }]
-        );
-      } else if (value === 'tone-firm') {
-        addAIMessage(
-          "Here's the revised email with a firmer tone:",
+          "I've added a pricing negotiation paragraph:",
           undefined,
           {
             type: 'email',
-            to: 'dimitris.papadopoulos@carrefour.gr',
-            subject: 'Action Required: JBP Price Compliance Issue - Coca-Cola Zero 4-Pack',
-            body: `Dimitris,
+            to: 'procurement@crystalglass.hu',
+            subject: 'Urgent: Emergency Glass Bottle Supply Request - Coca-Cola Hellenic',
+            body: `Dear CrystalGlass Procurement Team,
 
-We have identified a critical pricing discrepancy that requires immediate attention.
+I hope this message finds you well. We have an urgent sourcing requirement due to an unexpected production disruption at one of our primary suppliers.
 
-**Issue Details:**
-• Product: Coca-Cola Zero 4-Pack (SKU: CCZ4PK-GR)
-• Contracted Promotional Price: €3.99
-• Current Live Price: €4.50
-• Variance: +€0.51 (12.8% over agreement)
+**Requirement Details:**
+• Product: 500ml Glass Bottles (Coca-Cola Standard Spec)
+• Volume Needed: 400,000 units
+• Timeline: Delivery within 2 weeks
+• Quality Standards: ISO 9001 certified, food-grade compliance
 
-This was detected at 09:15 today. Screenshot evidence is attached.
+**Background:**
+Our primary supplier (GlassCo Romania) has experienced a production halt due to a facility incident. We need to secure alternative capacity immediately to maintain our production schedule.
 
-**Impact:**
-• Estimated daily revenue loss: €1,200
-• JBP compliance breach
-• Customer trust at risk
+CrystalGlass Hungary was identified as a pre-qualified backup supplier in our risk mitigation database based on:
+• Capacity availability (500K units/month confirmed)
+• 2-week lead time capability
+• Previous quality certifications on file
 
-We need this corrected by end of business today. Please confirm receipt and expected resolution time.
+**Pricing & Partnership:**
+Given the urgency and our commitment to establishing a long-term partnership, we're prepared to discuss favorable pricing terms. We view this as an opportunity to build a strategic relationship beyond this immediate need.
+
+Could you please confirm availability and provide:
+1. Pricing quote for 400K units (with volume discount consideration)
+2. Earliest delivery date
+3. Quality certification documentation
+
+We would appreciate a response within 24 hours given the urgency.
 
 Best regards,
-Account Manager - CCH`
+Supply Chain Manager - CCH`
           }
         );
         setTimeout(() => {
           addAIMessage(
-            "Firmer tone applied. Ready to send when you approve.",
+            "Pricing negotiation added. Ready to send?",
             [{ label: 'Send Now', value: 'send-now' }]
           );
         }, 1000);
-      } else if (value === 'tone-collaborative') {
+      } else if (value === 'make-urgent') {
         addAIMessage(
-          "Tone kept collaborative. Ready to send when you approve.",
-          [{ label: 'Send Now', value: 'send-now' }]
+          "Here's the message with increased urgency:",
+          undefined,
+          {
+            type: 'email',
+            to: 'procurement@crystalglass.hu',
+            subject: 'URGENT - IMMEDIATE ACTION REQUIRED: Emergency Supply Request - Coca-Cola Hellenic',
+            body: `URGENT - CrystalGlass Procurement Team,
+
+We require immediate assistance due to a critical supply chain disruption.
+
+**CRITICAL REQUIREMENT:**
+• Product: 500ml Glass Bottles (Coca-Cola Standard Spec)
+• Volume: 400,000 units
+• Timeline: MUST deliver within 2 weeks
+• Quality: ISO 9001 certified, food-grade
+
+**SITUATION:**
+GlassCo Romania facility explosion has halted all production. Our manufacturing line faces shutdown risk within 10 days without alternative supply.
+
+**WHY CRYSTALGLASS:**
+Your facility was pre-qualified as our priority backup:
+• Confirmed 500K units/month capacity
+• 2-week lead time capability
+• Quality certifications verified
+
+**IMMEDIATE ACTION NEEDED:**
+Please respond within 12 hours with:
+1. Availability confirmation for 400K units
+2. Pricing quote
+3. Earliest delivery commitment
+
+This is a high-priority escalation. We're prepared to expedite PO and payment terms.
+
+Regards,
+Supply Chain Manager - CCH`
+          }
         );
+        setTimeout(() => {
+          addAIMessage(
+            "Urgency level increased. Ready to send?",
+            [{ label: 'Send Now', value: 'send-now' }]
+          );
+        }, 1000);
       } else if (value === 'send-now') {
-        addAIMessage('✓ Email sent to the Carrefour Category Manager. I will continue monitoring and alert you to any response or price changes.');
+        addAIMessage('✓ Email sent to CrystalGlass Hungary. I will monitor their response and alert you when they reply. Meanwhile, I\'ll continue monitoring the other 48 suppliers for emerging risks.');
         setTimeout(() => {
           setShowMindsetPopup(true);
         }, 1500);
@@ -251,16 +319,16 @@ Account Manager - CCH`
                 <span className="text-sm font-medium">Back</span>
               </button>
             )}
-            <h2 className="text-lg font-bold text-gray-900 flex-1 text-center">AI-Powered Promo Compliance Auditing</h2>
+            <h2 className="text-lg font-bold text-gray-900 flex-1 text-center">AI-Powered Supplier Risk Monitoring</h2>
             <div className="w-20" /> {/* Spacer for alignment */}
           </div>
 
           <div className="bg-green-50 border-l-4 border-green-500 p-2 rounded">
             <h3 className="font-semibold text-green-900 text-xs mb-1">The New Reality:</h3>
             <ul className="text-[10px] text-green-800 space-y-0.5 list-disc list-inside">
-              <li>AI Agent audits all 150 SKUs automatically (completed in 3 minutes)</li>
-              <li>You only review high-priority issues and make decisions</li>
-              <li>Evidence collection and email drafting is automated</li>
+              <li>AI Agent monitors all 50 suppliers 24/7 (real-time news scanning)</li>
+              <li>You only review critical alerts and make strategic decisions</li>
+              <li>Backup supplier mapping and outreach drafting is automated</li>
             </ul>
           </div>
         </div>
@@ -276,15 +344,15 @@ Account Manager - CCH`
                   <Sparkles className="w-5 h-5 text-[#E41E2B]" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-white text-base font-bold">CCH Compliance Agent</h3>
+                  <h3 className="text-white text-base font-bold">Risk Sentinel Agent</h3>
                   <div className="flex items-center gap-2 text-red-100 text-xs">
                     <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                    <span>Active • Real-time Monitoring</span>
+                    <span>Active • 24/7 Monitoring</span>
                   </div>
                 </div>
                 <div className="text-right text-white text-xs">
-                  <p className="font-semibold">Daily Audit: Complete</p>
-                  <p className="text-red-100">150/150 SKUs</p>
+                  <p className="font-semibold">Daily Scan: Complete</p>
+                  <p className="text-red-100">50/50 Suppliers</p>
                 </div>
               </div>
             </div>
@@ -345,89 +413,89 @@ Account Manager - CCH`
                                     {message.data.body}
                                   </pre>
                                 </div>
-                                <div className="mt-2 flex items-center gap-2 text-xs text-gray-500">
-                                  <span>📎 Attachment: price_screenshot_2026-02-18_0915.png</span>
-                                </div>
                               </div>
-                            ) : message.data.type === 'screenshot' ? (
-                              // Screenshot Evidence Display
+                            ) : message.data.type === 'backup-list' ? (
+                              // Backup Suppliers List
                               <div>
                                 <div className="flex items-center gap-2 mb-3 pb-2 border-b border-gray-200">
-                                  <div className="w-5 h-5 bg-purple-600 rounded flex items-center justify-center">
-                                    <span className="text-white text-xs">📸</span>
-                                  </div>
-                                  <h4 className="font-semibold text-gray-900 text-sm">Screenshot Evidence</h4>
-                                </div>
-                                <div className="bg-gray-100 rounded-lg p-4 mb-3">
-                                  <div className="bg-white rounded border-2 border-gray-300 p-4">
-                                    <div className="text-xs text-gray-500 mb-2">Timestamp: {message.data.timestamp}</div>
-                                    <div className="text-xs text-gray-500 mb-3">Source: {message.data.url}</div>
-                                    <div className="bg-red-50 border-2 border-red-300 rounded p-6 text-center">
-                                      <div className="text-4xl mb-2">🥤</div>
-                                      <div className="text-sm font-semibold text-gray-900 mb-2">Coca-Cola Zero 4-Pack</div>
-                                      <div className="text-3xl font-bold text-red-700">{message.data.price}</div>
-                                      <div className="text-xs text-gray-500 mt-2">Live on website</div>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="text-xs text-gray-500">
-                                  ✓ Evidence captured and ready to attach to compliance request
-                                </div>
-                              </div>
-                            ) : message.data.type === 'all-issues' ? (
-                              // All Issues Display
-                              <div>
-                                <div className="flex items-center gap-2 mb-3 pb-2 border-b border-gray-200">
-                                  <AlertCircle className="w-5 h-5 text-red-600" />
-                                  <h4 className="font-semibold text-red-900 text-sm">All Compliance Issues</h4>
+                                  <AlertCircle className="w-5 h-5 text-green-600" />
+                                  <h4 className="font-semibold text-green-900 text-sm">Backup Suppliers Available</h4>
                                 </div>
                                 <div className="space-y-3">
-                                  {message.data.issues.map((issue: any, idx: number) => (
+                                  {message.data.backups.map((backup: any, idx: number) => (
                                     <div key={idx} className="bg-gray-50 rounded p-3 border border-gray-200">
                                       <div className="flex items-center justify-between mb-2">
-                                        <span className="font-semibold text-gray-900 text-sm">{issue.retailer}</span>
-                                        <span className="text-xs text-red-600 font-bold">{issue.loss}</span>
+                                        <span className="font-semibold text-gray-900 text-sm">{backup.name}</span>
+                                        <span className={`text-xs font-bold px-2 py-1 rounded ${
+                                          backup.status === 'Available' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                                        }`}>{backup.status}</span>
                                       </div>
-                                      <div className="text-xs text-gray-700 mb-1">{issue.product}</div>
-                                      <div className="flex gap-4 text-xs">
-                                        <span>Agreed: <strong className="text-green-700">{issue.agreedPrice}</strong></span>
-                                        <span>Actual: <strong className="text-red-700">{issue.actualPrice}</strong></span>
+                                      <div className="grid grid-cols-2 gap-2 text-xs">
+                                        <span>Capacity: <strong>{backup.capacity}</strong></span>
+                                        <span>Lead Time: <strong>{backup.leadTime}</strong></span>
                                       </div>
                                     </div>
                                   ))}
                                 </div>
                               </div>
-                            ) : (
-                              // Compliance Issue Display
-                              <>
+                            ) : message.data.type === 'all-risks' ? (
+                              // All Risks Display
+                              <div>
+                                <div className="flex items-center gap-2 mb-3 pb-2 border-b border-gray-200">
+                                  <AlertCircle className="w-5 h-5 text-red-600" />
+                                  <h4 className="font-semibold text-red-900 text-sm">Critical Supplier Risks</h4>
+                                </div>
+                                <div className="space-y-3">
+                                  {message.data.risks.map((risk: any, idx: number) => (
+                                    <div key={idx} className="bg-gray-50 rounded p-3 border border-gray-200">
+                                      <div className="flex items-center justify-between mb-2">
+                                        <span className="font-semibold text-gray-900 text-sm">{risk.supplier}</span>
+                                        <span className={`text-xs font-bold px-2 py-1 rounded ${
+                                          risk.severity === 'HIGH' ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'
+                                        }`}>{risk.severity}</span>
+                                      </div>
+                                      <div className="text-xs text-gray-700 mb-2">{risk.reason}</div>
+                                      <div className="grid grid-cols-2 gap-2 text-xs">
+                                        <span>Capacity at Risk: <strong className="text-red-700">{risk.capacity}</strong></span>
+                                        <span>Backups: <strong className="text-green-700">{risk.backups}</strong></span>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            ) : message.data.type === 'single-risk' ? (
+                              // Single Risk Detail Display
+                              <div>
                                 <div className="flex items-center gap-2 mb-3">
                                   <AlertCircle className="w-5 h-5 text-red-600" />
-                                  <h4 className="font-semibold text-red-900 text-sm">High Priority Issue</h4>
+                                  <h4 className="font-semibold text-red-900 text-sm">High Priority Risk</h4>
                                 </div>
-                                <div className="grid grid-cols-2 gap-3 text-sm">
-                                  <div>
-                                    <p className="text-gray-600 text-xs mb-1">Retailer</p>
-                                    <p className="font-semibold text-gray-900">{message.data.retailer}</p>
+                                <div className="space-y-3">
+                                  <div className="bg-red-50 rounded p-3">
+                                    <p className="text-xs font-bold text-red-900 mb-1">{message.data.supplier}</p>
+                                    <p className="text-xs text-red-800">{message.data.reason}</p>
                                   </div>
-                                  <div>
-                                    <p className="text-gray-600 text-xs mb-1">Product</p>
-                                    <p className="font-semibold text-gray-900">{message.data.product}</p>
-                                  </div>
-                                  <div>
-                                    <p className="text-gray-600 text-xs mb-1">Agreed Price</p>
-                                    <p className="font-semibold text-green-700 text-base">{message.data.agreedPrice}</p>
-                                  </div>
-                                  <div>
-                                    <p className="text-gray-600 text-xs mb-1">Actual Price</p>
-                                    <p className="font-semibold text-red-700 text-base">{message.data.actualPrice}</p>
-                                  </div>
-                                  <div className="col-span-2 bg-red-50 rounded p-3 mt-2">
-                                    <p className="text-gray-600 text-xs mb-1">Estimated Daily Loss</p>
-                                    <p className="font-bold text-red-900 text-xl">{message.data.loss}</p>
+                                  <div className="grid grid-cols-2 gap-3 text-xs">
+                                    <div>
+                                      <p className="text-gray-600 mb-1">Capacity at Risk</p>
+                                      <p className="font-bold text-red-700 text-base">{message.data.capacityAtRisk}</p>
+                                    </div>
+                                    <div>
+                                      <p className="text-gray-600 mb-1">Backup Suppliers</p>
+                                      <p className="font-bold text-green-700 text-base">{message.data.backupSuppliers}</p>
+                                    </div>
+                                    <div>
+                                      <p className="text-gray-600 mb-1">Impact Analysis</p>
+                                      <p className="font-semibold text-gray-900">{message.data.impactAnalysis}</p>
+                                    </div>
+                                    <div>
+                                      <p className="text-gray-600 mb-1">Response Time</p>
+                                      <p className="font-semibold text-green-700">{message.data.responseTime}</p>
+                                    </div>
                                   </div>
                                 </div>
-                              </>
-                            )}
+                              </div>
+                            ) : null}
                           </div>
                         )}
                         
@@ -500,10 +568,10 @@ Account Manager - CCH`
                 onClick={(e) => e.stopPropagation()}
                 className="bg-gradient-to-br from-green-600 to-green-700 text-white rounded-lg p-8 max-w-md shadow-2xl"
               >
-                <h3 className="text-2xl font-bold mb-4">🤝 The Agent Handles Evidence Gathering</h3>
+                <h3 className="text-2xl font-bold mb-4">🤖 The Agent Handles Monitoring & Research</h3>
                 <p className="text-lg mb-6 leading-relaxed">
-                  You only step in to manage the <strong>"Human Relationship"</strong> with the retailer. 
-                  The AI provides the facts; you provide the partnership.
+                  You only step in to make <strong>strategic sourcing decisions</strong> and manage supplier relationships. 
+                  The AI provides real-time intelligence; you provide the business judgment.
                 </p>
                 <button
                   onClick={() => setShowMindsetPopup(false)}
@@ -538,8 +606,8 @@ Account Manager - CCH`
                     <Sparkles className="w-9 h-9 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-2xl font-bold text-gray-900">Phase 2: The AI-Assisted Way</h3>
-                    <p className="text-sm text-gray-600">Same Task, Smarter Approach</p>
+                    <h3 className="text-2xl font-bold text-gray-900">Phase 2: The AI-Powered Way</h3>
+                    <p className="text-sm text-gray-600">Same Task, Intelligent Automation</p>
                   </div>
                 </div>
 
@@ -547,8 +615,8 @@ Account Manager - CCH`
                 <div className="mb-6">
                   <h4 className="text-lg font-bold text-gray-900 mb-3">What's Different:</h4>
                   <p className="text-gray-700 leading-relaxed mb-4">
-                    You're still the Trade Promotions Manager, but now you have an <strong className="text-green-600">AI assistant</strong> that 
-                    handles the repetitive auditing work while you focus on decision-making and relationship management.
+                    You're still the Supply Chain Manager, but now you have an <strong className="text-green-600">AI Risk Sentinel</strong> that 
+                    continuously monitors all suppliers, detects risks instantly, and prepares actionable recommendations.
                   </p>
                 </div>
 
@@ -556,11 +624,11 @@ Account Manager - CCH`
                 <div className="bg-green-50 rounded-lg p-4 mb-6 border-2 border-green-200">
                   <h4 className="text-lg font-bold text-green-900 mb-3">How It Works:</h4>
                   <div className="space-y-2 text-sm text-green-800">
-                    <p>✓ <strong>AI automatically audits</strong> all 150 SKUs across 12 retailers (in 3 minutes)</p>
-                    <p>✓ <strong>AI identifies discrepancies</strong> and calculates financial impact</p>
-                    <p>✓ <strong>AI captures evidence</strong> with timestamped screenshots</p>
-                    <p>✓ <strong>You review priorities</strong> and make strategic decisions</p>
-                    <p>✓ <strong>You manage communication</strong> with retail partners</p>
+                    <p>✓ <strong>AI monitors 24/7</strong> - scans global news for all 50 suppliers continuously</p>
+                    <p>✓ <strong>AI maps risks instantly</strong> - calculates capacity impact in 2 seconds</p>
+                    <p>✓ <strong>AI identifies backups</strong> - pre-qualifies alternative suppliers automatically</p>
+                    <p>✓ <strong>You make decisions</strong> - review priorities and choose actions</p>
+                    <p>✓ <strong>You manage relationships</strong> - oversee supplier communications</p>
                   </div>
                 </div>
 
@@ -568,9 +636,9 @@ Account Manager - CCH`
                 <div className="bg-blue-50 rounded-lg p-4 mb-6 border-2 border-blue-200">
                   <h4 className="text-base font-bold text-blue-900 mb-2">Your Role in This Phase:</h4>
                   <p className="text-sm text-blue-800">
-                    Interact with the AI agent through the chat interface. Click the suggested actions to 
-                    review findings, request evidence, and draft communications. You stay in control while 
-                    the AI handles the time-consuming tasks.
+                    Interact with the Risk Sentinel through the chat interface. Click the suggested actions to 
+                    review alerts, evaluate backup options, and approve communications. You stay in control while 
+                    the AI handles continuous monitoring and analysis.
                   </p>
                 </div>
 
@@ -578,7 +646,7 @@ Account Manager - CCH`
                   onClick={() => setShowWelcomePopup(false)}
                   className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-lg font-bold text-lg transition-colors w-full shadow-lg"
                 >
-                  Got It — Start AI-Assisted Audit →
+                  Got It — Start AI-Powered Monitoring →
                 </button>
               </motion.div>
             </motion.div>

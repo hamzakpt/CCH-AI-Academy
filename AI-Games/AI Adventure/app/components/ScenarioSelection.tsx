@@ -3,7 +3,7 @@ import { Button } from '@/app/components/ui/button';
 import { Badge } from '@/app/components/ui/badge';
 import { scenarios } from '@/app/data/scenarios-30';
 import { Scenario } from '@/app/types/scenario';
-import { Clock, ArrowRight, Users, Factory, DollarSign, Scale, Laptop, TrendingUp, Sparkles, Lightbulb, X, CheckCircle, Flame } from 'lucide-react';
+import { Clock, ArrowRight, ArrowLeft, Users, Factory, DollarSign, Scale, Laptop, TrendingUp, Sparkles, Lightbulb, X, CheckCircle, Flame } from 'lucide-react';
 import { useState } from 'react';
 import hellenIcon from 'figma:asset/07dfe6c7775cacff76b9e7dffe5d04e7714eeb57.png';
 import { RatingDisplay } from '@/app/components/RatingDisplay';
@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from 'motion/react';
 
 interface ScenarioSelectionProps {
   onScenarioSelect: (scenario: Scenario, mode: 'learn' | 'apply') => void;
+  onBackToHome?: () => void;
 }
 
 interface ScenarioRating {
@@ -21,7 +22,7 @@ interface ScenarioRating {
   userRatings: { rating: number; comment: string }[];
 }
 
-export function ScenarioSelection({ onScenarioSelect }: ScenarioSelectionProps) {
+export function ScenarioSelection({ onScenarioSelect, onBackToHome }: ScenarioSelectionProps) {
   const functions = ['Commercial', 'Supply Chain', 'Finance', 'HR', 'Other'] as const;
   const [selectedFunction, setSelectedFunction] = useState<typeof functions[number]>('Commercial');
   const [searchQuery, setSearchQuery] = useState('');
@@ -116,8 +117,22 @@ export function ScenarioSelection({ onScenarioSelect }: ScenarioSelectionProps) 
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        {onBackToHome && (
+          <button
+            onClick={onBackToHome}
+            className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <ArrowLeft className="h-5 w-5" />
+            <span className="text-sm font-medium">Back</span>
+          </button>
+        )}
+        <div className="flex-1 text-center">
+          <h2 className="text-2xl text-gray-900 mb-1 font-bold">Choose Your First Mission</h2>
+        </div>
+        <div className="w-20" /> {/* Spacer for alignment */}
+      </div>
       <div className="text-center mb-4">
-        <h2 className="text-2xl text-gray-900 mb-1 font-bold">Choose Your First Mission</h2>
         <p className="text-gray-600 text-sm">
           Select a business scenario to start your AI Adventure
         </p>
@@ -195,36 +210,44 @@ export function ScenarioSelection({ onScenarioSelect }: ScenarioSelectionProps) 
       {/* Scenarios Grid */}
       {(() => {
         // If searching, show all matching scenarios across all functions
-        // If not searching, show scenarios for the selected function
+        // If not searching, show scenarios for the selected function only
         const funcScenarios = searchQuery.trim()
-          ? scenarios.filter(s => 
+          ? scenarios.filter(s =>
               s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
               s.description.toLowerCase().includes(searchQuery.toLowerCase())
             )
           : scenarios.filter(s => s.function === selectedFunction);
-        
+
         return (
           <div className="flex-1 overflow-y-auto">
             <h3 className="text-lg font-bold text-gray-900 mb-3">
-              {searchQuery.trim() 
-                ? `Search Results (${funcScenarios.length})` 
+              {searchQuery.trim()
+                ? `Search Results (${funcScenarios.length})`
                 : `${selectedFunction} Scenarios`}
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {funcScenarios.map(scenario => {
-                const isAvailable = scenario.startHere === true;
-                
-                return (
-                  <Card 
-                    key={scenario.id} 
-                    className={`bg-white border-2 border-gray-200 shadow-lg transition-all hover:shadow-xl overflow-visible ${ 
-                      isAvailable ? 'cursor-pointer' : 'cursor-not-allowed'
-                    }`}
-                    onClick={() => isAvailable && onScenarioSelect(scenario, 'learn')}
-                  >
-                    <CardContent className="p-0 overflow-visible">
-                      {/* Card Header - Subtle color */}
-                      <div className={`${getFunctionColor(selectedFunction)} border-b-2 p-4 relative overflow-visible`}>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={searchQuery.trim() ? `search-${searchQuery}` : selectedFunction}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+              >
+                {funcScenarios.map(scenario => {
+                  const isAvailable = scenario.startHere === true;
+
+                  return (
+                    <Card
+                      key={scenario.id}
+                      className={`bg-white border-2 border-gray-200 shadow-lg transition-all hover:shadow-xl overflow-visible ${
+                        isAvailable ? 'cursor-pointer' : 'cursor-not-allowed'
+                      }`}
+                      onClick={() => isAvailable && onScenarioSelect(scenario, 'learn')}
+                    >
+                      <CardContent className="p-0 overflow-visible">
+                        {/* Card Header - Subtle color */}
+                        <div className={`${getFunctionColor(scenario.function)} border-b-2 p-4 relative overflow-visible`}>
                         {/* Flagship Badge - Top Right */}
                         {scenario.flagship && (
                           <div className="absolute -top-2 -right-2 z-10">
@@ -250,12 +273,12 @@ export function ScenarioSelection({ onScenarioSelect }: ScenarioSelectionProps) 
                           {typeof scenario.icon === 'string' ? (
                             <div className="text-3xl flex-shrink-0">{scenario.icon}</div>
                           ) : (
-                            <div className={`h-10 w-10 flex-shrink-0 rounded-lg ${getFunctionIconBg(selectedFunction)} flex items-center justify-center ${getFunctionAccent(selectedFunction)}`}>
+                            <div className={`h-10 w-10 flex-shrink-0 rounded-lg ${getFunctionIconBg(scenario.function)} flex items-center justify-center ${getFunctionAccent(scenario.function)}`}>
                               <scenario.icon className="h-6 w-6" />
                             </div>
                           )}
-                          
-                          <h4 className={`text-base font-bold leading-tight ${getFunctionAccent(selectedFunction)} flex-1`}>
+
+                          <h4 className={`text-base font-bold leading-tight ${getFunctionAccent(scenario.function)} flex-1`}>
                             {scenario.title}
                           </h4>
                         </div>
@@ -298,7 +321,8 @@ export function ScenarioSelection({ onScenarioSelect }: ScenarioSelectionProps) 
                   </Card>
                 );
               })}
-            </div>
+              </motion.div>
+            </AnimatePresence>
 
             {funcScenarios.length === 0 && (
               <div className="text-center py-12 text-gray-500">

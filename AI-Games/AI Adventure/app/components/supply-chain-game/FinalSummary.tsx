@@ -1,4 +1,4 @@
-import { TrendingDown, Clock, Zap, DollarSign, CheckCircle, Home, Star, Lightbulb, X, ArrowLeft } from 'lucide-react';
+import { TrendingDown, Clock, Zap, Shield, CheckCircle, Home, Star, Lightbulb, X, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useState } from 'react';
 
@@ -86,7 +86,7 @@ export function FinalSummary({ onBack }: { onBack?: () => void } = {}) {
             The "Aha!" Moment: Impact Metrics
           </h1>
           <p className="text-sm text-gray-600 max-w-2xl mx-auto">
-            You've experienced both the manual struggle and the AI-powered solution. 
+            You've experienced both the manual firefighting and the AI-powered solution. 
             Here's the transformation in numbers.
           </p>
         </motion.div>
@@ -94,31 +94,31 @@ export function FinalSummary({ onBack }: { onBack?: () => void } = {}) {
         {/* Metrics Grid */}
         <div className="grid grid-cols-2 gap-3 mb-4">
           <MetricCard
-            label="Daily Audit Time"
-            manual="120-180 Minutes"
+            label="Daily Monitoring Time"
+            manual="4+ Hours (Manual)"
             agentic="0 Minutes (Automated)"
             icon={<Clock className="w-4 h-4" />}
           />
           
           <MetricCard
-            label="Audit Frequency"
-            manual="Once Daily (Sampled)"
-            agentic="Real-time (Continuous)"
+            label="Monitoring Frequency"
+            manual="Reactive (Ad-hoc)"
+            agentic="Real-time (24/7)"
             icon={<Zap className="w-4 h-4" />}
           />
           
           <MetricCard
-            label="Response Time"
-            manual="24+ Hours"
-            agentic="< 5 Minutes"
+            label="Risk Detection Speed"
+            manual="24-48 Hours"
+            agentic="< 2 Minutes"
             icon={<TrendingDown className="w-4 h-4" />}
           />
           
           <MetricCard
-            label="Financial Impact"
-            manual="High Promo Leakage"
-            agentic="Optimized Trade Spend"
-            icon={<DollarSign className="w-4 h-4" />}
+            label="Supply Chain Impact"
+            manual="High Disruption Risk"
+            agentic="Proactive Protection"
+            icon={<Shield className="w-4 h-4" />}
           />
         </div>
 
@@ -138,25 +138,25 @@ export function FinalSummary({ onBack }: { onBack?: () => void } = {}) {
               <thead className="bg-gray-50 border-b-2 border-gray-200">
                 <tr>
                   <th className="text-left p-2 font-bold text-gray-900 text-xs">Metric</th>
-                  <th className="text-left p-2 font-bold text-red-700 text-xs">The Manual Struggle</th>
+                  <th className="text-left p-2 font-bold text-red-700 text-xs">The Manual Firefight</th>
                   <th className="text-left p-2 font-bold text-green-700 text-xs">The Agentic Shift</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 <tr className="hover:bg-gray-50 transition-colors">
                   <td className="p-2 font-semibold text-gray-900 text-xs">Cognitive Load</td>
-                  <td className="p-2 text-red-700 text-xs">High (Searching & Typing)</td>
+                  <td className="p-2 text-red-700 text-xs">High (Manual Searching)</td>
                   <td className="p-2 text-green-700 text-xs">Low (Reviewing & Deciding)</td>
                 </tr>
                 <tr className="hover:bg-gray-50 transition-colors">
                   <td className="p-2 font-semibold text-gray-900 text-xs">User Role</td>
-                  <td className="p-2 text-red-700 text-xs">Data Entry Clerk</td>
-                  <td className="p-2 text-green-700 text-xs">Strategic Relationship Manager</td>
+                  <td className="p-2 text-red-700 text-xs">Risk Firefighter</td>
+                  <td className="p-2 text-green-700 text-xs">Strategic Supply Chain Manager</td>
                 </tr>
                 <tr className="hover:bg-gray-50 transition-colors">
-                  <td className="p-2 font-semibold text-gray-900 text-xs">Accuracy</td>
-                  <td className="p-2 text-red-700 text-xs">Prone to Human Error</td>
-                  <td className="p-2 text-green-700 text-xs">100% Evidence-Based</td>
+                  <td className="p-2 font-semibold text-gray-900 text-xs">Coverage</td>
+                  <td className="p-2 text-red-700 text-xs">Sampled (2 of 50 suppliers)</td>
+                  <td className="p-2 text-green-700 text-xs">100% Continuous (All 50)</td>
                 </tr>
                 <tr className="hover:bg-gray-50 transition-colors">
                   <td className="p-2 font-semibold text-gray-900 text-xs">Daily Time Investment</td>
@@ -180,15 +180,15 @@ export function FinalSummary({ onBack }: { onBack?: () => void } = {}) {
             <div>
               <h4 className="text-[#E41E2B] font-bold mb-1 text-sm">🕒 Time</h4>
               <p className="text-gray-300 leading-relaxed text-xs">
-                You are no longer a <strong>"Data Collector."</strong> You are now a <strong>"Strategic Auditor."</strong> 
-                Let the Agent do the window shopping while you do the negotiating.
+                You are no longer a <strong>"Manual Checker."</strong> You are now a <strong>"Strategic Risk Manager."</strong> 
+                Let the Agent monitor 24/7 while you focus on high-value decisions.
               </p>
             </div>
             <div>
-              <h4 className="text-[#E41E2B] font-bold mb-1 text-sm">🤝 Fear</h4>
+              <h4 className="text-[#E41E2B] font-bold mb-1 text-sm">🤝 Control</h4>
               <p className="text-gray-300 leading-relaxed text-xs">
-                Removing the friction of confrontation. The AI provides the <strong>"Hard Truth"</strong> (the data), 
-                so you can focus on the <strong>"Soft Skill"</strong> (the relationship).
+                Moving from reactive firefighting to proactive protection. The AI provides <strong>"Early Warning Intelligence"</strong>, 
+                so you can focus on <strong>"Strategic Sourcing Decisions."</strong>
               </p>
             </div>
           </div>
@@ -341,7 +341,7 @@ export function FinalSummary({ onBack }: { onBack?: () => void } = {}) {
                       <textarea
                         value={suggestion}
                         onChange={(e) => setSuggestion(e.target.value)}
-                        placeholder="Example: Automating monthly contract renewals in procurement, where we spend hours manually tracking expiration dates and emailing vendors..."
+                        placeholder="Example: Automating supplier invoice reconciliation in finance, where we spend hours manually matching POs to invoices and flagging discrepancies..."
                         className="w-full h-40 px-4 py-3 border-2 border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:border-[#E41E2B] focus:outline-none resize-none"
                       />
                       <p className="text-sm text-gray-500 mt-2">
