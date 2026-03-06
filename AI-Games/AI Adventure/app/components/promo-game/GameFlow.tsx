@@ -7,7 +7,11 @@ import { motion, AnimatePresence } from 'motion/react';
 
 type GamePhase = 'phase1' | 'phase2' | 'summary';
 
-export function GameFlow() {
+interface GameFlowProps {
+  onBack?: () => void;
+}
+
+export function GameFlow({ onBack }: GameFlowProps) {
   const [currentPhase, setCurrentPhase] = useState<GamePhase>('phase1');
 
   return (
@@ -23,10 +27,10 @@ export function GameFlow() {
               exit={{ opacity: 0 }}
               className="h-full"
             >
-              <Phase1Manual onComplete={() => setCurrentPhase('phase2')} />
+              <Phase1Manual onComplete={() => setCurrentPhase('phase2')} onBack={onBack} />
             </motion.div>
           )}
-          
+
           {currentPhase === 'phase2' && (
             <motion.div
               key="phase2"
@@ -35,10 +39,10 @@ export function GameFlow() {
               exit={{ opacity: 0 }}
               className="h-full"
             >
-              <Phase2Agentic onComplete={() => setCurrentPhase('summary')} />
+              <Phase2Agentic onComplete={() => setCurrentPhase('summary')} onBack={onBack} />
             </motion.div>
           )}
-          
+
           {currentPhase === 'summary' && (
             <motion.div
               key="summary"
@@ -47,7 +51,7 @@ export function GameFlow() {
               exit={{ opacity: 0 }}
               className="h-full"
             >
-              <FinalSummary />
+              <FinalSummary onBack={onBack} />
             </motion.div>
           )}
         </AnimatePresence>

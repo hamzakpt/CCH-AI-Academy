@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Bot, DollarSign, Sparkles, Send, ArrowRight, FileText, Edit2, Check, X, AlertCircle } from 'lucide-react';
+import { Bot, DollarSign, Sparkles, Send, ArrowRight, FileText, Edit2, Check, X, AlertCircle, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 type Message = {
@@ -14,9 +14,10 @@ type Message = {
 
 interface Phase2AgenticProps {
   onComplete: () => void;
+  onBack?: () => void;
 }
 
-export function Phase2Agentic({ onComplete }: Phase2AgenticProps) {
+export function Phase2Agentic({ onComplete, onBack }: Phase2AgenticProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [showMindsetPopup, setShowMindsetPopup] = useState(false);
   const [showWelcomePopup, setShowWelcomePopup] = useState(true);
@@ -503,9 +504,21 @@ export function Phase2Agentic({ onComplete }: Phase2AgenticProps) {
   return (
     <div className="h-full overflow-hidden p-3">
       <div className="max-w-[1600px] mx-auto h-full flex flex-col">
-        {/* Header */}
+        {/* Header with Back Button */}
         <div className="mb-2 flex-shrink-0">
-          <h2 className="text-lg font-bold text-gray-900 mb-1">AI-Powered Accrual Detection</h2>
+          <div className="flex items-center justify-between mb-3">
+            {onBack && (
+              <button
+                onClick={onBack}
+                className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded-lg transition-colors flex-shrink-0"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                <span className="text-sm font-medium">Back</span>
+              </button>
+            )}
+            <h2 className="text-lg font-bold text-gray-900 flex-1 text-center">AI-Powered Accrual Detection</h2>
+            <div className="w-20" /> {/* Spacer for alignment */}
+          </div>
 
           <div className="bg-green-50 border-l-4 border-green-500 p-2 rounded mb-2">
             <h3 className="font-semibold text-green-900 text-xs mb-1">The New Reality:</h3>

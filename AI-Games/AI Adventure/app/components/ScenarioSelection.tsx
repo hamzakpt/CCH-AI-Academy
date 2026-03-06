@@ -3,7 +3,7 @@ import { Button } from '@/app/components/ui/button';
 import { Badge } from '@/app/components/ui/badge';
 import { scenarios } from '@/app/data/scenarios-30';
 import { Scenario } from '@/app/types/scenario';
-import { Clock, ArrowRight, Users, Factory, DollarSign, Scale, Laptop, TrendingUp, Sparkles, Lightbulb, X, CheckCircle, Flame } from 'lucide-react';
+import { Clock, ArrowRight, ArrowLeft, Users, Factory, DollarSign, Scale, Laptop, TrendingUp, Sparkles, Lightbulb, X, CheckCircle, Flame } from 'lucide-react';
 import { useState } from 'react';
 import hellenIcon from 'figma:asset/07dfe6c7775cacff76b9e7dffe5d04e7714eeb57.png';
 import { RatingDisplay } from '@/app/components/RatingDisplay';
@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from 'motion/react';
 
 interface ScenarioSelectionProps {
   onScenarioSelect: (scenario: Scenario, mode: 'learn' | 'apply') => void;
+  onBackToHome?: () => void;
 }
 
 interface ScenarioRating {
@@ -21,7 +22,7 @@ interface ScenarioRating {
   userRatings: { rating: number; comment: string }[];
 }
 
-export function ScenarioSelection({ onScenarioSelect }: ScenarioSelectionProps) {
+export function ScenarioSelection({ onScenarioSelect, onBackToHome }: ScenarioSelectionProps) {
   const functions = ['Commercial', 'Supply Chain', 'Finance', 'HR', 'Other'] as const;
   const [selectedFunction, setSelectedFunction] = useState<typeof functions[number]>('Commercial');
   const [searchQuery, setSearchQuery] = useState('');
@@ -116,8 +117,22 @@ export function ScenarioSelection({ onScenarioSelect }: ScenarioSelectionProps) 
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        {onBackToHome && (
+          <button
+            onClick={onBackToHome}
+            className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <ArrowLeft className="h-5 w-5" />
+            <span className="text-sm font-medium">Back</span>
+          </button>
+        )}
+        <div className="flex-1 text-center">
+          <h2 className="text-2xl text-gray-900 mb-1 font-bold">Choose Your First Mission</h2>
+        </div>
+        <div className="w-20" /> {/* Spacer for alignment */}
+      </div>
       <div className="text-center mb-4">
-        <h2 className="text-2xl text-gray-900 mb-1 font-bold">Choose Your First Mission</h2>
         <p className="text-gray-600 text-sm">
           Select a business scenario to start your AI Adventure
         </p>

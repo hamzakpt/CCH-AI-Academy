@@ -1,13 +1,14 @@
 import { useState } from 'react';
-import { FileSpreadsheet, AlertTriangle, Clock, Search } from 'lucide-react';
+import { FileSpreadsheet, AlertTriangle, Clock, Search, ArrowLeft } from 'lucide-react';
 import { MetricsPanel } from './MetricsPanel';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface Phase1ManualProps {
   onComplete: () => void;
+  onBack?: () => void;
 }
 
-export function Phase1Manual({ onComplete }: Phase1ManualProps) {
+export function Phase1Manual({ onComplete, onBack }: Phase1ManualProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
   const [enteredPrice, setEnteredPrice] = useState('');
@@ -39,15 +40,25 @@ export function Phase1Manual({ onComplete }: Phase1ManualProps) {
     <div className="flex h-full">
       <div className="flex-1 bg-gray-50 p-4 overflow-y-auto">
         <div className="max-w-7xl mx-auto">
-          {/* Header */}
+          {/* Header with Back Button */}
           <div className="mb-3">
-            <div className="flex items-center justify-between mb-2">
-              <div>
+            <div className="flex items-center justify-between mb-3">
+              {onBack && (
+                <button
+                  onClick={onBack}
+                  className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded-lg transition-colors flex-shrink-0"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  <span className="text-sm font-medium">Back</span>
+                </button>
+              )}
+              <div className="flex-1 text-center">
                 <h2 className="text-xl font-bold text-gray-900 mb-1">Manual Promo Compliance Auditing</h2>
                 <p className="text-gray-600 text-sm">
                   Experience the tedious reality of manual compliance checking
                 </p>
               </div>
+              <div className="w-20" /> {/* Spacer for alignment */}
             </div>
             
             {/* Task Instructions */}

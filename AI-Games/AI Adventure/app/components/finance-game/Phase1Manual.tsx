@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Mail, Clock, AlertCircle, Check, X, Calculator, Inbox } from 'lucide-react';
+import { Mail, Clock, AlertCircle, Check, X, Calculator, Inbox, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface Phase1ManualProps {
   onComplete: () => void;
+  onBack?: () => void;
 }
 
 type EmailResponse = {
@@ -61,7 +62,7 @@ const emailResponses: EmailResponse[] = [
   }
 ];
 
-export function Phase1Manual({ onComplete }: Phase1ManualProps) {
+export function Phase1Manual({ onComplete, onBack }: Phase1ManualProps) {
   const [showWelcomePopup, setShowWelcomePopup] = useState(true);
   const [showCompletionPopup, setShowCompletionPopup] = useState(false);
   const [currentStep, setCurrentStep] = useState<'inbox' | 'excel'>('inbox');
@@ -152,6 +153,18 @@ export function Phase1Manual({ onComplete }: Phase1ManualProps) {
   return (
     <div className="h-full overflow-hidden p-3">
       <div className="max-w-[1600px] mx-auto h-full flex flex-col">
+        {/* Back Button */}
+        {onBack && (
+          <div className="flex justify-start mb-2">
+            <button
+              onClick={onBack}
+              className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded-lg transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span className="text-sm font-medium">Back</span>
+            </button>
+          </div>
+        )}
         {/* Header Stats */}
         <div className="mb-2 flex-shrink-0">
           <div className="bg-gradient-to-r from-red-600 to-red-700 rounded-lg p-3 shadow-lg">

@@ -66,23 +66,33 @@ function App() {
     setAppState('selection');
   };
 
+  const handleBackToHome = () => {
+    setSelectedScenario(null);
+    setAppState('welcome');
+  };
+
+  const handleBackToSelection = () => {
+    setSelectedScenario(null);
+    setAppState('selection');
+  };
+
   if (appState === 'welcome') {
     return <WelcomeScreen onContinue={handleStartLearning} />;
   }
 
   // Special full-screen experience for Promo Compliance game
   if (appState === 'promo-game') {
-    return <GameFlow />;
+    return <GameFlow onBack={handleBackToSelection} />;
   }
 
   // Special full-screen experience for Supply Chain Risk game
   if (appState === 'supply-chain-game') {
-    return <SupplyChainGameFlow />;
+    return <SupplyChainGameFlow onBack={handleBackToSelection} />;
   }
 
   // Special full-screen experience for Finance Risk game
   if (appState === 'finance-game') {
-    return <FinanceGameFlow />;
+    return <FinanceGameFlow onBack={handleBackToSelection} />;
   }
 
   return (
@@ -91,7 +101,7 @@ function App() {
       <main className="flex-1 overflow-y-auto">
         <div className="max-w-7xl mx-auto p-4 h-full">
           {appState === 'selection' && (
-            <ScenarioSelection onScenarioSelect={handleScenarioSelect} />
+            <ScenarioSelection onScenarioSelect={handleScenarioSelect} onBackToHome={handleBackToHome} />
           )}
 
           {appState === 'comparison' && selectedScenario && (

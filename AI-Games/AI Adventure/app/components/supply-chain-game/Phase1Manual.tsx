@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { Search, Clock, AlertTriangle, X, MousePointerClick } from 'lucide-react';
+import { Search, Clock, AlertTriangle, X, MousePointerClick, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface Phase1ManualProps {
   onComplete: () => void;
+  onBack?: () => void;
 }
 
-export function Phase1Manual({ onComplete }: Phase1ManualProps) {
+export function Phase1Manual({ onComplete, onBack }: Phase1ManualProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
   const [checkedSuppliers, setCheckedSuppliers] = useState<number[]>([]);
@@ -263,10 +264,19 @@ export function Phase1Manual({ onComplete }: Phase1ManualProps) {
 
       <div className="flex-1 bg-gradient-to-br from-gray-100 to-gray-200 p-4 overflow-y-auto">
         <div className="max-w-7xl mx-auto">
-          {/* Header */}
+          {/* Header with Back Button */}
           <div className="mb-4">
             <div className="flex items-center justify-between mb-3">
-              <div>
+              {onBack && (
+                <button
+                  onClick={onBack}
+                  className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded-lg transition-colors flex-shrink-0"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  <span className="text-sm font-medium">Back</span>
+                </button>
+              )}
+              <div className="flex-1 text-center">
                 <h2 className="text-2xl font-bold text-gray-900 mb-1">
                   Manual Supplier Risk Monitoring
                 </h2>
@@ -274,6 +284,7 @@ export function Phase1Manual({ onComplete }: Phase1ManualProps) {
                   The tedious reality of reactive risk firefighting
                 </p>
               </div>
+              <div className="w-20" /> {/* Spacer for alignment */}
             </div>
 
             {/* Status Bar - Red/Gray theme for friction */}

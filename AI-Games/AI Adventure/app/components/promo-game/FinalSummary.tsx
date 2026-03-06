@@ -1,4 +1,4 @@
-import { TrendingDown, Clock, Zap, DollarSign, CheckCircle, Home, Star, Lightbulb, X } from 'lucide-react';
+import { TrendingDown, Clock, Zap, DollarSign, CheckCircle, Home, Star, Lightbulb, X, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useState } from 'react';
 
@@ -27,7 +27,7 @@ function MetricCard({ label, manual, agentic, icon }: { label: string; manual: s
   );
 }
 
-export function FinalSummary() {
+export function FinalSummary({ onBack }: { onBack?: () => void } = {}) {
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [showSuggestModal, setShowSuggestModal] = useState(false);
   const [rating, setRating] = useState(0);
@@ -58,17 +58,30 @@ export function FinalSummary() {
   return (
     <div className="h-full overflow-y-auto p-3">
       <div className="max-w-[1400px] mx-auto">
-        {/* Hero Section */}
+        {/* Hero Section with Back Button */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-3"
         >
-          <div className="inline-flex items-center gap-2 bg-green-50 border-2 border-green-500 rounded-full px-4 py-1.5 mb-2">
-            <CheckCircle className="w-4 h-4 text-green-600" />
-            <span className="text-green-900 font-bold text-xs">Simulation Complete!</span>
+          {/* Back Button and Completion Badge on same line */}
+          <div className="flex items-center justify-between mb-3">
+            {onBack && (
+              <button
+                onClick={onBack}
+                className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded-lg transition-colors flex-shrink-0"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                <span className="text-sm font-medium">Back</span>
+              </button>
+            )}
+            <div className="flex-1" /> {/* Spacer */}
+            <div className="inline-flex items-center gap-2 bg-green-50 border-2 border-green-500 rounded-full px-4 py-1.5 flex-shrink-0">
+              <CheckCircle className="w-4 h-4 text-green-600" />
+              <span className="text-green-900 font-bold text-xs">Simulation Complete!</span>
+            </div>
           </div>
-          
+
           <h1 className="text-2xl font-bold text-gray-900 mb-1">
             The "Aha!" Moment: Impact Metrics
           </h1>
