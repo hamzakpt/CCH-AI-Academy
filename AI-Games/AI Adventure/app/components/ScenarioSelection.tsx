@@ -209,28 +209,25 @@ export function ScenarioSelection({ onScenarioSelect, onBackToHome }: ScenarioSe
 
       {/* Scenarios Grid */}
       {(() => {
-        // Always filter by selected function, then apply search if provided
-        const funcScenarios = scenarios.filter(s => {
-          const matchesFunction = s.function === selectedFunction;
-          if (!searchQuery.trim()) {
-            return matchesFunction;
-          }
-          const matchesSearch =
-            s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            s.description.toLowerCase().includes(searchQuery.toLowerCase());
-          return matchesFunction && matchesSearch;
-        });
+        // If searching, show all matching scenarios across all functions
+        // If not searching, show scenarios for the selected function only
+        const funcScenarios = searchQuery.trim()
+          ? scenarios.filter(s =>
+              s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              s.description.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+          : scenarios.filter(s => s.function === selectedFunction);
 
         return (
           <div className="flex-1 overflow-y-auto">
             <h3 className="text-lg font-bold text-gray-900 mb-3">
               {searchQuery.trim()
-                ? `Search Results in ${selectedFunction} (${funcScenarios.length})`
+                ? `Search Results (${funcScenarios.length})`
                 : `${selectedFunction} Scenarios`}
             </h3>
             <AnimatePresence mode="wait">
               <motion.div
-                key={`${selectedFunction}-${searchQuery}`}
+                key={searchQuery.trim() ? `search-${searchQuery}` : selectedFunction}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
