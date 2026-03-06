@@ -5,7 +5,7 @@ import { scenarios } from '@/app/data/scenarios-30';
 import { Scenario } from '@/app/types/scenario';
 import { Clock, ArrowRight, ArrowLeft, Users, Factory, DollarSign, Scale, Laptop, TrendingUp, Sparkles, Lightbulb, X, CheckCircle, Flame } from 'lucide-react';
 import { useState } from 'react';
-import hellenIcon from 'figma:asset/07dfe6c7775cacff76b9e7dffe5d04e7714eeb57.png';
+import hellenIcon from '/hellen-logo-transparent-background.png';
 import { RatingDisplay } from '@/app/components/RatingDisplay';
 import { RatingModal } from '@/app/components/RatingModal';
 import { CommentsViewModal } from '@/app/components/CommentsViewModal';

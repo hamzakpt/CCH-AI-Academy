@@ -8,14 +8,27 @@ import { GameFlow as SupplyChainGameFlow } from '@/app/components/supply-chain-g
 import { GameFlow as FinanceGameFlow } from '@/app/components/finance-game/GameFlow';
 import { Footer } from '@/app/components/Footer';
 import { Scenario } from '@/app/types/scenario';
-import cokeLogoImage from 'figma:asset/b7c663aaaffd2123e1f119dd74e53b5eadefff3c.png';
+import { LoginPage } from '@/app/components/LoginPage';
+import { MasterLandingPage } from '@/app/components/MasterLandingPage';
 
-type AppState = 'welcome' | 'selection' | 'comparison' | 'execution' | 'promo-game' | 'supply-chain-game' | 'finance-game';
+type AppState = 'login' | 'master-landing' | 'welcome' | 'selection' | 'comparison' | 'execution' | 'promo-game' | 'supply-chain-game' | 'finance-game';
 
 function App() {
-  const [appState, setAppState] = useState<AppState>('welcome');
+  const [appState, setAppState] = useState<AppState>('login');
   const [selectedScenario, setSelectedScenario] = useState<Scenario | null>(null);
   const [mode, setMode] = useState<'learn' | 'apply'>('learn');
+
+  const handleLogin = (email: string) => {
+    setAppState('master-landing');
+  };
+
+  const handleSelectAIAdventure = () => {
+    setAppState('welcome');
+  };
+
+  const handleSelectLearningPath = () => {
+    window.open('https://learning-path-tau.vercel.app/', '_blank');
+  };
 
   const handleStartLearning = () => {
     setAppState('selection');
@@ -75,6 +88,14 @@ function App() {
     setSelectedScenario(null);
     setAppState('selection');
   };
+
+  if (appState === 'login') {
+    return <LoginPage onLogin={handleLogin} />;
+  }
+
+  if (appState === 'master-landing') {
+    return <MasterLandingPage onSelectAIAdventure={handleSelectAIAdventure} onSelectLearningPath={handleSelectLearningPath} />;
+  }
 
   if (appState === 'welcome') {
     return <WelcomeScreen onContinue={handleStartLearning} />;

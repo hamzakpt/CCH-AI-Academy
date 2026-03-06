@@ -2,12 +2,10 @@ import { Button } from '@/app/components/ui/button';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { Gamepad2, Users, Factory, DollarSign, Building2, Scale, Laptop, TrendingUp, ArrowRight, CheckCircle2, Sparkles } from 'lucide-react';
 import { Footer } from '@/app/components/Footer';
-import cokeLogoImage from 'figma:asset/b7c663aaaffd2123e1f119dd74e53b5eadefff3c.png';
-import heroImage from 'figma:asset/50df961786c08f3ce7403ef57839bc891028f51a.png';
-import contentImage from 'figma:asset/0b77b80337e00e3daf4cb457032e58b6d56f04a0.png';
-import deskImage from 'figma:asset/ff9936f7e451a179b1ac9cb210a5bceda3311140.png';
-import timerImage from 'figma:asset/1d8eef4f0b971ebad3c5ec87490f803b5217cbb0.png';
-import stackImage from 'figma:asset/dcb115b258b620033204da77a8a40088d031186f.png';
+import heroImage from '/ai-games-logo.png';
+import deskImage from '/desk-image.png';
+import timerImage from '/timer-image.png';
+import stackImage from '/stack-image.png';
 
 interface WelcomeScreenProps {
   onContinue: () => void;

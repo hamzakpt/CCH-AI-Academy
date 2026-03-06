@@ -1,4 +1,4 @@
-import hellenLogo from 'figma:asset/56b56d388664a39ac1bdfc334b9e0794a6db2ba8.png';
+import hellenLogo from '/hellen-logo-footer.png';
 
 export function Footer() {
   return (
