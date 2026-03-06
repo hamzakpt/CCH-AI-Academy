@@ -194,37 +194,48 @@ export function ScenarioSelection({ onScenarioSelect }: ScenarioSelectionProps) 
 
       {/* Scenarios Grid */}
       {(() => {
-        // If searching, show all matching scenarios across all functions
-        // If not searching, show scenarios for the selected function
-        const funcScenarios = searchQuery.trim()
-          ? scenarios.filter(s => 
-              s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              s.description.toLowerCase().includes(searchQuery.toLowerCase())
-            )
-          : scenarios.filter(s => s.function === selectedFunction);
-        
+        // Always filter by selected function, then apply search if provided
+        const funcScenarios = scenarios.filter(s => {
+          const matchesFunction = s.function === selectedFunction;
+          if (!searchQuery.trim()) {
+            return matchesFunction;
+          }
+          const matchesSearch =
+            s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            s.description.toLowerCase().includes(searchQuery.toLowerCase());
+          return matchesFunction && matchesSearch;
+        });
+
         return (
           <div className="flex-1 overflow-y-auto">
             <h3 className="text-lg font-bold text-gray-900 mb-3">
-              {searchQuery.trim() 
-                ? `Search Results (${funcScenarios.length})` 
+              {searchQuery.trim()
+                ? `Search Results in ${selectedFunction} (${funcScenarios.length})`
                 : `${selectedFunction} Scenarios`}
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {funcScenarios.map(scenario => {
-                const isAvailable = scenario.startHere === true;
-                
-                return (
-                  <Card 
-                    key={scenario.id} 
-                    className={`bg-white border-2 border-gray-200 shadow-lg transition-all hover:shadow-xl overflow-visible ${ 
-                      isAvailable ? 'cursor-pointer' : 'cursor-not-allowed'
-                    }`}
-                    onClick={() => isAvailable && onScenarioSelect(scenario, 'learn')}
-                  >
-                    <CardContent className="p-0 overflow-visible">
-                      {/* Card Header - Subtle color */}
-                      <div className={`${getFunctionColor(selectedFunction)} border-b-2 p-4 relative overflow-visible`}>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`${selectedFunction}-${searchQuery}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+              >
+                {funcScenarios.map(scenario => {
+                  const isAvailable = scenario.startHere === true;
+
+                  return (
+                    <Card
+                      key={scenario.id}
+                      className={`bg-white border-2 border-gray-200 shadow-lg transition-all hover:shadow-xl overflow-visible ${
+                        isAvailable ? 'cursor-pointer' : 'cursor-not-allowed'
+                      }`}
+                      onClick={() => isAvailable && onScenarioSelect(scenario, 'learn')}
+                    >
+                      <CardContent className="p-0 overflow-visible">
+                        {/* Card Header - Subtle color */}
+                        <div className={`${getFunctionColor(scenario.function)} border-b-2 p-4 relative overflow-visible`}>
                         {/* Flagship Badge - Top Right */}
                         {scenario.flagship && (
                           <div className="absolute -top-2 -right-2 z-10">
@@ -250,12 +261,12 @@ export function ScenarioSelection({ onScenarioSelect }: ScenarioSelectionProps) 
                           {typeof scenario.icon === 'string' ? (
                             <div className="text-3xl flex-shrink-0">{scenario.icon}</div>
                           ) : (
-                            <div className={`h-10 w-10 flex-shrink-0 rounded-lg ${getFunctionIconBg(selectedFunction)} flex items-center justify-center ${getFunctionAccent(selectedFunction)}`}>
+                            <div className={`h-10 w-10 flex-shrink-0 rounded-lg ${getFunctionIconBg(scenario.function)} flex items-center justify-center ${getFunctionAccent(scenario.function)}`}>
                               <scenario.icon className="h-6 w-6" />
                             </div>
                           )}
-                          
-                          <h4 className={`text-base font-bold leading-tight ${getFunctionAccent(selectedFunction)} flex-1`}>
+
+                          <h4 className={`text-base font-bold leading-tight ${getFunctionAccent(scenario.function)} flex-1`}>
                             {scenario.title}
                           </h4>
                         </div>
@@ -298,7 +309,8 @@ export function ScenarioSelection({ onScenarioSelect }: ScenarioSelectionProps) 
                   </Card>
                 );
               })}
-            </div>
+              </motion.div>
+            </AnimatePresence>
 
             {funcScenarios.length === 0 && (
               <div className="text-center py-12 text-gray-500">
