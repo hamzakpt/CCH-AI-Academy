@@ -58,6 +58,7 @@ function figmaAssetPlugin(): Plugin {
 }
 
 export default defineConfig({
+  base: '/ai-games/',
   plugins: [
     figmaAssetPlugin(),
     react(),

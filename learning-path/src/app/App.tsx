@@ -45,10 +45,7 @@ export default function App() {
   };
 
   const handleSelectAIAdventure = () => {
-    alert('AI Adventure is coming soon! Redirecting you to Learning Path.');
-
-    setSelectedMode('learning-path');
-    setCurrentScreen('dashboard');
+    window.location.href = '/ai-games/';
   };
 
   const handleStart = () => {

@@ -8,27 +8,15 @@ import { GameFlow as SupplyChainGameFlow } from '@/app/components/supply-chain-g
 import { GameFlow as FinanceGameFlow } from '@/app/components/finance-game/GameFlow';
 import { Footer } from '@/app/components/Footer';
 import { Scenario } from '@/app/types/scenario';
-import { LoginPage } from '@/app/components/LoginPage';
-import { MasterLandingPage } from '@/app/components/MasterLandingPage';
 
-type AppState = 'login' | 'master-landing' | 'welcome' | 'selection' | 'comparison' | 'execution' | 'promo-game' | 'supply-chain-game' | 'finance-game';
+type AppState = 'welcome' | 'selection' | 'comparison' | 'execution' | 'promo-game' | 'supply-chain-game' | 'finance-game';
 
 function App() {
-  const [appState, setAppState] = useState<AppState>('login');
+  const [appState, setAppState] = useState<AppState>('welcome');
   const [selectedScenario, setSelectedScenario] = useState<Scenario | null>(null);
   const [mode, setMode] = useState<'learn' | 'apply'>('learn');
 
-  const handleLogin = (email: string) => {
-    setAppState('master-landing');
-  };
 
-  const handleSelectAIAdventure = () => {
-    setAppState('welcome');
-  };
-
-  const handleSelectLearningPath = () => {
-    window.open('https://learning-path-tau.vercel.app/', '_blank');
-  };
 
   const handleStartLearning = () => {
     setAppState('selection');
@@ -89,29 +77,18 @@ function App() {
     setAppState('selection');
   };
 
-  if (appState === 'login') {
-    return <LoginPage onLogin={handleLogin} />;
-  }
-
-  if (appState === 'master-landing') {
-    return <MasterLandingPage onSelectAIAdventure={handleSelectAIAdventure} onSelectLearningPath={handleSelectLearningPath} />;
-  }
-
   if (appState === 'welcome') {
     return <WelcomeScreen onContinue={handleStartLearning} />;
   }
 
-  // Special full-screen experience for Promo Compliance game
   if (appState === 'promo-game') {
     return <GameFlow onBack={handleBackToSelection} />;
   }
 
-  // Special full-screen experience for Supply Chain Risk game
   if (appState === 'supply-chain-game') {
     return <SupplyChainGameFlow onBack={handleBackToSelection} />;
   }
 
-  // Special full-screen experience for Finance Risk game
   if (appState === 'finance-game') {
     return <FinanceGameFlow onBack={handleBackToSelection} />;
   }

@@ -9,6 +9,7 @@ dist/
 .vite/
 
 # Python
+.venv/
 venv/
 backend/venv/
 __pycache__/
