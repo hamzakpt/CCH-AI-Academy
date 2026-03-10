@@ -79,6 +79,7 @@ class ScreenActivity(Base):
     session_id = Column(Integer, ForeignKey("user_sessions.id"), nullable=False)
 
     screen_name = Column(String, nullable=False)
+    app_context = Column(String, nullable=True)  # "learning-path" or "ai-games"
 
     enter_time = Column(DateTime, nullable=False)
     exit_time = Column(DateTime, nullable=False)

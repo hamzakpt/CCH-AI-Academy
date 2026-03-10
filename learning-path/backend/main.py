@@ -33,8 +33,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://learning-path-tau.vercel.app",
-        "http://localhost:5173"
     ],
+    allow_origin_regex=r"http://localhost:\d+",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -525,6 +525,7 @@ class ActivityLogRequest(BaseModel):
     username: str
     session_id: int
     screen_name: str
+    app_context: Optional[str] = None  # "learning-path" or "ai-games"
     enter_time: datetime
     exit_time: datetime
     duration_seconds: int
@@ -754,6 +755,7 @@ def log_activity(data: ActivityLogRequest, db: Session = Depends(get_db)):
         username=data.username,
         session_id=data.session_id,
         screen_name=data.screen_name,
+        app_context=data.app_context,
         enter_time=data.enter_time,
         exit_time=data.exit_time,
         duration_seconds=data.duration_seconds
@@ -1072,6 +1074,7 @@ def get_user_analytics(username: str, db: Session = Depends(get_db)):
         for act in activities:
             screens.append({
                 "screen": act.screen_name,
+                "app_context": act.app_context,
                 "enter_time": act.enter_time,
                 "exit_time": act.exit_time,
                 "duration_seconds": act.duration_seconds
@@ -1111,7 +1114,8 @@ def get_user_summary(username: str, db: Session = Depends(get_db)):
     screen_time = {}
 
     for act in activities:
-        screen_time[act.screen_name] = screen_time.get(act.screen_name, 0) + act.duration_seconds
+        key = f"{act.app_context or 'unknown'}:{act.screen_name}"
+        screen_time[key] = screen_time.get(key, 0) + act.duration_seconds
 
     return {
         "username": username,

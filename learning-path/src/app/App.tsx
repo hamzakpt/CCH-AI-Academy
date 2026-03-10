@@ -26,6 +26,20 @@ export default function App() {
   const [userEmail, setUserEmail] = useState<string>('');
   const [savedPaths, setSavedPaths] = useState<SavedLearningPath[]>([]);
   const [currentPathId, setCurrentPathId] = useState<string | null>(null);
+
+  useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+  const usernameFromUrl = params.get("username");
+
+  if (usernameFromUrl) {
+    localStorage.setItem("username", usernameFromUrl);
+    setUserEmail(usernameFromUrl);
+
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+}, []);
+
+
   const [selectedMode, setSelectedMode] = useState<'learning-path' | 'ai-adventure' | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile>({
     jobFunction: null,
@@ -45,7 +59,7 @@ export default function App() {
   };
 
   const handleSelectAIAdventure = () => {
-    window.location.href = '/ai-games/';
+    window.location.href = `http://localhost:5174?username=${userEmail}`;
   };
 
   const handleStart = () => {
@@ -61,7 +75,10 @@ export default function App() {
       if (sessionId) {
         navigator.sendBeacon(
           `${API_BASE}/session/end`,
-          JSON.stringify({ session_id: Number(sessionId) })
+          new Blob(
+            [JSON.stringify({ session_id: Number(sessionId) })],
+            { type: "application/json" }
+          )
         );
       }
     };
@@ -99,6 +116,7 @@ export default function App() {
           username: userEmail,
           session_id: Number(sessionId),
           screen_name: screenIdentifier,
+          app_context: "learning-path",
           enter_time: enterTime.toISOString(),
           exit_time: exitTime.toISOString(),
           duration_seconds: durationSeconds
@@ -371,30 +389,30 @@ export default function App() {
 
   // Determine recommended path based on profile
   const determineRecommendedPath = (profile: UserProfile): string => {
-  if (profile.experienceLevel === 'beginner') {
-    return 'Data Fundamentals';
-  }
+    if (profile.experienceLevel === 'beginner') {
+      return 'Data Fundamentals';
+    }
 
-  if (profile.interests.includes('generative-agentic-ai')) {
-    return 'Generative & Agentic AI';
-  }
+    if (profile.interests.includes('generative-agentic-ai')) {
+      return 'Generative & Agentic AI';
+    }
 
-  if (profile.interests.includes('ml')) {
-    return profile.experienceLevel === 'advanced'
-      ? 'Advanced Machine Learning'
-      : 'Machine Learning';
-  }
+    if (profile.interests.includes('ml')) {
+      return profile.experienceLevel === 'advanced'
+        ? 'Advanced Machine Learning'
+        : 'Machine Learning';
+    }
 
-  if (profile.interests.includes('visualization')) {
-    return 'Data Visualization';
-  }
+    if (profile.interests.includes('visualization')) {
+      return 'Data Visualization';
+    }
 
-  if (profile.interests.includes('statistics')) {
-    return 'Data Science Basics';
-  }
+    if (profile.interests.includes('statistics')) {
+      return 'Data Science Basics';
+    }
 
-  return 'Data Projects';
-};
+    return 'Data Projects';
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">

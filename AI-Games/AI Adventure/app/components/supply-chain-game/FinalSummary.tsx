@@ -202,7 +202,10 @@ export function FinalSummary({ onBack }: { onBack?: () => void } = {}) {
         >
           <div className="grid grid-cols-3 gap-3 max-w-4xl mx-auto">
             <button
-              onClick={() => window.location.href = '/'}
+              onClick={() => {
+                const username = localStorage.getItem("username");
+                window.location.href = `http://localhost:5173?username=${username}`;
+              }}
               className="bg-white hover:bg-gray-50 text-gray-900 border-2 border-gray-300 px-4 py-3 rounded-lg font-bold text-xs transition-colors shadow-md flex items-center justify-center gap-2"
             >
               <Home className="w-4 h-4" />
