@@ -4,7 +4,7 @@ import { JobFunctionStep } from '@learning-path/app/components/steps/JobFunction
 import { ExperienceStep } from '@learning-path/app/components/steps/ExperienceStep';
 import { InterestsStep } from '@learning-path/app/components/steps/InterestsStep';
 import { GoalsStep } from '@learning-path/app/components/steps/GoalsStep';
-import type { UserProfile, JobFunction, ExperienceLevel, InterestArea } from '@learning-path/app/App';
+import type { UserProfile, JobFunction, ExperienceLevel, InterestArea } from '@learning-path/app/types';
 
 interface QuestionnaireFlowProps {
   onComplete: (profile: UserProfile) => void;

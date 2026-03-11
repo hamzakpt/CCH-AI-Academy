@@ -1,5 +1,5 @@
 import { BarChart3, Calculator, Brain, Database, PieChart, Sparkles } from 'lucide-react';
-import type { InterestArea } from '@learning-path/app/App';
+import type { InterestArea } from '@learning-path/app/types';
 
 interface InterestsStepProps {
   selectedInterests: InterestArea[];

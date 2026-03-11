@@ -2,15 +2,9 @@ import { useState, useEffect } from 'react';
 import { Plus, BookOpen, Calendar, TrendingUp, LogOut, Star, MessageSquare, Send, Pencil, Check } from 'lucide-react';
 import { useSound } from '@learning-path/utils/sounds';
 import hellenLogo from '@learning-path/assets/hellen-logo-transparent-background.png';
-import type { UserProfile } from '@learning-path/app/App';
+import type { UserProfile, SavedLearningPath } from '@learning-path/app/types';
 
-export interface SavedLearningPath {
-  id: string;
-  name: string;
-  createdAt: Date;
-  profile: UserProfile;
-  recommendedPath?: string;
-}
+export type { SavedLearningPath };
 
 interface LearningPathsDashboardProps {
   userEmail: string;

@@ -100,7 +100,10 @@ To build and run the application in a Docker container, use the following comman
 
 ```bash
 # 1. Build the Docker image
-docker build -t ai-games .
+docker build -t frontend .
+
+# Custom API build
+docker build -t frontend --build-arg VITE_API_URL=https://api.production.com .
 
 # 2. Run the Docker container
 docker run -p 8080:80 ai-games

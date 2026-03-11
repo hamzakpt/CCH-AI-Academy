@@ -1,5 +1,5 @@
 import { Briefcase, Package, Megaphone, DollarSign, Settings, Users } from 'lucide-react';
-import type { JobFunction } from '@learning-path/app/App';
+import type { JobFunction } from '@learning-path/app/types';
 
 interface JobFunctionStepProps {
   selectedFunction: JobFunction | null;

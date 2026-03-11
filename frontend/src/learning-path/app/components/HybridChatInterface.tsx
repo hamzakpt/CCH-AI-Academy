@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, MessageCircle, ArrowLeft } from 'lucide-react';
 import hellenLogo from '@learning-path/assets/a1c07c8833c1385f9acba9acb24b2ea7df9be827.png';
 import cocaColaHBCLogo from '@learning-path/assets/59218e6eca964424a8f051f5c7fe905235198f2c.png';
-import type { UserProfile, JobFunction, ExperienceLevel, InterestArea } from '@learning-path/app/App';
+import type { UserProfile, JobFunction, ExperienceLevel, InterestArea } from '@learning-path/app/types';
 import { useSound } from '@learning-path/utils/sounds';
 import { Briefcase, Package, Megaphone, DollarSign, Settings, Users as UsersIcon } from 'lucide-react';
 import { Sprout, TrendingUp, Award } from 'lucide-react';

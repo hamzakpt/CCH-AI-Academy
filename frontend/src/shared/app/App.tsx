@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MasterLandingPage } from '@learning-path/app/components/MasterLandingPage';
 import { LoginPage } from '@learning-path/app/components/LoginPage';
-import { LearningPathsDashboard, SavedLearningPath } from '@learning-path/app/components/LearningPathsDashboard';
+import { LearningPathsDashboard } from '@learning-path/app/components/LearningPathsDashboard';
 import { HybridChatInterface } from '@learning-path/app/components/HybridChatInterface';
 import { ResultsScreen } from '@learning-path/app/components/ResultsScreen';
 import { GeneratingPathScreen } from '@learning-path/app/components/GeneratingPathScreen';
+// Learning path types
+import type { JobFunction, ExperienceLevel, InterestArea, UserProfile, SavedLearningPath } from '@learning-path/app/types';
 // AI Adventure components
 import { WelcomeScreen as AIAdventureWelcome } from '@ai-adventure/app/components/WelcomeScreen';
 import { ScenarioSelection } from '@ai-adventure/app/components/ScenarioSelection';
@@ -15,19 +17,8 @@ import { GameFlow as SupplyChainGameFlow } from '@ai-adventure/app/components/su
 import { GameFlow as FinanceGameFlow } from '@ai-adventure/app/components/finance-game/GameFlow';
 import { Scenario } from '@ai-adventure/app/types/scenario';
 
-export type JobFunction = 'commercial' | 'supply-chain' | 'marketing' | 'finance' | 'operations' | 'hr' | 'other';
-export type ExperienceLevel = 'beginner' | 'intermediate' | 'advanced';
-export type InterestArea = 'visualization' | 'statistics' | 'ml' | 'data-engineering' | 'generative-agentic-ai';
-import { useEffect } from 'react';
-
-export interface UserProfile {
-  jobFunction: JobFunction | null;
-  experienceLevel: ExperienceLevel | null;
-  interests: InterestArea[];
-  goals: string[];
-  responses: string[];
-  timeCommitment: number; // hours over 3 months
-}
+// Re-export learning path types for compatibility
+export type { JobFunction, ExperienceLevel, InterestArea, UserProfile, SavedLearningPath };
 
 type AppScreen = 'login' | 'master' | 'learning-dashboard' | 'learning-chat' | 'learning-generating' | 'learning-results' | 'ai-welcome' | 'ai-selection' | 'ai-comparison' | 'ai-execution' | 'ai-promo-game' | 'ai-supply-chain-game' | 'ai-finance-game';
 
@@ -62,7 +53,15 @@ export default function App() {
     setCurrentScreen('ai-selection');
   };
 
-  const API_BASE = import.meta.env.VITE_API_URL;
+  // Use runtime config if available (from config.js), fallback to build-time env var
+  const getApiBase = () => {
+    const appConfig = (window as any).__APP_CONFIG__;
+    if (appConfig?.VITE_API_URL) {
+      return appConfig.VITE_API_URL;
+    }
+    return import.meta.env.VITE_API_URL || 'http://localhost:8000';
+  };
+  const API_BASE = getApiBase();
 
   useEffect(() => {
     const handleUnload = () => {

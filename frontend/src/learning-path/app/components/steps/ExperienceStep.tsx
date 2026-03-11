@@ -1,5 +1,5 @@
 import { Sprout, TrendingUp, Award } from 'lucide-react';
-import type { ExperienceLevel } from '@learning-path/app/App';
+import type { ExperienceLevel } from '@learning-path/app/types';
 
 interface ExperienceStepProps {
   selectedLevel: ExperienceLevel | null;

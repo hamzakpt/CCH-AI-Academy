@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User } from 'lucide-react';
 import mailaLogo from '@learning-path/assets/e9a712672cfa9778c78d1abe8cc715fbb4f2438a.png';
-import type { UserProfile } from '@learning-path/app/App';
+import type { UserProfile } from '@learning-path/app/types';
 
 interface ChatInterfaceProps {
   username: string;

@@ -23,3 +23,23 @@ Thumbs.db
 # Ignore Docker files
 Dockerfile
 .dockerignore
+
+# Ignore development/documentation
+README.md
+*.md
+.vscode
+.editorconfig
+.eslintignore
+.prettierignore
+
+# Ignore CI/CD files
+.github
+.gitlab-ci.yml
+.circleci
+
+# Ignore IDE files
+*.swp
+*.swo
+*~
+.idea
+*.iml

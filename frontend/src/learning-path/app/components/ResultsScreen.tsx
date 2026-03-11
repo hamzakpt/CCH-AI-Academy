@@ -2,7 +2,7 @@ import { RotateCcw, CheckCircle2, BookOpen, Clock, Target, Lightbulb, MessageCir
 import hellenLogo from '@learning-path/assets/a1c07c8833c1385f9acba9acb24b2ea7df9be827.png';
 import hellenLogoTransparent from '@learning-path/assets/hellen-logo-transparent-background.png';
 import cocaColaHBCLogo from '@learning-path/assets/59218e6eca964424a8f051f5c7fe905235198f2c.png';
-import type { UserProfile, JobFunction, ExperienceLevel, InterestArea } from '@learning-path/app/App';
+import type { UserProfile, JobFunction, ExperienceLevel, InterestArea } from '@learning-path/app/types';
 import { useState, useEffect, useMemo } from 'react';
 import { PathChatModal } from '@learning-path/app/components/PathChatModal';
 import { HellenPlusChatModal } from '@learning-path/app/components/HellenPlusChatModal';

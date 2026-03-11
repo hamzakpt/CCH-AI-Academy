@@ -1,44 +1,50 @@
-# Stage 1: Build the application
-FROM node:20-alpine AS builder
+# Stage 1: Dependencies
+FROM node:20-alpine AS deps
+
+# Install pnpm
+RUN npm install -g pnpm@latest
 
 # Set working directory
 WORKDIR /app
 
-# Install pnpm
-RUN npm install -g pnpm
-
 # Copy dependency manifests
 COPY package.json pnpm-lock.yaml ./
 
-# Install dependencies
-# We use --frozen-lockfile to ensure we use the exact versions from the lockfile
-# We also handle the potential issue with @tailwindcss/oxide by installing the correct binary for linux
+# Install dependencies with frozen lockfile
 RUN pnpm install --frozen-lockfile
-RUN pnpm add @tailwindcss/oxide-linux-x64-gnu
+
+# Stage 2: Build the application
+FROM deps AS builder
 
 # Copy the rest of the application source code
 COPY . .
 
 # Build the application
+# Note: API URL is NOT set at build time - it's configured at runtime via environment variable
 RUN pnpm run build
 
-# Stage 2: Serve the application with Nginx
-FROM nginx:1.25-alpine AS final
-
-# Set working directory
-WORKDIR /usr/share/nginx/html
+# Stage 3: Serve the application with Nginx
+FROM nginx:1.25-alpine
 
 # Remove default Nginx public folder
-RUN rm -rf ./*
+RUN rm -rf /usr/share/nginx/html/*
 
 # Copy the built assets from the builder stage
-COPY --from=builder /app/dist .
+COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Copy the custom Nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
+# Copy the Docker entrypoint script
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Add health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget --quiet --tries=1 --spider http://localhost/ || exit 1
+
 # Expose port 80
 EXPOSE 80
 
-# Start Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Use entrypoint script to substitute environment variables at runtime
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
