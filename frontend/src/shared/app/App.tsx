@@ -402,7 +402,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {currentScreen === 'login' && <LoginPage onLogin={handleLogin} />}
+      {currentScreen === 'login' && <LoginPage onLogin={handleLogin} apiBase={API_BASE} />}
       {currentScreen === 'master' && <MasterLandingPage onSelectLearningPath={handleSelectLearningPath} onSelectAIAdventure={handleSelectAIAdventure} />}
 
       {/* Learning Path Screens */}

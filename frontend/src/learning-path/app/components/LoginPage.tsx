@@ -6,9 +6,10 @@ import { ArrowRight } from 'lucide-react';
 
 interface LoginPageProps {
   onLogin: (email: string) => void;
+  apiBase?: string;
 }
 
-export function LoginPage({ onLogin }: LoginPageProps) {
+export function LoginPage({ onLogin, apiBase = 'http://localhost:8000' }: LoginPageProps) {
   const [username, setUsername] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -43,7 +44,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
       try {
         const fullEmail = `${username.toLowerCase()}@cchellenic.com`;
 
-        const res = await fetch("https://learning-path-production-b09f.up.railway.app/session/start", {
+        const res = await fetch(`${apiBase}/session/start`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
