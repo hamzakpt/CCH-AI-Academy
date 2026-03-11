@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ChevronUp, ChevronDown, Star, Users } from 'lucide-react';
+import { UserDetailModal } from './UserDetailModal';
 
 export interface UserSummary {
   username: string;
@@ -12,6 +13,7 @@ export interface UserSummary {
 interface UserTableProps {
   users: UserSummary[];
   loading: boolean;
+  apiBase: string;
 }
 
 type SortKey = 'username' | 'total_sessions' | 'total_time_seconds' | 'learning_paths_created' | 'average_rating';
@@ -35,9 +37,10 @@ function StarRating({ value }: { value: number | null }) {
   );
 }
 
-export function UserTable({ users, loading }: UserTableProps) {
+export function UserTable({ users, loading, apiBase }: UserTableProps) {
   const [sortKey, setSortKey] = useState<SortKey>('total_sessions');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
+  const [selectedUsername, setSelectedUsername] = useState<string | null>(null);
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
@@ -136,14 +139,17 @@ export function UserTable({ users, loading }: UserTableProps) {
                   className="hover:bg-red-50/30 transition-colors duration-150"
                 >
                   <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setSelectedUsername(user.username)}
+                      className="flex items-center gap-2 group text-left"
+                    >
                       <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#F40009] to-[#DC0012] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
                         {user.username.charAt(0).toUpperCase()}
                       </div>
-                      <span className="text-sm font-medium text-gray-800 truncate max-w-[180px]">
+                      <span className="text-sm font-medium text-[#F40009] underline underline-offset-2 decoration-transparent group-hover:decoration-[#F40009] transition-all truncate max-w-[180px]">
                         {user.username.replace('@cchellenic.com', '')}
                       </span>
-                    </div>
+                    </button>
                   </td>
                   <td className="px-4 py-3">
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
@@ -170,6 +176,14 @@ export function UserTable({ users, loading }: UserTableProps) {
             </tbody>
           </table>
         </div>
+      )}
+
+      {selectedUsername && (
+        <UserDetailModal
+          username={selectedUsername}
+          apiBase={apiBase}
+          onClose={() => setSelectedUsername(null)}
+        />
       )}
     </div>
   );

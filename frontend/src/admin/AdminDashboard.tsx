@@ -171,6 +171,7 @@ export function AdminDashboard({ onLogout, apiBase }: AdminDashboardProps) {
           <UserTable
             users={data?.users ?? []}
             loading={loading}
+            apiBase={apiBase}
           />
         </section>
 
