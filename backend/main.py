@@ -34,7 +34,8 @@ app.add_middleware(
     allow_origins=[
         "https://learning-path-tau.vercel.app",
         "http://localhost:5173",
-        "http://localhost:5174"
+        "http://localhost:5174",
+        "http://localhost:8080",
     ],
     allow_credentials=True,
     allow_methods=["*"],
