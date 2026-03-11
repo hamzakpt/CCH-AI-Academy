@@ -90,16 +90,26 @@ export default function App() {
 
     const enterTime = new Date();
 
+    // 🔹 Log entry immediately
+    fetch(`${API_BASE}/activity/log`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username: userEmail,
+        session_id: Number(sessionId),
+        screen_name: currentScreen,
+        enter_time: enterTime.toISOString(),
+        exit_time: enterTime.toISOString(),
+        duration_seconds: 0
+      })
+    }).catch(err => console.error("Entry log failed:", err));
+
     return () => {
       const exitTime = new Date();
+
       const durationSeconds = Math.floor(
         (exitTime.getTime() - enterTime.getTime()) / 1000
       );
-
-      const screenIdentifier =
-        currentScreen === "learning-results" && learningPathId
-          ? `results:${learningPathId}`
-          : currentScreen;
 
       fetch(`${API_BASE}/activity/log`, {
         method: "POST",
@@ -107,17 +117,15 @@ export default function App() {
         body: JSON.stringify({
           username: userEmail,
           session_id: Number(sessionId),
-          screen_name: screenIdentifier,
+          screen_name: currentScreen,
           enter_time: enterTime.toISOString(),
           exit_time: exitTime.toISOString(),
           duration_seconds: durationSeconds
         })
-      }).catch(err =>
-        console.error("Activity log failed:", err)
-      );
+      }).catch(err => console.error("Exit log failed:", err));
     };
 
-  }, [currentScreen, learningPathId]);
+  }, [currentScreen]);
 
   const handleLogin = async (email: string) => {
     setUserEmail(email);
