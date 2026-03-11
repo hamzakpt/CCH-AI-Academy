@@ -41,6 +41,7 @@
     "src/vite-env.d.ts",
     "src/ai-adventure",
     "src/learning-path",
-    "src/shared"
+    "src/shared",
+    "src/admin"
   ]
 }

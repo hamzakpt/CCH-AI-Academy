@@ -33,7 +33,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://learning-path-tau.vercel.app",
-        "http://localhost:5173"
+        "http://localhost:5173",
+        "http://localhost:5174"
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -1218,6 +1219,128 @@ def get_all_user_ratings(username: str, db: Session = Depends(get_db)):
         }
 
     return result
+
+
+
+# ----------------------------
+# Admin Analytics Endpoint
+# ----------------------------
+
+@app.get("/analytics/admin")
+def get_admin_analytics(db: Session = Depends(get_db)):
+    """Aggregate platform-wide analytics for the admin dashboard."""
+
+    # ── Users ──────────────────────────────────────────────────
+    all_users = db.query(models.User).all()
+    total_users = len(all_users)
+
+    # ── Sessions ───────────────────────────────────────────────
+    all_sessions = db.query(models.UserSession).all()
+    total_sessions = len(all_sessions)
+
+    completed_sessions = [s for s in all_sessions if s.logout_time]
+    durations = [
+        (s.logout_time - s.login_time).total_seconds()
+        for s in completed_sessions
+    ]
+    total_time_seconds = sum(durations)
+    avg_session_duration_seconds = (
+        round(sum(durations) / len(durations), 1) if durations else 0
+    )
+
+    # ── Screen Activity ────────────────────────────────────────
+    all_activities = db.query(models.ScreenActivity).all()
+
+    screen_visits: dict = {}
+    screen_time: dict = {}
+
+    for act in all_activities:
+        screen_visits[act.screen_name] = screen_visits.get(act.screen_name, 0) + 1
+        screen_time[act.screen_name] = (
+            screen_time.get(act.screen_name, 0) + act.duration_seconds
+        )
+
+    # Top 8 screens by visit count
+    top_screens = sorted(screen_visits.items(), key=lambda x: x[1], reverse=True)[:8]
+    top_screen_time = sorted(screen_time.items(), key=lambda x: x[1], reverse=True)[:8]
+
+    # ── AI Game Usage ──────────────────────────────────────────
+    game_screens = {
+        "supply-chain": "ai-supply-chain-game",
+        "finance": "ai-finance-game",
+        "promo": "ai-promo-game",
+    }
+    ai_game_plays = {
+        name: screen_visits.get(screen_id, 0)
+        for name, screen_id in game_screens.items()
+    }
+
+    # ── Learning Paths ─────────────────────────────────────────
+    all_paths = db.query(models.LearningPath).all()
+    total_paths_created = len(all_paths)
+    total_paths_completed = sum(1 for p in all_paths if p.status == "completed")
+    completion_rate = (
+        round(total_paths_completed / total_paths_created * 100, 1)
+        if total_paths_created > 0
+        else 0
+    )
+
+    # ── Ratings ────────────────────────────────────────────────
+    all_ratings = db.query(models.UserRating).all()
+    avg_rating = (
+        round(sum(r.rating for r in all_ratings) / len(all_ratings), 2)
+        if all_ratings
+        else 0
+    )
+
+    # ── Per-User Summary ───────────────────────────────────────
+    user_summary = []
+    for user in all_users:
+        user_sessions = [s for s in all_sessions if s.username == user.username]
+        u_completed = [s for s in user_sessions if s.logout_time]
+        u_total_time = sum(
+            (s.logout_time - s.login_time).total_seconds() for s in u_completed
+        )
+        u_paths = [p for p in all_paths if p.username == user.username and p.status == "completed"]
+        u_ratings = [r for r in all_ratings if r.username == user.username]
+        u_avg_rating = (
+            round(sum(r.rating for r in u_ratings) / len(u_ratings), 2)
+            if u_ratings
+            else None
+        )
+        user_summary.append({
+            "username": user.username,
+            "total_sessions": len(user_sessions),
+            "total_time_seconds": round(u_total_time),
+            "learning_paths_created": len(u_paths),
+            "average_rating": u_avg_rating,
+        })
+
+    return {
+        "platform_metrics": {
+            "total_users": total_users,
+            "total_sessions": total_sessions,
+            "avg_session_duration_seconds": avg_session_duration_seconds,
+            "total_time_seconds": round(total_time_seconds),
+        },
+        "screen_analytics": {
+            "most_visited": [{"screen": s, "visits": v} for s, v in top_screens],
+            "time_per_screen": [{"screen": s, "seconds": t} for s, t in top_screen_time],
+        },
+        "ai_game_analytics": {
+            "plays": [{"game": k, "count": v} for k, v in ai_game_plays.items()],
+        },
+        "learning_analytics": {
+            "total_created": total_paths_created,
+            "total_completed": total_paths_completed,
+            "completion_rate": completion_rate,
+        },
+        "ratings_analytics": {
+            "average_rating": avg_rating,
+            "total_ratings": len(all_ratings),
+        },
+        "users": user_summary,
+    }
 
 
 # ----------------------------

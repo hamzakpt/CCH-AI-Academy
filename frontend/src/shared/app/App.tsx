@@ -16,11 +16,13 @@ import { GameFlow } from '@ai-adventure/app/components/promo-game/GameFlow';
 import { GameFlow as SupplyChainGameFlow } from '@ai-adventure/app/components/supply-chain-game/GameFlow';
 import { GameFlow as FinanceGameFlow } from '@ai-adventure/app/components/finance-game/GameFlow';
 import { Scenario } from '@ai-adventure/app/types/scenario';
+// Admin
+import { AdminDashboard } from '../../admin/AdminDashboard';
 
 // Re-export learning path types for compatibility
 export type { JobFunction, ExperienceLevel, InterestArea, UserProfile, SavedLearningPath };
 
-type AppScreen = 'login' | 'master' | 'learning-dashboard' | 'learning-chat' | 'learning-generating' | 'learning-results' | 'ai-welcome' | 'ai-selection' | 'ai-comparison' | 'ai-execution' | 'ai-promo-game' | 'ai-supply-chain-game' | 'ai-finance-game';
+type AppScreen = 'login' | 'master' | 'learning-dashboard' | 'learning-chat' | 'learning-generating' | 'learning-results' | 'ai-welcome' | 'ai-selection' | 'ai-comparison' | 'ai-execution' | 'ai-promo-game' | 'ai-supply-chain-game' | 'ai-finance-game' | 'admin-dashboard';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('login');
@@ -128,14 +130,42 @@ export default function App() {
   }, [currentScreen]);
 
   const handleLogin = async (email: string) => {
-    setUserEmail(email);
+    // ── Admin shortcut ──────────────────────────────────────
+    // If the user typed "admin", resolve to admin@cchellenic.com
+    // and bypass the normal login flow to go straight to the dashboard.
+    const resolvedEmail = email === 'admin@cchellenic.com' || email.replace('@cchellenic.com', '').toLowerCase() === 'admin'
+      ? 'admin@cchellenic.com'
+      : email;
 
+    setUserEmail(resolvedEmail);
+
+    if (resolvedEmail === 'admin@cchellenic.com') {
+      // Still start a session so the backend session/activity tracking works
+      try {
+        const sessionRes = await fetch(`${API_BASE}/session/start`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: resolvedEmail })
+        });
+        if (sessionRes.ok) {
+          const sessionData = await sessionRes.json();
+          localStorage.setItem("username", resolvedEmail);
+          localStorage.setItem("session_id", sessionData.session_id);
+        }
+      } catch (err) {
+        console.warn("[Admin] Session start failed (non-critical):", err);
+      }
+      setCurrentScreen('admin-dashboard');
+      return;
+    }
+
+    // ── Normal login flow ───────────────────────────────────
     try {
       // 🔹 1️⃣ START SESSION FIRST
       const sessionRes = await fetch(`${API_BASE}/session/start`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: email })
+        body: JSON.stringify({ username: resolvedEmail })
       });
 
       if (!sessionRes.ok) {
@@ -145,12 +175,12 @@ export default function App() {
       const sessionData = await sessionRes.json();
 
       // Store session info
-      localStorage.setItem("username", email);
+      localStorage.setItem("username", resolvedEmail);
       localStorage.setItem("session_id", sessionData.session_id);
 
       // 🔹 2️⃣ Then fetch learning paths (your existing logic)
       const res = await fetch(
-        `${API_BASE}/learning-paths/${email}`
+        `${API_BASE}/learning-paths/${resolvedEmail}`
       );
 
       if (!res.ok) {
@@ -411,6 +441,9 @@ export default function App() {
   return (
     <div className="min-h-screen bg-gray-50">
       {currentScreen === 'login' && <LoginPage onLogin={handleLogin} apiBase={API_BASE} />}
+      {currentScreen === 'admin-dashboard' && (
+        <AdminDashboard onLogout={handleLogout} apiBase={API_BASE} />
+      )}
       {currentScreen === 'master' && <MasterLandingPage onSelectLearningPath={handleSelectLearningPath} onSelectAIAdventure={handleSelectAIAdventure} />}
 
       {/* Learning Path Screens */}
