@@ -4,7 +4,7 @@
 set -e  # Exit on error
 
 # Default API URL if not provided
-API_URL="${API_URL:-http://localhost:8000}"
+API_URL="${API_URL:-/api}"
 
 # Replace placeholder in frontend config if it exists
 if [ -f "/usr/share/nginx/html/config.js" ]; then
