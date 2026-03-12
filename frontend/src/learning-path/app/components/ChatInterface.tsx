@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User } from 'lucide-react';
 import mailaLogo from '@learning-path/assets/e9a712672cfa9778c78d1abe8cc715fbb4f2438a.png';
 import type { UserProfile } from '@learning-path/app/types';
+import { API_BASE } from '@shared/config/api';
 
 interface ChatInterfaceProps {
   username: string;
@@ -51,7 +52,7 @@ export function ChatInterface({ username, onComplete }: ChatInterfaceProps) {
   useEffect(() => {
     const initDraft = async () => {
       try {
-        const res = await fetch("http://localhost:8000/learning-paths/draft", {
+        const res = await fetch(`${API_BASE}/learning-paths/draft`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username })
@@ -98,7 +99,7 @@ export function ChatInterface({ username, onComplete }: ChatInterfaceProps) {
     // ✅ Save response to backend
     if (pathId !== null) {
       try {
-        await fetch(`http://localhost:8000/learning-path/${pathId}/response`, {
+        await fetch(`${API_BASE}/learning-path/${pathId}/response`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -140,7 +141,7 @@ export function ChatInterface({ username, onComplete }: ChatInterfaceProps) {
         if (pathId !== null) {
           try {
             const res = await fetch(
-              `http://localhost:8000/learning-path/${pathId}/complete`,
+              `${API_BASE}/learning-path/${pathId}/complete`,
               { method: "POST" }
             );
 

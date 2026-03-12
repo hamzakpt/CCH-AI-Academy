@@ -3,6 +3,7 @@ import { Plus, BookOpen, Calendar, TrendingUp, LogOut, Star, MessageSquare, Send
 import { useSound } from '@learning-path/utils/sounds';
 import hellenLogo from '@learning-path/assets/hellen-logo-transparent-background.png';
 import type { UserProfile, SavedLearningPath } from '@learning-path/app/types';
+import { API_BASE } from '@shared/config/api';
 
 export type { SavedLearningPath };
 
@@ -81,7 +82,6 @@ export function LearningPathsDashboard({
   const [editingNameFor, setEditingNameFor] = useState<string | null>(null);
   const [editNameInput, setEditNameInput] = useState('');
   const [pathNames, setPathNames] = useState<Record<string, string>>({});
-  const API_BASE = import.meta.env.VITE_API_URL;
 
   // Initialize path names from savedPaths
   useEffect(() => {

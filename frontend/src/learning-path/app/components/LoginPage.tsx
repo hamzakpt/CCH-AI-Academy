@@ -3,13 +3,14 @@ import { useSound } from '@learning-path/utils/sounds';
 import hellenLogo from '@learning-path/assets/hellen-logo-transparent-background.png';
 import cocaColaHBCLogo from '@learning-path/assets/cch-logo-transparent-background.png';
 import { ArrowRight } from 'lucide-react';
+import { API_BASE } from '@shared/config/api';
 
 interface LoginPageProps {
   onLogin: (email: string) => void;
   apiBase?: string;
 }
 
-export function LoginPage({ onLogin, apiBase = 'http://localhost:8000' }: LoginPageProps) {
+export function LoginPage({ onLogin, apiBase = API_BASE }: LoginPageProps) {
   const [username, setUsername] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);

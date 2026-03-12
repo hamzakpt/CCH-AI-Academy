@@ -10,20 +10,15 @@ A unified application combining AI Games and Learning Path features.
 
 ## Docker (Recommended)
 
-### With Docker Compose (Easiest)
+### With Docker (Single Command)
 ```bash
-docker-compose up
+docker build -t cch-ai-academy -f Dockerfile .
+docker run -p 8080:80 cch-ai-academy
 ```
 
 The application will be available at:
 - **Frontend**: http://localhost:8080
-- **Backend API**: http://localhost:8000
-
-### With Docker (Single Command)
-```bash
-docker build -t cch-ai-academy -f Dockerfile .
-docker run -p 8000:8000 -p 8080:80 cch-ai-academy
-```
+- **Backend API**: http://localhost:8080/api
 
 ## Local Development
 

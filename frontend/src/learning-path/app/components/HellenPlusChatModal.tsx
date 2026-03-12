@@ -4,6 +4,7 @@ import hellenLogo from '@learning-path/assets/a1c07c8833c1385f9acba9acb24b2ea7df
 import hellenLogoTransparent from '@learning-path/assets/hellen-logo-transparent-background.png';
 import { useSound } from '@learning-path/utils/sounds';
 import ReactMarkdown from "react-markdown";
+import { API_BASE } from '@shared/config/api';
 
 interface HellenPlusChatModalProps {
     isOpen: boolean;
@@ -48,7 +49,6 @@ export function HellenPlusChatModal({ isOpen, onClose, moduleName, submoduleName
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const { playTyping, playClick } = useSound();
-    const API_BASE = import.meta.env.VITE_API_URL;
 
     const welcomeMessage: ChatMessage = {
         text: `Hi! I'm Hellen+, your AI tutor for **${moduleName}**. I can explain concepts, give key takeaways, quiz you, or answer any question — all based on the video transcripts! 💡`,

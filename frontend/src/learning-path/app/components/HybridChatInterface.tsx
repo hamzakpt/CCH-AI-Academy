@@ -8,8 +8,8 @@ import { Briefcase, Package, Megaphone, DollarSign, Settings, Users as UsersIcon
 import { Sprout, TrendingUp, Award } from 'lucide-react';
 import { BarChart3, Calculator, Brain, Database, PieChart, Sparkles } from 'lucide-react';
 import { Target, Lightbulb, Users as UsersGoalIcon, Rocket, Clock } from 'lucide-react';
+import { API_BASE } from '@shared/config/api';
 
-const API_BASE = import.meta.env.VITE_API_URL;
 
 interface HybridChatInterfaceProps {
   username: string;

@@ -8,6 +8,7 @@ import { PathChatModal } from '@learning-path/app/components/PathChatModal';
 import { HellenPlusChatModal } from '@learning-path/app/components/HellenPlusChatModal';
 import { useSound } from '@learning-path/utils/sounds';
 import { ExternalLink } from 'lucide-react';
+import { API_BASE } from '@shared/config/api';
 
 interface ResultsScreenProps {
   profile: UserProfile;
@@ -120,7 +121,6 @@ export function ResultsScreen({ profile, username, learningPathId, aiSummary, is
   const selectedPaths = aiSummary?.selected_paths ?? [];
   const [completed, setCompleted] = useState<Record<string, boolean>>({});
   const [isLoaded, setIsLoaded] = useState(false);
-  const API_BASE = import.meta.env.VITE_API_URL;
 
   // Hellen+ chat state
   const [hellenModule, setHellenModule] = useState<{ moduleName: string; submoduleNames: string[] } | null>(null);

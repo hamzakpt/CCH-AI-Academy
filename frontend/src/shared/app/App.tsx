@@ -20,6 +20,7 @@ import { GameFlow as LegalGameFlow } from '@ai-adventure/app/components/legal-ga
 import { Scenario } from '@ai-adventure/app/types/scenario';
 // Admin
 import { AdminDashboard } from '../../admin/AdminDashboard';
+import { API_BASE } from '@shared/config/api';
 
 // Re-export learning path types for compatibility
 export type { JobFunction, ExperienceLevel, InterestArea, UserProfile, SavedLearningPath };
@@ -57,16 +58,6 @@ export default function App() {
     setCurrentScreen('ai-selection');
   };
 
-  // Use runtime config if available (from config.js), fallback to build-time env var
-  const getApiBase = () => {
-    const appConfig = (window as any).__APP_CONFIG__;
-    // Check if we have a valid runtime config (not an unprocessed placeholder)
-    if (appConfig?.VITE_API_URL && appConfig.VITE_API_URL !== '${API_URL}') {
-      return appConfig.VITE_API_URL;
-    }
-    return import.meta.env.VITE_API_URL || 'http://localhost:8000';
-  };
-  const API_BASE = getApiBase();
 
   useEffect(() => {
     const handleUnload = () => {
