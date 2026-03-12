@@ -38,8 +38,8 @@ COPY backend/ ./backend/
 # Copy frontend built assets
 COPY --from=frontend-builder /app/frontend/dist /usr/share/nginx/html
 
-# Replace entire nginx configuration with our minimal config
-COPY nginx-minimal.conf /etc/nginx/nginx.conf
+# Replace entire nginx configuration with our config
+COPY nginx.conf /etc/nginx/nginx.conf
 
 # Copy and setup entrypoint script
 COPY docker-entrypoint.sh /usr/local/bin/
