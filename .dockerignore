@@ -1,8 +1,9 @@
 # Ignore node_modules, it will be installed in the container
 node_modules
 
-# Ignore build output, it will be generated in the container
-dist
+# Ignore build output except frontend/dist (pre-built locally)
+**/dist
+!frontend/dist
 
 # Ignore local development files
 .env

@@ -10,11 +10,19 @@ A unified application combining AI Games and Learning Path features.
 
 ## Docker (Recommended)
 
-### With Docker (Single Command)
+### Build & Run
 ```bash
+# 1. Build frontend first (required)
+cd frontend && pnpm install && pnpm run build && cd ..
+
+# 2. Build Docker image (add --platform linux/amd64 for cross-platform)
 docker build -t cch-ai-academy -f Dockerfile .
+
+# 3. Run container
 docker run -p 8080:80 cch-ai-academy
 ```
+
+> **Note**: The frontend must be pre-built locally because esbuild crashes under QEMU emulation when building for linux/amd64 on Apple Silicon Macs.
 
 The application will be available at:
 - **Frontend**: http://localhost:8080
@@ -56,7 +64,7 @@ OPENAI_API_KEY=your_key_here
 ```
 ├── frontend/          # React Vite application
 ├── backend/           # FastAPI application
-├── Dockerfile         # Multi-stage Docker build
+├── Dockerfile         # Docker build (requires pre-built frontend)
 ├── docker-entrypoint.sh
 ├── nginx.conf         # Reverse proxy configuration
 └── README.md
