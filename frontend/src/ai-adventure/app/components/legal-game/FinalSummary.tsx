@@ -77,7 +77,7 @@ export function FinalSummary() {
         </motion.div>
 
         {/* Metrics Grid */}
-        <div className="grid grid-cols-2 gap-3 mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
           <MetricCard
             label="Review Time"
             manual="4.5 Hours"
@@ -161,7 +161,7 @@ export function FinalSummary() {
           className="bg-black text-white rounded-xl p-4 mb-3"
         >
           <h3 className="text-base font-bold mb-3 text-center">The Mindset Shift</h3>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <h4 className="text-[#E41E2B] font-bold mb-1 text-sm">🕒 Time</h4>
               <p className="text-gray-300 leading-relaxed text-xs">
@@ -185,7 +185,7 @@ export function FinalSummary() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.7 }}
         >
-          <div className="grid grid-cols-3 gap-3 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-4xl mx-auto">
             <button
               onClick={() => window.location.href = '/'}
               className="bg-white hover:bg-gray-50 text-gray-900 border-2 border-gray-300 px-4 py-3 rounded-lg font-bold text-xs transition-colors shadow-md flex items-center justify-center gap-2"

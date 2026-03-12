@@ -88,7 +88,7 @@ export function Phase1Manual({ onComplete }: Phase1ManualProps) {
   };
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden">
+    <div className="min-h-screen flex flex-col">
       {/* Compact Header */}
       <div className="bg-white border-b-2 border-gray-200 px-6 py-2.5 flex-shrink-0">
         <div className="max-w-[1400px] mx-auto flex items-center justify-between">
@@ -112,16 +112,16 @@ export function Phase1Manual({ onComplete }: Phase1ManualProps) {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-hidden flex flex-col">
-        <div className="flex-1 max-w-[1400px] mx-auto px-6 py-3 w-full overflow-hidden">
+      <div className="flex-1 flex flex-col">
+        <div className="flex-1 max-w-[1400px] mx-auto px-6 py-3 w-full">
           {/* Contract Fragments */}
-          <div className="h-full flex flex-col overflow-hidden">
+          <div className="flex flex-col">
             <div className="flex items-center gap-2 mb-2">
               <FileText className="w-4 h-4 text-gray-700" />
               <h2 className="text-sm font-bold text-gray-900">Contract Fragments (Page-by-Page Review)</h2>
             </div>
             
-            <div className="flex-1 flex flex-col gap-2 overflow-hidden">
+            <div className="flex-1 flex flex-col gap-2">
               {contractFragments.map((fragment, index) => {
                 const evaluation = getEvaluation(fragment.id);
                 const isEvaluated = !!evaluation;
@@ -165,20 +165,20 @@ export function Phase1Manual({ onComplete }: Phase1ManualProps) {
                     </p>
 
                     {!isEvaluated && (
-                      <div className="flex gap-2 mt-auto">
+                      <div className="flex flex-col sm:flex-row gap-2 mt-auto">
                         <button
                           onClick={() => handleRiskClick(fragment.id)}
                           className="flex-1 bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-xs font-bold transition-colors flex items-center justify-center gap-1.5"
                         >
-                          <AlertTriangle className="w-3.5 h-3.5" />
-                          Contains Risk
+                          <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
+                          <span>Contains Risk</span>
                         </button>
                         <button
                           onClick={() => handleNoRiskClick(fragment.id)}
                           className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded text-xs font-bold transition-colors flex items-center justify-center gap-1.5"
                         >
-                          <XCircle className="w-3.5 h-3.5" />
-                          No Risk
+                          <XCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                          <span>No Risk</span>
                         </button>
                       </div>
                     )}

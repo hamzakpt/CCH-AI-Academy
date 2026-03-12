@@ -359,8 +359,8 @@ Coca-Cola Legal Department`
   };
 
   return (
-    <div className="h-full overflow-hidden p-3">
-      <div className="max-w-[1600px] mx-auto h-full flex flex-col">
+    <div className="min-h-screen p-3">
+      <div className="max-w-[1600px] mx-auto flex flex-col">
         {/* Header */}
         <div className="mb-2 flex-shrink-0">
           <h2 className="text-lg font-bold text-gray-900 mb-1">AI-Powered Contract Intelligence</h2>
@@ -511,7 +511,7 @@ Coca-Cola Legal Department`
                                 {/* Action Buttons for Counter-Clauses */}
                                 <div className="pt-4 space-y-3 border-t-2 border-gray-300">
                                   <p className="text-xs font-semibold text-gray-700 mb-2">How would you like to proceed?</p>
-                                  <div className="grid grid-cols-2 gap-3">
+                                  <div className="flex flex-col lg:flex-row gap-3">
                                     <button
                                       onClick={() => {
                                         addUserMessage('Confirm and use these corrections');
@@ -527,10 +527,10 @@ Coca-Cola Legal Department`
                                           );
                                         }, 800);
                                       }}
-                                      className="bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-2"
+                                      className="flex-1 bg-green-600 hover:bg-green-700 text-white px-3 py-2.5 rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-2"
                                     >
-                                      <CheckCircle2 className="w-4 h-4" />
-                                      Confirm & Use These Corrections
+                                      <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                                      <span>Confirm & Use These Corrections</span>
                                     </button>
                                     <button
                                       onClick={() => {
@@ -560,10 +560,10 @@ Coca-Cola Legal Department`
                                           }, 1500);
                                         }, 800);
                                       }}
-                                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-2"
+                                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2.5 rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-2"
                                     >
-                                      <FileText className="w-4 h-4" />
-                                      Save to OneDrive for Manual Editing
+                                      <FileText className="w-4 h-4 flex-shrink-0" />
+                                      <span>Save to OneDrive for Manual Editing</span>
                                     </button>
                                   </div>
                                 </div>
@@ -883,7 +883,7 @@ Coca-Cola Legal Department`
                   </div>
 
                   {/* Actions */}
-                  <div className="flex gap-3">
+                  <div className="flex flex-col sm:flex-row gap-3">
                     <button
                       onClick={() => {
                         setShowRiskReviewModal(false);
@@ -899,13 +899,13 @@ Coca-Cola Legal Department`
                           );
                         }, 500);
                       }}
-                      className="flex-1 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-bold text-sm transition-colors"
+                      className="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-bold text-sm transition-colors"
                     >
                       ✓ Complete Review & Continue
                     </button>
                     <button
                       onClick={() => setShowRiskReviewModal(false)}
-                      className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-bold text-sm transition-colors"
+                      className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-3 rounded-lg font-bold text-sm transition-colors"
                     >
                       Cancel
                     </button>
