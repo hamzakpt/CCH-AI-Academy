@@ -15,10 +15,21 @@ export function MasterLandingPage({ onSelectLearningPath, onSelectAIAdventure }:
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-8 mb-8">
             <img src={cocaColaHBCLogo} alt="Coca-Cola HBC" className="h-28" />
+
             <div className="w-px h-20 bg-gray-300"></div>
-            <img src={hellenLogo} alt="Hellen+ for AI Academy" className="h-28" />
+
+            <div className="flex items-center gap-4">
+              <img src={hellenLogo} alt="Hellen+" className="h-28" />
+
+              <span className="text-2xl text-gray-800 font-bold">
+                AI Academy
+              </span>
+            </div>
           </div>
-          <p className="text-2xl text-gray-800 font-bold">Choose your way to start AI learning</p>
+
+          <p className="text-2xl text-gray-800 font-bold">
+            Choose your way to start AI learning
+          </p>
         </div>
 
         {/* Options */}

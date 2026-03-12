@@ -90,8 +90,16 @@ export function LoginPage({ onLogin, apiBase = API_BASE }: LoginPageProps) {
         {/* Logos */}
         <div className="flex items-center justify-center gap-6 mb-10">
           <img src={cocaColaHBCLogo} alt="Coca-Cola HBC" className="h-16" />
+
           <div className="w-px h-10 bg-gray-300"></div>
-          <img src={hellenLogo} alt="Hellen+ for AI Academy" className="h-16" />
+
+          <div className="flex items-center gap-3">
+            <img src={hellenLogo} alt="Hellen+" className="h-16" />
+
+            <span className="text-lg text-gray-800 font-bold">
+              AI Academy
+            </span>
+          </div>
         </div>
 
         {/* Glass Card */}

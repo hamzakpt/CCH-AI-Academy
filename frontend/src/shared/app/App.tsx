@@ -458,6 +458,7 @@ export default function App() {
           onSelectPath={handleSelectPath}
           onCreateNew={handleCreateNew}
           onLogout={handleLogout}
+          onBackToHome={() => setCurrentScreen('master')}
         />
       )}
       {currentScreen === 'learning-chat' && <HybridChatInterface username={userEmail} onComplete={handleComplete} />}
@@ -499,7 +500,10 @@ export default function App() {
 
       {/* AI Adventure Screens */}
       {currentScreen === 'ai-welcome' && (
-        <AIAdventureWelcome onContinue={handleStartAIAdventure} />
+        <AIAdventureWelcome
+          onContinue={handleStartAIAdventure}
+          onBackToHome={() => setCurrentScreen('master')}
+        />
       )}
       {currentScreen === 'ai-selection' && (
         <ScenarioSelection onScenarioSelect={handleScenarioSelect} onBackToHome={handleAIAdventureBackToHome} />

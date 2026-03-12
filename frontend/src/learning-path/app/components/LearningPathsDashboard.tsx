@@ -13,6 +13,7 @@ interface LearningPathsDashboardProps {
   onSelectPath: (path: SavedLearningPath) => void;
   onCreateNew: () => void;
   onLogout: () => void;
+  onBackToHome: () => void;
 }
 
 interface UserRatingData {
@@ -69,7 +70,8 @@ export function LearningPathsDashboard({
   savedPaths,
   onSelectPath,
   onCreateNew,
-  onLogout
+  onLogout,
+  onBackToHome
 }: LearningPathsDashboardProps) {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const { playClick, playTyping } = useSound();
@@ -226,6 +228,11 @@ export function LearningPathsDashboard({
     onLogout();
   };
 
+  const handleBackHome = () => {
+    playClick();
+    onBackToHome();
+  };
+
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString('en-US', {
       month: 'short',
@@ -257,6 +264,16 @@ export function LearningPathsDashboard({
                 <p className="text-sm text-gray-600">{userEmail}</p>
               </div>
             </div>
+            <div className="flex items-center gap-3">
+
+            <button
+              onClick={handleBackHome}
+              className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-[#F40009] hover:bg-red-50 rounded-lg transition-colors"
+            >
+              <BookOpen className="w-4 h-4" />
+              <span className="text-sm font-medium">Academy Home</span>
+            </button>
+
             <button
               onClick={handleLogout}
               className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-[#F40009] hover:bg-red-50 rounded-lg transition-colors"
@@ -264,6 +281,8 @@ export function LearningPathsDashboard({
               <LogOut className="w-4 h-4" />
               <span className="text-sm font-medium">Logout</span>
             </button>
+
+          </div>
           </div>
         </div>
       </div>

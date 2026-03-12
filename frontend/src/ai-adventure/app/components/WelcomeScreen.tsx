@@ -9,14 +9,27 @@ import stackImage from '/stack-image.png';
 
 interface WelcomeScreenProps {
   onContinue: () => void;
+  onBackToHome: () => void;
 }
 
-export function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
+export function WelcomeScreen({ onContinue, onBackToHome }: WelcomeScreenProps) {
   return (
     <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center px-8 py-8 overflow-y-auto">
-        <div className="max-w-6xl w-full">
+      <div className="flex-1 px-8 py-8 overflow-y-auto">
+        {/* Back button */}
+        <div className="max-w-6xl mx-auto mb-4">
+          <button
+            onClick={onBackToHome}
+            className="flex items-center gap-2 text-sm text-gray-600 hover:text-[#F40009] transition-colors"
+          >
+            <ArrowRight className="w-4 h-4 rotate-180" />
+            Back to AI Academy
+          </button>
+        </div>
+
+        <div className="flex items-center justify-center">
+          <div className="max-w-6xl w-full">
           {/* Hero Image */}
           <div className="mb-6">
             <img src={heroImage} alt="AI Adventure" className="w-full max-w-3xl mx-auto" />
@@ -83,7 +96,7 @@ export function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
           
 
           {/* Business Functions Preview */}
-          
+          </div>
         </div>
       </div>
       <Footer />
