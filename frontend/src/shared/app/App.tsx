@@ -15,6 +15,8 @@ import { OldVsNewComparison } from '@ai-adventure/app/components/OldVsNewCompari
 import { GameFlow } from '@ai-adventure/app/components/promo-game/GameFlow';
 import { GameFlow as SupplyChainGameFlow } from '@ai-adventure/app/components/supply-chain-game/GameFlow';
 import { GameFlow as FinanceGameFlow } from '@ai-adventure/app/components/finance-game/GameFlow';
+import { HRGame } from '@ai-adventure/app/components/hr-game/HRGame';
+import { GameFlow as LegalGameFlow } from '@ai-adventure/app/components/legal-game/GameFlow';
 import { Scenario } from '@ai-adventure/app/types/scenario';
 // Admin
 import { AdminDashboard } from '../../admin/AdminDashboard';
@@ -22,7 +24,7 @@ import { AdminDashboard } from '../../admin/AdminDashboard';
 // Re-export learning path types for compatibility
 export type { JobFunction, ExperienceLevel, InterestArea, UserProfile, SavedLearningPath };
 
-type AppScreen = 'login' | 'master' | 'learning-dashboard' | 'learning-chat' | 'learning-generating' | 'learning-results' | 'ai-welcome' | 'ai-selection' | 'ai-comparison' | 'ai-execution' | 'ai-promo-game' | 'ai-supply-chain-game' | 'ai-finance-game' | 'admin-dashboard';
+type AppScreen = 'login' | 'master' | 'learning-dashboard' | 'learning-chat' | 'learning-generating' | 'learning-results' | 'ai-welcome' | 'ai-selection' | 'ai-comparison' | 'ai-execution' | 'ai-promo-game' | 'ai-supply-chain-game' | 'ai-finance-game' | 'admin-dashboard' | 'ai-hr-game' | 'ai-legal-game';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('login');
@@ -58,7 +60,8 @@ export default function App() {
   // Use runtime config if available (from config.js), fallback to build-time env var
   const getApiBase = () => {
     const appConfig = (window as any).__APP_CONFIG__;
-    if (appConfig?.VITE_API_URL) {
+    // Check if we have a valid runtime config (not an unprocessed placeholder)
+    if (appConfig?.VITE_API_URL && appConfig.VITE_API_URL !== '${API_URL}') {
       return appConfig.VITE_API_URL;
     }
     return import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -233,6 +236,16 @@ export default function App() {
 
     if (scenario.id === 'finance-1') {
       setCurrentScreen('ai-finance-game');
+      return;
+    }
+
+    if (scenario.id === 'hr-1') {
+      setCurrentScreen('ai-hr-game');
+      return;
+    }
+
+    if (scenario.id === 'legal-1') {
+      setCurrentScreen('ai-legal-game');
       return;
     }
 
@@ -522,6 +535,12 @@ export default function App() {
       )}
       {currentScreen === 'ai-finance-game' && (
         <FinanceGameFlow onBack={handleAIAdventureBackToSelection} />
+      )}
+      {currentScreen === 'ai-hr-game' && (
+        <HRGame onBack={handleAIAdventureBackToSelection} />
+      )}
+      {currentScreen === 'ai-legal-game' && (
+        <LegalGameFlow onBack={handleAIAdventureBackToSelection} />
       )}
     </div>
   );
