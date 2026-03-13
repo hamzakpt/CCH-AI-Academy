@@ -46,7 +46,7 @@ export function Phase2Agentic({ onComplete }: Phase2AgenticProps) {
 
   // Auto-start conversation
   useEffect(() => {
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       addAIMessage(
         "Performance review analysis complete for Engineering department. Scanned 10 reviews from 3 managers. Found 2 critical calibration anomalies.",
         [
@@ -55,6 +55,7 @@ export function Phase2Agentic({ onComplete }: Phase2AgenticProps) {
         ]
       );
     }, 500);
+    return () => clearTimeout(timer);
   }, []);
 
   const addAIMessage = (text: string, buttons?: { label: string; value: string }[], data?: any) => {
