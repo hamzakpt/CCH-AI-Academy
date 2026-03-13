@@ -1,7 +1,30 @@
-﻿learning_path,link
-Generative AI,https://cchellenic.csod.com/ui/lms-learning-details/app/curriculum/ddce5f12-6ae8-4f1c-a3fe-1d4d35ae804d
-Full Path Finisher,https://cchellenic.csod.com/ui/lms-learning-details/app/curriculum/73f9342c-49c7-49d2-a090-35052aeca58d
-Data Storyteller,https://cchellenic.csod.com/ui/lms-learning-details/app/curriculum/a9398ef7-0e88-4ff6-a94f-ff6f713ba8aa
-Data Modeller,https://cchellenic.csod.com/ui/lms-learning-details/app/curriculum/0b612662-ce13-473b-8786-386ecf3e7a23
-Data Science Jump Starter,https://cchellenic.csod.com/ui/lms-learning-details/app/curriculum/7cd17cbe-8777-4a8a-a438-d2ba91dfa1bc
-Analytics Project Runner,https://cchellenic.csod.com/ui/lms-learning-details/app/curriculum/17061085-8e18-434b-91fd-6bf56aaa1dc8
+﻿learning_path,link,,
+Generative AI,https://cchellenic.csod.com/samldefault.aspx?ouid=1&returnUrl=%252fDeepLink%252fProcessRedirect.aspx%253fmodule%253dlodetails%2526lo%253dddce5f12-6ae8-4f1c-a3fe-1d4d35ae804d,,
+Full Path Finisher,https://cchellenic.csod.com/ui/lms-learning-details/app/curriculum/73f9342c-49c7-49d2-a090-35052aeca58d,,
+Data Storyteller,https://cchellenic.csod.com/samldefault.aspx?ouid=1&returnUrl=%252fDeepLink%252fProcessRedirect.aspx%253fmodule%253dlodetails%2526lo%253da9398ef7-0e88-4ff6-a94f-ff6f713ba8aa,,
+Data Modeller,https://cchellenic.csod.com/samldefault.aspx?ouid=1&returnUrl=%252fDeepLink%252fProcessRedirect.aspx%253fmodule%253dlodetails%2526lo%253d0b612662-ce13-473b-8786-386ecf3e7a23,,
+Data Science Jump Starter,https://cchellenic.csod.com/samldefault.aspx?ouid=1&returnUrl=%252fDeepLink%252fProcessRedirect.aspx%253fmodule%253dlodetails%2526lo%253d7cd17cbe-8777-4a8a-a438-d2ba91dfa1bc,,
+Analytics Project Runner,https://cchellenic.csod.com/samldefault.aspx?ouid=1&returnUrl=%252fDeepLink%252fProcessRedirect.aspx%253fmodule%253dlodetails%2526lo%253d17061085-8e18-434b-91fd-6bf56aaa1dc8,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
+External Resources,Databricks,Get Started with Databricks,https://customer-academy.databricks.com/learn/courses/4486/get-started-with-databricks-free-edition
+External Resources,Databricks,Data Governance Fundamentals,https://customer-academy.databricks.com/learn/courses/4681/data-governance-fundamentals
+External Resources,Databricks,Get Started with SQL Analytics and BI on Databricks,https://customer-academy.databricks.com/learn/courses/3347/get-started-with-sql-analytics-and-bi-on-databricks
+External Resources,Databricks,Data Preparation for Machine Learning,https://customer-academy.databricks.com/learn/courses/2343/data-preparation-for-machine-learning
+External Resources,Microsoft,Data Analyst Career Path,https://learn.microsoft.com/en-us/plans/y2wkt5z4do381m
+External Resources,Anthropic,AI Fluency: Framework & Foundations,AI Fluency: Framework & Foundations
+External Resources,DeepLearning.AI,Agentic AI with Andrew Ng,Agentic AI with Andrew Ng - DeepLearning.AI
+External Resources,Youtube,StatQuest with Josh Starmer,(139) StatQuest with Josh Starmer - YouTube
+External Resources,Youtube,Getting Started with Microsoft Fabric,(139) Getting Started with Microsoft Fabric - YouTube

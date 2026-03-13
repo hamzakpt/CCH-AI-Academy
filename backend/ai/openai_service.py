@@ -287,6 +287,45 @@ If the answer is NOT clearly YES to at least two of these questions,
 DO NOT include the learning path.
 
 ----------------------------------------------------
+FREE TEXT USER INPUT
+----------------------------------------------------
+
+The user may provide additional written answers describing
+their interests, goals, or learning needs.
+
+You MUST carefully analyze this text.
+
+If the user explicitly mentions a specific topic,
+technology, tool, or skill, treat it as a strong signal
+when selecting modules.
+
+Examples:
+
+User writes:
+"I want to learn prompt engineering for LLMs"
+
+→ Prefer Generative AI modules or relevant external resources.
+
+User writes:
+"I want to build dashboards for marketing data"
+
+→ Prefer Data Visualization modules.
+
+User writes:
+"I want to understand machine learning models"
+
+→ Prefer Machine Learning modules.
+
+Important:
+
+- Written user answers may contain stronger signals
+  than the predefined interest selections.
+- If the written answer contradicts a selected interest,
+  prioritize the written answer.
+
+Always use the written responses to refine your recommendations.
+
+----------------------------------------------------
 MAXIMUM NUMBER OF LEARNING PATHS
 ----------------------------------------------------
 
@@ -359,12 +398,27 @@ Lower priority content must appear at the end.
 MODULE REASONING
 ----------------------------------------------------
 
-For each recommended module, explain WHY it was selected.
+For each recommended module, explain briefly WHY it was selected.
 
-The explanation must:
-- Reference the user's goals or role
-- Be concise (1–2 sentences)
-- Clearly explain the value of the module
+Rules:
+- Use very simple language.
+- Maximum 1 short sentence.
+- 12–18 words maximum.
+- Avoid technical explanations.
+- Focus on the benefit to the user's role or learning goal.
+- When possible, reference the user's written interests or goals.
+
+Good examples:
+
+"Helps you communicate insights clearly using data visualizations."
+
+"Builds the core data skills needed for your role."
+
+"Improves how you analyze data for better business decisions."
+
+Bad examples (too complex):
+
+"As a marketing professional with advanced data proficiency..."
 
 Return this as:
 
@@ -419,6 +473,45 @@ IMPORTANT CONSTRAINTS
 - It is better to return fewer highly relevant modules than many loosely relevant ones.
 - If only one learning path is relevant, return only that path.
 - If multiple modules belong to the same learning path, prefer selecting the most valuable modules within that path instead of introducing additional learning paths.
+
+----------------------------------------------------
+EXTERNAL RESOURCES RULE
+----------------------------------------------------
+
+The training catalog contains a special learning path called:
+
+"External Resources"
+
+This path contains curated external learning links.
+
+Rules:
+
+1) This path must ALWAYS appear last in the recommendations.
+2) It must never replace core internal learning paths.
+3) Only include external resources that are relevant to the user's:
+- job function
+- interests
+- written answers
+- experience level
+4) NEVER include all external resources unless the user selected ONLY "External Resources".
+5) If multiple external resources exist, choose only the most relevant ones.
+6) Prefer a maximum of 1–3 external modules.
+7) If the user selected ONLY "External Resources", you may include all modules.
+
+Example:
+
+User interest: Machine Learning  
+→ Good:
+- DeepLearning.AI
+
+→ Bad:
+- Databricks
+- Microsoft
+- Anthropic
+- DeepLearning.AI
+(all resources)
+
+External resources must be filtered just like internal learning modules.
 
 Return ONLY JSON.
 """
@@ -530,6 +623,40 @@ Available training content:
             total_minutes
         )
 
+        external_path_name = "External Resources"
+
+        # Detect if user asked for external resources
+        answers_lower = user_answers.lower()
+
+        user_requested_external = (
+            "external-resources" in answers_lower and
+            "visualization" not in answers_lower and
+            "statistics" not in answers_lower and
+            "ml" not in answers_lower and
+            "data-engineering" not in answers_lower and
+            "generative-agentic-ai" not in answers_lower
+        )
+
+        # Check if AI selected it
+        external_selected = any(
+            lp == external_path_name
+            for lp in selected_structure.keys()
+        )
+
+        # Fallback if AI failed
+        if user_requested_external and not external_selected:
+
+            print("[Fallback] Adding External Resources")
+
+            external_modules = {}
+
+            for (lp, module_name), module_data in module_catalog.items():
+                if lp == external_path_name:
+                    external_modules[module_name] = module_data["submodules"]
+
+            if external_modules:
+                selected_structure[external_path_name] = external_modules
+
         print(f"Greedy packed total minutes: {total_time}/{total_minutes}")
 
         # Convert to final output format
@@ -538,13 +665,23 @@ Available training content:
             "selected_paths": []
         }
 
-        for lp, modules in list(selected_structure.items())[:3]:
+        external_path_name = "External Resources"
+
+        ordered_paths = sorted(
+            selected_structure.items(),
+            key=lambda x: x[0] == external_path_name
+        )
+
+        for lp, modules in ordered_paths[:3]:
             final_output["selected_paths"].append({
                 "learning_path": lp,
                 "modules": [
                     {
                         "module_name": module_name,
-                        "reasoning": reasoning_lookup.get((lp, module_name), ""),
+                        "reasoning": reasoning_lookup.get(
+                            (lp, module_name),
+                            "Recommended external course to deepen your knowledge in this topic."
+                        ),
                         "submodules": submodules
                     }
                     for module_name, submodules in modules.items()

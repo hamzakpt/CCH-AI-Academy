@@ -34,7 +34,7 @@ def load_courses():
 
         module_name = row["module"]
         submodule_name = row["sub_module"]
-        duration = int(row["duration_in_minutes"])
+        duration = int(row["duration_in_minutes"]) if row["duration_in_minutes"] == row["duration_in_minutes"] else 0
         rating = parse_rating(row.get("user_feedback", ""))
 
         for lp in learning_paths:

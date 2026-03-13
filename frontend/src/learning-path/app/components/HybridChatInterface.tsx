@@ -6,7 +6,7 @@ import type { UserProfile, JobFunction, ExperienceLevel, InterestArea } from '@l
 import { useSound } from '@learning-path/utils/sounds';
 import { Briefcase, Package, Megaphone, DollarSign, Settings, Users as UsersIcon } from 'lucide-react';
 import { Sprout, TrendingUp, Award } from 'lucide-react';
-import { BarChart3, Calculator, Brain, Database, PieChart, Sparkles } from 'lucide-react';
+import { BarChart3, Calculator, Brain, Database, PieChart, Sparkles, Globe } from 'lucide-react';
 import { Target, Lightbulb, Users as UsersGoalIcon, Rocket, Clock } from 'lucide-react';
 import { API_BASE } from '@shared/config/api';
 
@@ -47,6 +47,12 @@ const interestAreas: { value: InterestArea; label: string; description: string; 
   { value: 'ml', label: 'Machine Learning', description: 'Predictive models and AI applications', icon: Brain },
   { value: 'data-engineering', label: 'Data Engineering', description: 'Building data pipelines and infrastructure', icon: Database },
   { value: 'generative-agentic-ai', label: 'Generative & Agentic AI', description: 'Strategic insights and decision support', icon: Sparkles },
+  {
+    value: 'external-resources',
+    label: 'External Resources',
+    description: 'Discover curated external courses and learning materials',
+    icon: Globe
+  },
 ];
 
 const goalOptions: { value: string; label: string; icon: React.ComponentType<any> }[] = [

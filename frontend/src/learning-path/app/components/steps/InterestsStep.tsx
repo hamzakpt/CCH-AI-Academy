@@ -37,6 +37,12 @@ const interestAreas: { value: InterestArea; label: string; description: string; 
     description: 'Strategic insights and decision support',
     icon: Sparkles,
   },
+  {
+    value: 'external-resources',
+    label: 'External Resources',
+    description: 'Discover curated external courses and learning materials',
+    icon: Sparkles,
+  },
 ];
 
 export function InterestsStep({ selectedInterests, onSelect }: InterestsStepProps) {
