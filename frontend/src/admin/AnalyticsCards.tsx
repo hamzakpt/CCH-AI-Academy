@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Users, Activity, Clock, TrendingUp } from 'lucide-react';
 
 interface PlatformMetrics {
@@ -24,7 +25,7 @@ interface MetricCardProps {
   title: string;
   value: string;
   subtitle: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   gradient: string;
   iconBg: string;
 }

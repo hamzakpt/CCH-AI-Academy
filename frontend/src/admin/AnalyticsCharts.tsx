@@ -11,6 +11,7 @@ import {
   Cell,
   Legend,
 } from 'recharts';
+import type { ReactNode } from 'react';
 import { Monitor, Gamepad2, BookOpen, Star } from 'lucide-react';
 
 interface ScreenVisit {
@@ -84,8 +85,8 @@ function ChartCard({
   children,
 }: {
   title: string;
-  icon: React.ReactNode;
-  children: React.ReactNode;
+  icon: ReactNode;
+  children: ReactNode;
 }) {
   return (
     <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
