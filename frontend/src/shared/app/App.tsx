@@ -17,6 +17,7 @@ import { GameFlow as SupplyChainGameFlow } from '@ai-adventure/app/components/su
 import { GameFlow as FinanceGameFlow } from '@ai-adventure/app/components/finance-game/GameFlow';
 import { HRGame } from '@ai-adventure/app/components/hr-game/HRGame';
 import { GameFlow as LegalGameFlow } from '@ai-adventure/app/components/legal-game/GameFlow';
+import { Footer as AIAdventureFooter } from '@ai-adventure/app/components/Footer';
 import { Scenario } from '@ai-adventure/app/types/scenario';
 // Admin
 import { AdminDashboard } from '../../admin/AdminDashboard';
@@ -505,22 +506,31 @@ export default function App() {
           onBackToHome={() => setCurrentScreen('master')}
         />
       )}
-      {currentScreen === 'ai-selection' && (
-        <ScenarioSelection onScenarioSelect={handleScenarioSelect} onBackToHome={handleAIAdventureBackToHome} />
-      )}
-      {currentScreen === 'ai-comparison' && selectedScenario && (
-        <OldVsNewComparison
-          scenario={selectedScenario}
-          onChooseNewWay={handleChooseNewWay}
-          onChooseOldWay={handleChooseOldWay}
-        />
-      )}
-      {currentScreen === 'ai-execution' && selectedScenario && (
-        <ChatBasedExecution
-          scenario={selectedScenario}
-          mode={aiAdventureMode}
-          onReset={handleAIAdventureReset}
-        />
+      {(currentScreen === 'ai-selection' || currentScreen === 'ai-comparison' || currentScreen === 'ai-execution') && (
+        <div className="h-screen flex flex-col bg-gray-50 overflow-hidden">
+          <main className="flex-1 overflow-y-auto">
+            <div className="max-w-7xl mx-auto p-4 h-full">
+              {currentScreen === 'ai-selection' && (
+                <ScenarioSelection onScenarioSelect={handleScenarioSelect} onBackToHome={handleAIAdventureBackToHome} />
+              )}
+              {currentScreen === 'ai-comparison' && selectedScenario && (
+                <OldVsNewComparison
+                  scenario={selectedScenario}
+                  onChooseNewWay={handleChooseNewWay}
+                  onChooseOldWay={handleChooseOldWay}
+                />
+              )}
+              {currentScreen === 'ai-execution' && selectedScenario && (
+                <ChatBasedExecution
+                  scenario={selectedScenario}
+                  mode={aiAdventureMode}
+                  onReset={handleAIAdventureReset}
+                />
+              )}
+            </div>
+          </main>
+          <AIAdventureFooter />
+        </div>
       )}
       {currentScreen === 'ai-promo-game' && (
         <GameFlow onBack={handleAIAdventureBackToSelection} />

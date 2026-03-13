@@ -32,7 +32,7 @@ export function Phase2Agentic({ onComplete, onBack }: Phase2AgenticProps) {
 
   useEffect(() => {
     // Initial greeting
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       addAIMessage(
         "Daily audit complete across 12 retailers. Found 3 price discrepancies.",
         [
@@ -41,6 +41,7 @@ export function Phase2Agentic({ onComplete, onBack }: Phase2AgenticProps) {
         ]
       );
     }, 500);
+    return () => clearTimeout(timer);
   }, []);
 
   const addAIMessage = (text: string, buttons?: { label: string; value: string }[], data?: any) => {

@@ -32,7 +32,7 @@ export function Phase2Agentic({ onComplete, onBack }: Phase2AgenticProps) {
 
   useEffect(() => {
     // Initial greeting
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       addAIMessage(
         "Daily supplier risk scan complete. 2 critical alerts detected across 50 suppliers.",
         [
@@ -41,6 +41,7 @@ export function Phase2Agentic({ onComplete, onBack }: Phase2AgenticProps) {
         ]
       );
     }, 500);
+    return () => clearTimeout(timer);
   }, []);
 
   const addAIMessage = (text: string, buttons?: { label: string; value: string }[], data?: any) => {
