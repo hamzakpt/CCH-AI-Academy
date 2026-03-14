@@ -136,7 +136,7 @@ export function UserGrowthPage({ apiBase, filterFunction, filterLevel }: Props) 
             <div className="h-48 flex items-center justify-center text-gray-400 text-sm">No data</div>
           ) : (
             <div className="flex items-center justify-center">
-              <PieChart width={280} height={220}>
+              <PieChart width={360} height={240}>
                 <Pie
                   data={by_level}
                   dataKey="count"
@@ -144,16 +144,23 @@ export function UserGrowthPage({ apiBase, filterFunction, filterLevel }: Props) 
                   cx="50%"
                   cy="50%"
                   outerRadius={85}
-                  innerRadius={40}
+                  innerRadius={50}
                   strokeWidth={0}
-                  label={({ level, percent }) => `${level} ${(percent * 100).toFixed(0)}%`}
-                  labelLine={false}
+                  label={false}
                 >
                   {by_level.map((_, i) => (
                     <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid #e5e7eb', fontSize: 12 }} />
+                <Tooltip
+                  formatter={(value: number, name: string) => [`${value} users`, name]}
+                  contentStyle={{
+                    borderRadius: '12px',
+                    border: '1px solid #e5e7eb',
+                    fontSize: 12
+                  }}
+                />
+                <Legend />
               </PieChart>
             </div>
           )}

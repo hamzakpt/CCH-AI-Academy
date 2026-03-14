@@ -1384,11 +1384,23 @@ def get_growth_analytics(
             "level": latest.experience or "Unknown",
         }
 
-    filtered_users = all_users
+    # Only include users that actually have a learning path
+    filtered_users = [
+        u for u in all_users
+        if u.username in user_demo
+    ]
+
     if function:
-        filtered_users = [u for u in filtered_users if user_demo.get(u.username, {}).get("function") == function]
+        filtered_users = [
+            u for u in filtered_users
+            if user_demo.get(u.username, {}).get("function") == function
+        ]
+
     if level:
-        filtered_users = [u for u in filtered_users if user_demo.get(u.username, {}).get("level") == level]
+        filtered_users = [
+            u for u in filtered_users
+            if user_demo.get(u.username, {}).get("level") == level
+        ]
 
     current_week_start = now - timedelta(weeks=1)
     prev_week_start = now - timedelta(weeks=2)
@@ -1459,17 +1471,23 @@ def get_engagement_analytics(
             "level": latest.experience or "Unknown",
         }
 
-    if function or level:
-        filtered_usernames = set()
-        for u in all_users:
-            d = user_demo.get(u.username, {})
-            if function and d.get("function") != function:
-                continue
-            if level and d.get("level") != level:
-                continue
-            filtered_usernames.add(u.username)
-    else:
-        filtered_usernames = {u.username for u in all_users}
+    filtered_usernames = {
+        u.username
+        for u in all_users
+        if u.username in user_demo
+    }
+
+    if function:
+        filtered_usernames = {
+            u for u in filtered_usernames
+            if user_demo.get(u, {}).get("function") == function
+        }
+
+        if level:
+            filtered_usernames = {
+                u for u in filtered_usernames
+                if user_demo.get(u, {}).get("level") == level
+            }
 
     wau_names = {s.username for s in all_sessions if s.login_time >= week_ago and s.username in filtered_usernames}
     mau_names = {s.username for s in all_sessions if s.login_time >= month_ago and s.username in filtered_usernames}
@@ -1554,11 +1572,23 @@ def get_per_user_analytics(
             "planned_hours": planned_h,
         }
 
-    filtered_users = all_users
+    # Only include users that actually have a learning path
+    filtered_users = [
+        u for u in all_users
+        if u.username in user_demo
+    ]
+
     if function:
-        filtered_users = [u for u in filtered_users if user_demo.get(u.username, {}).get("function") == function]
+        filtered_users = [
+            u for u in filtered_users
+            if user_demo.get(u.username, {}).get("function") == function
+        ]
+
     if level:
-        filtered_users = [u for u in filtered_users if user_demo.get(u.username, {}).get("level") == level]
+        filtered_users = [
+            u for u in filtered_users
+            if user_demo.get(u.username, {}).get("level") == level
+        ]
 
     sessions_map = defaultdict(list)
     for s in all_sessions:
@@ -1593,8 +1623,10 @@ def get_per_user_analytics(
     func_groups: dict = defaultdict(list)
     level_groups: dict = defaultdict(list)
     for u in users_data:
-        func_groups[u["function"]].append(u)
-        level_groups[u["level"]].append(u)
+        if u["function"] != "Unknown":
+            func_groups[u["function"]].append(u)
+        if u["level"] != "Unknown":
+            level_groups[u["level"]].append(u)
 
     def avg_group(groups, key_name):
         result = []

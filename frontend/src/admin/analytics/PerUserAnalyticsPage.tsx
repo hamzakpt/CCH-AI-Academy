@@ -211,7 +211,12 @@ export function PerUserAnalyticsPage({ apiBase, filterFunction, filterLevel }: P
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={data.planned_vs_actual} margin={{ top: 0, right: 0, left: -8, bottom: 40 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
-                <XAxis dataKey="username" tick={{ fontSize: 10, fill: '#6b7280', angle: -30, textAnchor: 'end' }} axisLine={false} tickLine={false} />
+                <XAxis
+                  dataKey="username"
+                  angle={-30}
+                  textAnchor="end"
+                  tick={{ fontSize: 10, fill: '#6b7280' }}
+                />
                 <YAxis tick={{ fontSize: 11, fill: '#6b7280' }} axisLine={false} tickLine={false} />
                 <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid #e5e7eb', fontSize: 12 }} />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
@@ -228,12 +233,18 @@ export function PerUserAnalyticsPage({ apiBase, filterFunction, filterLevel }: P
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={sorted.slice(0, 20)} margin={{ top: 0, right: 0, left: -8, bottom: 40 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
-              <XAxis dataKey="username"
+              <XAxis
+                dataKey="username"
+                angle={-30}
+                textAnchor="end"
                 tickFormatter={(v: string) => v.replace('@cchellenic.com', '')}
-                tick={{ fontSize: 10, fill: '#6b7280', angle: -30, textAnchor: 'end' }} axisLine={false} tickLine={false} />
+                tick={{ fontSize: 10, fill: '#6b7280' }}
+                axisLine={false}
+                tickLine={false}
+              />
               <YAxis tick={{ fontSize: 11, fill: '#6b7280' }} axisLine={false} tickLine={false} />
               <Tooltip
-                formatter={(val: unknown, name: string) => [val, name]}
+                formatter={(val: number, name: string) => [val as React.ReactNode, name]}
                 labelFormatter={(label: string) => label.replace('@cchellenic.com', '')}
                 contentStyle={{ borderRadius: '12px', border: '1px solid #e5e7eb', fontSize: 12 }} />
               <Legend wrapperStyle={{ fontSize: 12 }} />
