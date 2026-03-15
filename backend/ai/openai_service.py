@@ -498,6 +498,16 @@ Rules:
 6) Prefer a maximum of 1–3 external modules.
 7) If the user selected ONLY "External Resources", you may include all modules.
 
+IMPORTANT REASONING RULE FOR EXTERNAL RESOURCES:
+
+For modules belonging to the learning path **"External Resources"**, the reasoning MUST begin with the following sentence exactly:
+
+"Our DIAI Academy Lead Vesko has curated a course list of free and paid resources that can enhance your learning journey. The external library is updated every three months as new technology and learning becomes available, so check back often. The below materials were selected for you because"
+
+Continue the explanation naturally after the word "because" based on the user's profile.
+
+Do NOT include this sentence in the reasoning for internal DIAI learning modules.
+
 Example:
 
 User interest: Machine Learning  
