@@ -87,7 +87,7 @@ export function WelcomeScreen({ onContinue, onBackToHome }: WelcomeScreenProps) 
                   <img src={stackImage} alt="Stack" className="w-full h-full object-contain" />
                 </div>
                 <h3 className="text-base mb-2 text-gray-900 font-bold">Growing Universe</h3>
-                <p className="text-gray-600 text-sm leading-relaxed">10+ missions live, new scenarios added monthly</p>
+                <p className="text-gray-600 text-sm leading-relaxed">10+ missions live, new games added monthly</p>
               </CardContent>
             </Card>
           </div>

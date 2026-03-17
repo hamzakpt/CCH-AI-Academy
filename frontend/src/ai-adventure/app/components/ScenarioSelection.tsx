@@ -220,7 +220,7 @@ export function ScenarioSelection({ onScenarioSelect, onBackToHome, userEmail }:
       </div>
       <div className="text-center mb-4">
         <p className="text-gray-600 text-sm">
-          Select a business scenario to start your AI Adventure
+          Select a game to start your AI Adventure
         </p>
       </div>
 
@@ -234,7 +234,7 @@ export function ScenarioSelection({ onScenarioSelect, onBackToHome, userEmail }:
           />
           <input
             type="text"
-            placeholder="Search scenarios..."
+            placeholder="Search games..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-11 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[#E41E2B] text-gray-900 placeholder:text-gray-500"
@@ -254,7 +254,7 @@ export function ScenarioSelection({ onScenarioSelect, onBackToHome, userEmail }:
               Can't find what you're looking for?
             </span>
             <span className="text-sm font-bold text-[#E41E2B] underline">
-              Suggest a scenario
+              Suggest a game idea
             </span>
           </button>
         </div>
@@ -281,7 +281,7 @@ export function ScenarioSelection({ onScenarioSelect, onBackToHome, userEmail }:
               </div>
               <div className="text-xs font-semibold text-gray-900 mb-0.5">{func}</div>
               <div className="text-[10px] text-gray-500">
-                {funcScenarios.length} {funcScenarios.length === 1 ? 'scenario' : 'scenarios'}
+                {funcScenarios.length} {funcScenarios.length === 1 ? 'game' : 'games'}
               </div>
               {isSelected && (
                 <div className="absolute -top-1 -right-1 h-6 w-6 bg-[#E41E2B] rounded-full flex items-center justify-center shadow-lg">
@@ -312,7 +312,7 @@ export function ScenarioSelection({ onScenarioSelect, onBackToHome, userEmail }:
             <h3 className="text-lg font-bold text-gray-900 mb-3">
               {searchQuery.trim()
                 ? `Search Results (${funcScenarios.length})`
-                : `${selectedFunction} Scenarios`}
+                : `${selectedFunction} Games`}
             </h3>
             <AnimatePresence mode="wait">
               <motion.div
@@ -348,15 +348,17 @@ export function ScenarioSelection({ onScenarioSelect, onBackToHome, userEmail }:
                         )}
                         
                         {/* Rating Display - Top Right */}
-                        <div className="absolute top-4 right-4" onClick={(e) => e.stopPropagation()}>
-                          <RatingDisplay
-                            averageRating={ratings[scenario.id]?.averageRating || 0}
-                            totalRatings={ratings[scenario.id]?.totalRatings || 0}
-                            onRate={() => setRatingModalOpen(scenario.id)}
-                            onViewComments={() => setCommentsModalOpen(scenario.id)}
-                          />
-                        </div>
-
+                        {isAvailable && (
+                          <div className="absolute top-4 right-4" onClick={(e) => e.stopPropagation()}>
+                            <RatingDisplay
+                              averageRating={ratings[scenario.id]?.averageRating || 0}
+                              totalRatings={ratings[scenario.id]?.totalRatings || 0}
+                              onRate={() => setRatingModalOpen(scenario.id)}
+                              onViewComments={() => setCommentsModalOpen(scenario.id)}
+                            />
+                          </div>
+                        )}
+                      
                         {/* Icon and Title Side-by-Side */}
                         <div className="flex items-center gap-3 mb-2 pr-16">
                           {typeof scenario.icon === 'string' ? (
