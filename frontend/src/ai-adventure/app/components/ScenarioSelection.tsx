@@ -1,10 +1,10 @@
 import { Card, CardContent } from '@ai-adventure/app/components/ui/card';
 import { Button } from '@ai-adventure/app/components/ui/button';
 import { Badge } from '@ai-adventure/app/components/ui/badge';
-import { scenarios } from '@ai-adventure/app/data/scenarios-30';
 import { Scenario } from '@ai-adventure/app/types/scenario';
-import { Clock, ArrowRight, ArrowLeft, Users, Factory, DollarSign, Scale, Laptop, TrendingUp, Sparkles, Lightbulb, X, CheckCircle, Flame } from 'lucide-react';
-import { useState } from 'react';
+import { fetchScenarios } from '@ai-adventure/app/services/scenariosApi';
+import { Clock, ArrowRight, ArrowLeft, Users, Factory, DollarSign, Scale, Laptop, TrendingUp, Sparkles, Lightbulb, X, CheckCircle, Flame, Loader2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import hellenIcon from '/hellen-logo-transparent-background.png';
 import { RatingDisplay } from '@ai-adventure/app/components/RatingDisplay';
 import { RatingModal } from '@ai-adventure/app/components/RatingModal';
@@ -24,6 +24,9 @@ interface ScenarioRating {
 
 export function ScenarioSelection({ onScenarioSelect, onBackToHome }: ScenarioSelectionProps) {
   const functions = ['Commercial', 'Supply Chain', 'Finance', 'HR', 'Other'] as const;
+  const [scenarios, setScenarios] = useState<Scenario[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedFunction, setSelectedFunction] = useState<typeof functions[number]>('Commercial');
   const [searchQuery, setSearchQuery] = useState('');
   const [ratings, setRatings] = useState<Record<string, ScenarioRating>>({});
@@ -32,6 +35,24 @@ export function ScenarioSelection({ onScenarioSelect, onBackToHome }: ScenarioSe
   const [showSuggestModal, setShowSuggestModal] = useState(false);
   const [suggestion, setSuggestion] = useState('');
   const [submitted, setSubmitted] = useState(false);
+
+  // Fetch scenarios from API on mount
+  useEffect(() => {
+    async function loadScenarios() {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const data = await fetchScenarios();
+        setScenarios(data);
+      } catch (err) {
+        console.error('Failed to fetch scenarios:', err);
+        setError('Failed to load scenarios. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadScenarios();
+  }, []);
 
   const handleRatingSubmit = (scenarioId: string, rating: number, comment: string) => {
     setRatings(prev => {
@@ -114,6 +135,33 @@ export function ScenarioSelection({ onScenarioSelect, onBackToHome }: ScenarioSe
     }
   };
 
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center">
+        <Loader2 className="h-12 w-12 text-[#E41E2B] animate-spin mb-4" />
+        <p className="text-gray-600">Loading scenarios...</p>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <Button
+            onClick={() => window.location.reload()}
+            className="bg-[#E41E2B] hover:bg-[#DC0008] text-white"
+          >
+            Try Again
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
@@ -177,7 +225,7 @@ export function ScenarioSelection({ onScenarioSelect, onBackToHome }: ScenarioSe
       {/* Function Selector Cards */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
         {functions.map(func => {
-          const funcScenarios = scenarios.filter(s => s.function === func);
+          const funcScenarios = scenarios.filter(s => s.function === func && !s.hidden);
           const isSelected = selectedFunction === func;
           
           return (
@@ -209,14 +257,17 @@ export function ScenarioSelection({ onScenarioSelect, onBackToHome }: ScenarioSe
 
       {/* Scenarios Grid */}
       {(() => {
+        // Filter out hidden scenarios first
+        const visibleScenarios = scenarios.filter(s => !s.hidden);
+
         // If searching, show all matching scenarios across all functions
         // If not searching, show scenarios for the selected function only
         const funcScenarios = searchQuery.trim()
-          ? scenarios.filter(s =>
+          ? visibleScenarios.filter(s =>
               s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
               s.description.toLowerCase().includes(searchQuery.toLowerCase())
             )
-          : scenarios.filter(s => s.function === selectedFunction);
+          : visibleScenarios.filter(s => s.function === selectedFunction);
 
         return (
           <div className="flex-1 overflow-y-auto">
@@ -235,7 +286,7 @@ export function ScenarioSelection({ onScenarioSelect, onBackToHome }: ScenarioSe
                 className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
               >
                 {funcScenarios.map(scenario => {
-                  const isAvailable = scenario.startHere === true;
+                  const isAvailable = scenario.active === true;
 
                   return (
                     <Card
@@ -337,6 +388,7 @@ export function ScenarioSelection({ onScenarioSelect, onBackToHome }: ScenarioSe
       {ratingModalOpen && (
         <RatingModal
           scenarioId={ratingModalOpen}
+          scenarioTitle={scenarios.find(s => s.id === ratingModalOpen)?.title}
           existingComments={ratings[ratingModalOpen]?.userRatings || []}
           onSubmit={handleRatingSubmit}
           onClose={() => setRatingModalOpen(null)}
@@ -347,6 +399,7 @@ export function ScenarioSelection({ onScenarioSelect, onBackToHome }: ScenarioSe
       {commentsModalOpen && (
         <CommentsViewModal
           scenarioId={commentsModalOpen}
+          scenarioTitle={scenarios.find(s => s.id === commentsModalOpen)?.title}
           comments={ratings[commentsModalOpen]?.userRatings || []}
           averageRating={ratings[commentsModalOpen]?.averageRating || 0}
           onClose={() => setCommentsModalOpen(null)}

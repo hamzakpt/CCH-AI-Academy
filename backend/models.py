@@ -95,3 +95,26 @@ class UserRating(Base):
     comment = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class Scenario(Base):
+    __tablename__ = "scenarios"
+
+    id = Column(String, primary_key=True, index=True)
+    title = Column(String, nullable=False)
+    function = Column(String, nullable=False)  # Commercial, Supply Chain, Finance, HR, Legal, IT & Marketing, Other
+    description = Column(Text, nullable=False)
+    problem = Column(Text, nullable=False)
+    icon = Column(String, nullable=False)  # Icon name (e.g., 'ShieldCheck', 'AlertTriangle')
+    difficulty = Column(String, nullable=False)  # Beginner, Intermediate, Advanced
+    estimated_time = Column(String, nullable=False)
+    old_way_time = Column(String, nullable=True)
+    old_way_steps = Column(JSON, nullable=True)  # List of strings
+    steps = Column(JSON, nullable=False)  # List of AgentStep objects
+    benefits = Column(JSON, nullable=False)  # {timeSaved, impactMetric}
+    learning_modules = Column(JSON, nullable=False)  # List of strings
+    flagship = Column(Integer, default=0)  # Boolean stored as int
+    active = Column(Integer, default=0)  # Boolean stored as int (replaces start_here)
+    hidden = Column(Integer, default=0)  # Boolean stored as int - hidden scenarios not shown in frontend
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

@@ -1,6 +1,5 @@
 import { X, Star, MessageSquare } from 'lucide-react';
 import { Button } from '@ai-adventure/app/components/ui/button';
-import { scenarios } from '@ai-adventure/app/data/scenarios-30';
 
 interface Comment {
   rating: number;
@@ -10,15 +9,14 @@ interface Comment {
 
 interface CommentsViewModalProps {
   scenarioId: string;
+  scenarioTitle?: string;
   comments: Comment[];
   averageRating: number;
   onClose: () => void;
   onAddRating: () => void;
 }
 
-export function CommentsViewModal({ scenarioId, comments, averageRating, onClose, onAddRating }: CommentsViewModalProps) {
-  const scenario = scenarios.find(s => s.id === scenarioId);
-  const scenarioTitle = scenario?.title || 'Scenario';
+export function CommentsViewModal({ scenarioId, scenarioTitle = 'Scenario', comments, averageRating, onClose, onAddRating }: CommentsViewModalProps) {
 
   const renderStars = (rating: number) => {
     return (

@@ -78,7 +78,7 @@ export const scenarios: Scenario[] = [
     benefits: { timeSaved: '42-57 min', impactMetric: '24 retailers checked • $8.4K leak found' },
     learningModules: ['Web Scraping', 'Compliance Monitoring'],
     flagship: true,
-    startHere: true
+    active: true
   },
 
   // ==================== SUPPLY CHAIN - Risk Management (1 scenario) ====================
@@ -148,7 +148,7 @@ export const scenarios: Scenario[] = [
     benefits: { timeSaved: '3 hours 57 min', impactMetric: 'Instant detection • Proactive sourcing • €5.2K margin protected' },
     learningModules: ['Risk Monitoring', 'Supplier Intelligence'],
     flagship: true,
-    startHere: true
+    active: true
   },
 
   // ==================== FINANCE - Month-End Close (1 scenario) ====================
@@ -218,7 +218,7 @@ export const scenarios: Scenario[] = [
     benefits: { timeSaved: '23 hours 51 min', impactMetric: 'Close time: 5 days → 2 days • Zero email chasing' },
     learningModules: ['Accrual Automation', 'Month-End Close'],
     flagship: true,
-    startHere: true
+    active: true
   },
   // ==================== HR - Performance Management (1 scenario) ====================
   
@@ -287,7 +287,7 @@ export const scenarios: Scenario[] = [
     benefits: { timeSaved: '7 hours 51 min', impactMetric: 'Time: 8 hours → 15 min • 100% coverage • Objective bias detection' },
     learningModules: ['Bias Detection', 'Performance Analytics'],
     flagship: true,
-    startHere: true
+    active: true
   },
 
   // ==================== LEGAL - Contract Risk Management (1 scenario) ====================
@@ -357,6 +357,6 @@ export const scenarios: Scenario[] = [
     benefits: { timeSaved: '4 hours 21 min', impactMetric: 'Review time: 4.5 hrs → 45 sec • 100% clause coverage • Risk-aligned' },
     learningModules: ['Contract Intelligence', 'Risk Extraction'],
     flagship: true,
-    startHere: true
+    active: true
   }
 ];

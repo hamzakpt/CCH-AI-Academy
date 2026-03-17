@@ -1,22 +1,19 @@
 import { useState } from 'react';
 import { X, Star, MessageSquare } from 'lucide-react';
 import { Button } from '@ai-adventure/app/components/ui/button';
-import { scenarios } from '@ai-adventure/app/data/scenarios-30';
 
 interface RatingModalProps {
   scenarioId: string;
+  scenarioTitle?: string;
   existingComments: { rating: number; comment: string }[];
   onClose: () => void;
   onSubmit: (scenarioId: string, rating: number, comment: string) => void;
 }
 
-export function RatingModal({ scenarioId, existingComments, onClose, onSubmit }: RatingModalProps) {
+export function RatingModal({ scenarioId, scenarioTitle = 'Scenario', existingComments, onClose, onSubmit }: RatingModalProps) {
   const [selectedRating, setSelectedRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [comment, setComment] = useState('');
-
-  const scenario = scenarios.find(s => s.id === scenarioId);
-  const scenarioTitle = scenario?.title || 'Scenario';
 
   const handleSubmit = () => {
     if (selectedRating > 0) {

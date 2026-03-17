@@ -17,6 +17,7 @@ import requests as http_requests
 from dotenv import load_dotenv
 import math
 from collections import defaultdict
+from routers import scenarios
 
 ADMIN_USERNAMES = {"admin@cchellenic.com"}
 
@@ -44,6 +45,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include routers
+app.include_router(scenarios.router)
 
 course_links_df = pd.read_csv("data/DIAI Academy eLearning details(Sheet2).csv")
 
