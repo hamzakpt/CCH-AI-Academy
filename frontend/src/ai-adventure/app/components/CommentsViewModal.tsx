@@ -1,24 +1,23 @@
 import { X, Star, MessageSquare } from 'lucide-react';
 import { Button } from '@ai-adventure/app/components/ui/button';
-import { scenarios } from '@ai-adventure/app/data/scenarios-30';
 
 interface Comment {
   rating: number;
   comment: string;
   timestamp?: Date;
+  createdAt?: string;
 }
 
 interface CommentsViewModalProps {
   scenarioId: string;
+  scenarioTitle?: string;
   comments: Comment[];
   averageRating: number;
   onClose: () => void;
   onAddRating: () => void;
 }
 
-export function CommentsViewModal({ scenarioId, comments, averageRating, onClose, onAddRating }: CommentsViewModalProps) {
-  const scenario = scenarios.find(s => s.id === scenarioId);
-  const scenarioTitle = scenario?.title || 'Scenario';
+export function CommentsViewModal({ scenarioId, scenarioTitle = 'Scenario', comments, averageRating, onClose, onAddRating }: CommentsViewModalProps) {
 
   const renderStars = (rating: number) => {
     return (
@@ -80,7 +79,11 @@ export function CommentsViewModal({ scenarioId, comments, averageRating, onClose
                   <div className="flex items-center justify-between mb-2">
                     {renderStars(item.rating)}
                     <span className="text-xs text-gray-500">
-                      {item.timestamp ? new Date(item.timestamp).toLocaleDateString() : 'Recently'}
+                      {item.createdAt
+                        ? new Date(item.createdAt).toLocaleDateString()
+                        : item.timestamp
+                        ? new Date(item.timestamp).toLocaleDateString()
+                        : 'Recently'}
                     </span>
                   </div>
                   {item.comment && (

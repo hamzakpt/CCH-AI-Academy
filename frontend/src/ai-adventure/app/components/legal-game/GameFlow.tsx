@@ -9,9 +9,10 @@ type GamePhase = 'manual' | 'agentic' | 'summary';
 
 interface GameFlowProps {
   onBack?: () => void;
+  userEmail: string;
 }
 
-export function GameFlow({ onBack }: GameFlowProps) {
+export function GameFlow({ onBack, userEmail }: GameFlowProps) {
   const [phase, setPhase] = useState<GamePhase>('manual');
 
   const handleManualComplete = () => {
@@ -58,7 +59,7 @@ export function GameFlow({ onBack }: GameFlowProps) {
               exit={{ opacity: 0 }}
               className="h-full"
             >
-              <FinalSummary />
+              <FinalSummary onBack={onBack} scenarioId="legal-1" scenarioTitle="Legal Contract Review Simulation" userEmail={userEmail} />
             </motion.div>
           )}
         </AnimatePresence>

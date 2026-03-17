@@ -1,10 +1,10 @@
 import { Card, CardContent } from '@ai-adventure/app/components/ui/card';
 import { Button } from '@ai-adventure/app/components/ui/button';
 import { Badge } from '@ai-adventure/app/components/ui/badge';
-import { scenarios } from '@ai-adventure/app/data/scenarios-30';
 import { Scenario } from '@ai-adventure/app/types/scenario';
-import { Clock, ArrowRight, ArrowLeft, Users, Factory, DollarSign, Scale, Laptop, TrendingUp, Sparkles, Lightbulb, X, CheckCircle, Flame } from 'lucide-react';
-import { useState } from 'react';
+import { fetchScenarios, fetchAllRatings, submitRating, RatingSummary } from '@ai-adventure/app/services/scenariosApi';
+import { Clock, ArrowRight, ArrowLeft, Users, Factory, DollarSign, Scale, Laptop, TrendingUp, Sparkles, Lightbulb, X, CheckCircle, Flame, Loader2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import hellenIcon from '/hellen-logo-transparent-background.png';
 import { RatingDisplay } from '@ai-adventure/app/components/RatingDisplay';
 import { RatingModal } from '@ai-adventure/app/components/RatingModal';
@@ -14,16 +14,20 @@ import { motion, AnimatePresence } from 'motion/react';
 interface ScenarioSelectionProps {
   onScenarioSelect: (scenario: Scenario, mode: 'learn' | 'apply') => void;
   onBackToHome?: () => void;
+  userEmail?: string;
 }
 
 interface ScenarioRating {
   averageRating: number;
   totalRatings: number;
-  userRatings: { rating: number; comment: string }[];
+  userRatings: { rating: number; comment: string; createdAt?: string }[];
 }
 
-export function ScenarioSelection({ onScenarioSelect, onBackToHome }: ScenarioSelectionProps) {
+export function ScenarioSelection({ onScenarioSelect, onBackToHome, userEmail }: ScenarioSelectionProps) {
   const functions = ['Commercial', 'Supply Chain', 'Finance', 'HR', 'Other'] as const;
+  const [scenarios, setScenarios] = useState<Scenario[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedFunction, setSelectedFunction] = useState<typeof functions[number]>('Commercial');
   const [searchQuery, setSearchQuery] = useState('');
   const [ratings, setRatings] = useState<Record<string, ScenarioRating>>({});
@@ -32,23 +36,78 @@ export function ScenarioSelection({ onScenarioSelect, onBackToHome }: ScenarioSe
   const [showSuggestModal, setShowSuggestModal] = useState(false);
   const [suggestion, setSuggestion] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmittingRating, setIsSubmittingRating] = useState(false);
 
-  const handleRatingSubmit = (scenarioId: string, rating: number, comment: string) => {
-    setRatings(prev => {
-      const currentRating = prev[scenarioId] || { averageRating: 0, totalRatings: 0, userRatings: [] };
-      const newUserRatings = [...currentRating.userRatings, { rating, comment }];
-      const totalRatings = newUserRatings.length;
-      const averageRating = newUserRatings.reduce((sum, r) => sum + r.rating, 0) / totalRatings;
-      
-      return {
-        ...prev,
-        [scenarioId]: {
-          averageRating,
-          totalRatings,
-          userRatings: newUserRatings
+  // Fetch scenarios and ratings from API on mount
+  useEffect(() => {
+    async function loadData() {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        // Fetch scenarios and ratings in parallel
+        const [scenariosData, ratingsData] = await Promise.all([
+          fetchScenarios(),
+          fetchAllRatings()
+        ]);
+
+        setScenarios(scenariosData);
+
+        // Convert API ratings to local format
+        const ratingsMap: Record<string, ScenarioRating> = {};
+        for (const [scenarioId, summary] of Object.entries(ratingsData.ratings)) {
+          ratingsMap[scenarioId] = {
+            averageRating: summary.averageRating,
+            totalRatings: summary.totalRatings,
+            userRatings: summary.ratings.map(r => ({
+              rating: r.rating,
+              comment: r.comment || '',
+              createdAt: r.createdAt
+            }))
+          };
         }
-      };
-    });
+        setRatings(ratingsMap);
+      } catch (err) {
+        console.error('Failed to fetch data:', err);
+        setError('Failed to load scenarios. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadData();
+  }, []);
+
+  const handleRatingSubmit = async (scenarioId: string, rating: number, comment: string) => {
+    const username = userEmail || 'anonymous';
+
+    try {
+      setIsSubmittingRating(true);
+
+      // Submit rating to API
+      await submitRating(scenarioId, username, rating, comment);
+
+      // Update local state optimistically
+      setRatings(prev => {
+        const currentRating = prev[scenarioId] || { averageRating: 0, totalRatings: 0, userRatings: [] };
+        const newUserRatings = [...currentRating.userRatings, { rating, comment, createdAt: new Date().toISOString() }];
+        const totalRatings = newUserRatings.length;
+        const averageRating = newUserRatings.reduce((sum, r) => sum + r.rating, 0) / totalRatings;
+
+        return {
+          ...prev,
+          [scenarioId]: {
+            averageRating: Math.round(averageRating * 10) / 10,
+            totalRatings,
+            userRatings: newUserRatings
+          }
+        };
+      });
+    } catch (err) {
+      console.error('Failed to submit rating:', err);
+      // Could show an error toast here
+    } finally {
+      setIsSubmittingRating(false);
+    }
   };
 
   const handleSuggestionSubmit = () => {
@@ -114,6 +173,33 @@ export function ScenarioSelection({ onScenarioSelect, onBackToHome }: ScenarioSe
     }
   };
 
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center">
+        <Loader2 className="h-12 w-12 text-[#E41E2B] animate-spin mb-4" />
+        <p className="text-gray-600">Loading scenarios...</p>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <Button
+            onClick={() => window.location.reload()}
+            className="bg-[#E41E2B] hover:bg-[#DC0008] text-white"
+          >
+            Try Again
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
@@ -134,7 +220,7 @@ export function ScenarioSelection({ onScenarioSelect, onBackToHome }: ScenarioSe
       </div>
       <div className="text-center mb-4">
         <p className="text-gray-600 text-sm">
-          Select a business scenario to start your AI Adventure
+          Select a game to start your AI Adventure
         </p>
       </div>
 
@@ -148,7 +234,7 @@ export function ScenarioSelection({ onScenarioSelect, onBackToHome }: ScenarioSe
           />
           <input
             type="text"
-            placeholder="Search scenarios..."
+            placeholder="Search games..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-11 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-[#E41E2B] text-gray-900 placeholder:text-gray-500"
@@ -168,7 +254,7 @@ export function ScenarioSelection({ onScenarioSelect, onBackToHome }: ScenarioSe
               Can't find what you're looking for?
             </span>
             <span className="text-sm font-bold text-[#E41E2B] underline">
-              Suggest a scenario
+              Suggest a game idea
             </span>
           </button>
         </div>
@@ -177,7 +263,7 @@ export function ScenarioSelection({ onScenarioSelect, onBackToHome }: ScenarioSe
       {/* Function Selector Cards */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
         {functions.map(func => {
-          const funcScenarios = scenarios.filter(s => s.function === func);
+          const funcScenarios = scenarios.filter(s => s.function === func && !s.hidden);
           const isSelected = selectedFunction === func;
           
           return (
@@ -195,7 +281,7 @@ export function ScenarioSelection({ onScenarioSelect, onBackToHome }: ScenarioSe
               </div>
               <div className="text-xs font-semibold text-gray-900 mb-0.5">{func}</div>
               <div className="text-[10px] text-gray-500">
-                {funcScenarios.length} {funcScenarios.length === 1 ? 'scenario' : 'scenarios'}
+                {funcScenarios.length} {funcScenarios.length === 1 ? 'game' : 'games'}
               </div>
               {isSelected && (
                 <div className="absolute -top-1 -right-1 h-6 w-6 bg-[#E41E2B] rounded-full flex items-center justify-center shadow-lg">
@@ -209,21 +295,24 @@ export function ScenarioSelection({ onScenarioSelect, onBackToHome }: ScenarioSe
 
       {/* Scenarios Grid */}
       {(() => {
+        // Filter out hidden scenarios first
+        const visibleScenarios = scenarios.filter(s => !s.hidden);
+
         // If searching, show all matching scenarios across all functions
         // If not searching, show scenarios for the selected function only
         const funcScenarios = searchQuery.trim()
-          ? scenarios.filter(s =>
+          ? visibleScenarios.filter(s =>
               s.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
               s.description.toLowerCase().includes(searchQuery.toLowerCase())
             )
-          : scenarios.filter(s => s.function === selectedFunction);
+          : visibleScenarios.filter(s => s.function === selectedFunction);
 
         return (
           <div className="flex-1 overflow-y-auto">
             <h3 className="text-lg font-bold text-gray-900 mb-3">
               {searchQuery.trim()
                 ? `Search Results (${funcScenarios.length})`
-                : `${selectedFunction} Scenarios`}
+                : `${selectedFunction} Games`}
             </h3>
             <AnimatePresence mode="wait">
               <motion.div
@@ -235,7 +324,7 @@ export function ScenarioSelection({ onScenarioSelect, onBackToHome }: ScenarioSe
                 className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
               >
                 {funcScenarios.map(scenario => {
-                  const isAvailable = scenario.startHere === true;
+                  const isAvailable = scenario.active === true;
 
                   return (
                     <Card
@@ -259,15 +348,17 @@ export function ScenarioSelection({ onScenarioSelect, onBackToHome }: ScenarioSe
                         )}
                         
                         {/* Rating Display - Top Right */}
-                        <div className="absolute top-4 right-4" onClick={(e) => e.stopPropagation()}>
-                          <RatingDisplay
-                            averageRating={ratings[scenario.id]?.averageRating || 0}
-                            totalRatings={ratings[scenario.id]?.totalRatings || 0}
-                            onRate={() => setRatingModalOpen(scenario.id)}
-                            onViewComments={() => setCommentsModalOpen(scenario.id)}
-                          />
-                        </div>
-
+                        {isAvailable && (
+                          <div className="absolute top-4 right-4" onClick={(e) => e.stopPropagation()}>
+                            <RatingDisplay
+                              averageRating={ratings[scenario.id]?.averageRating || 0}
+                              totalRatings={ratings[scenario.id]?.totalRatings || 0}
+                              onRate={() => setRatingModalOpen(scenario.id)}
+                              onViewComments={() => setCommentsModalOpen(scenario.id)}
+                            />
+                          </div>
+                        )}
+                      
                         {/* Icon and Title Side-by-Side */}
                         <div className="flex items-center gap-3 mb-2 pr-16">
                           {typeof scenario.icon === 'string' ? (
@@ -337,6 +428,7 @@ export function ScenarioSelection({ onScenarioSelect, onBackToHome }: ScenarioSe
       {ratingModalOpen && (
         <RatingModal
           scenarioId={ratingModalOpen}
+          scenarioTitle={scenarios.find(s => s.id === ratingModalOpen)?.title}
           existingComments={ratings[ratingModalOpen]?.userRatings || []}
           onSubmit={handleRatingSubmit}
           onClose={() => setRatingModalOpen(null)}
@@ -347,6 +439,7 @@ export function ScenarioSelection({ onScenarioSelect, onBackToHome }: ScenarioSe
       {commentsModalOpen && (
         <CommentsViewModal
           scenarioId={commentsModalOpen}
+          scenarioTitle={scenarios.find(s => s.id === commentsModalOpen)?.title}
           comments={ratings[commentsModalOpen]?.userRatings || []}
           averageRating={ratings[commentsModalOpen]?.averageRating || 0}
           onClose={() => setCommentsModalOpen(null)}
