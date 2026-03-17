@@ -1,3 +1,27 @@
+=========================================
+HELLEN+ KNOWLEDGE BASE
+=========================================
+
+This file contains:
+1) Course video transcripts
+2) Quiz knowledge base
+
+INSTRUCTIONS FOR AI:
+
+If a user asks a question that matches a quiz question,
+return the answer from the "Correct Answer" field.
+
+If a user asks a conceptual question,
+answer using the course transcripts.
+
+Do not invent information that is not in this file.
+
+
+
+============================================================
+COURSE TRANSCRIPTS
+============================================================
+
 What is Data:
 
 0 minutes 7 seconds
@@ -4835,3 +4859,1754 @@ I really hope that you find found this interesting and useful and thank you very
 2:07
 2 minutes 7 seconds
 Goodbye.
+
+
+
+============================================================
+QUIZ KNOWLEDGE BASE
+============================================================
+
+
+============================================================
+MODULE: Data Lakes
+CONTENT TYPE: Quiz Knowledge Base
+============================================================
+
+[QUIZ_BLOCK_1]
+
+Question:
+The strength of a data lake in comparison to a data warehouse is?
+
+Options:
+A) The fact that it is optimized write large volumes of transactions, e.g., purchase data on an e-commerce webpage.
+B) The fact that it pre-organizes data in a way that makes easy to read large volumes of data very quickly, e.g., video streaming data.
+C) The fact that it can ingest data from very different sources very flexibly and the decision of how to retrieve the data can be made later.
+
+Correct Answer:
+The fact that it can ingest data from very different sources very flexibly and the decision of how to retrieve the data can be made later.
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_2]
+
+Question:
+Typically, “Big Data” is described by which “3 Vs”?
+
+Options:
+A) Velocity, volume, and visibility
+B) Velocity, velocity, and value
+C) Volume, variety, and veracity
+D) Volume, variety, and velocity
+
+Correct Answer:
+Volume, variety, and velocity
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_3]
+
+Question:
+Which of the types of data is not a good example for “unstructured data”?
+
+Options:
+A) Video data
+B) Audio data
+C) Image data
+D) Ad-tracking data
+
+Correct Answer:
+Ad-tracking data
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_4]
+
+Question:
+A weakness of a data lake in comparison to a data warehouse is?
+
+Options:
+A) The fact that the underlying row-based storage pattern allows for the efficient ingestion of large volumes of additional data, but column-based aggregation (e.g. statistical information and analytics like averages or means) is slow.
+B) The fact that it can ingest structured, semi-structured and unstructured data can also mean that too much data is stored with too little information about the data, turning the lake into a swamp.
+C) The fact that it can only ingest structured, tabular data and schema changes are hard to implement.
+
+Correct Answer:
+The fact that it can ingest structured, semi-structured and unstructured data can also mean that too much data is stored with too little information about the data, turning the lake into a swamp.
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_5]
+
+Question:
+Typically, “Big Data” is described by “3 Vs”. Which one is not part of this?
+
+Options:
+A) Velocity
+B) Value
+C) Volume
+D) Variety
+
+Correct Answer:
+Value
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_6]
+
+Question:
+Which of the types of data is a good example for “unstructured data”? 
+
+Options:
+A) Metadata
+B) Transactional data
+C) Image data
+D) Financial data
+
+Correct Answer:
+Image data
+
+============================================================
+END OF QUIZ MODULE
+============================================================
+
+
+============================================================
+MODULE: Data Wrangling
+CONTENT TYPE: Quiz Knowledge Base
+============================================================
+
+[QUIZ_BLOCK_1]
+
+Question:
+Which of the following concepts is at the top of the value pyramid?
+
+Options:
+A) Insights, derived from, analytics
+B) Business value, derived from actions
+C) Information, derived from the processing of data
+D) Real world processes, analog raw facts
+
+Correct Answer:
+Business value, derived from actions
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_2]
+
+Question:
+Agile work that continually improves in an iterative fashion is at the core of a successful data strategy. Which step comes at the start of every cycle?
+
+Options:
+A) Data driven decision making
+B) Gain insights
+C) Define goals
+D) Define metrics, analytics, and methods
+E) Feedback
+
+Correct Answer:
+Define goals
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_3]
+
+Question:
+Which of the following concepts is at the bottom of the value pyramid?
+
+Options:
+A) Insights, derived from, analytics
+B) Business value, derived from actions
+C) Information, derived from the processing of data
+D) Real world processes, analog raw facts
+
+Correct Answer:
+Real world processes, analog raw facts
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_4]
+
+Question:
+Agile work that continually improves in an iterative fashion is at the core of a successful data strategy. Which step comes at the end of every cycle, before a new iteration starts?
+
+Options:
+A) Data driven decision making
+B) Gain insights
+C) Feedback
+D) Define metrics, analytics, and methods
+E) Define goals
+
+Correct Answer:
+Feedback
+
+============================================================
+END OF QUIZ MODULE
+============================================================
+
+============================================================
+MODULE: Data Warehouses
+CONTENT TYPE: Quiz Knowledge Base
+============================================================
+
+[QUIZ_BLOCK_1]
+
+Question:
+Which layer of a data warehouse (DWH) will be accessed by the data presentation layer which implements analytics and business intelligence?
+
+Options:
+A) The original data sources are proxied through the DWH and are accessed directly 
+B) The data marts
+C) The core data warehouse
+D) The data lake
+
+Correct Answer:
+The data marts
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_2]
+
+Question:
+Which of the following types of data would typically not be found in a data warehouse (DWH)?
+
+Options:
+A) Web traffic and click data
+B) HR data
+C) Transactional data
+D) Recordings of security cameras
+
+Correct Answer:
+Recordings of security cameras
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_3]
+
+Question:
+Which of the following statements is typically true about a data warehouse (DWH)?
+
+Options:
+A) A data warehouse consolidates data from more than one source
+B) A data warehouse is a data source for many transactional database systems
+C) A data warehouse stores structured, semi-structured and unstructured data
+D) The main use case for a data warehouse is enterprise resource planning (ERP)
+
+Correct Answer:
+A data warehouse consolidates data from more than one source
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_4]
+
+Question:
+Which layer of a data warehouse (DWH) stores all transactional data?
+
+Options:
+A) As soon as the transactional data has been aggregated it is pushed down to the original source systems
+B) The data marts
+C) The core data warehouse
+D) The data lake
+
+Correct Answer:
+The core data warehouse
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_5]
+
+Question:
+Which of the following types data would typically be found in a data warehouse (DWH)?
+
+Options:
+A) Video data 
+B) Sound data 
+C) Image data 
+D) Tabular data 
+
+Correct Answer:
+Tabular data 
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_6]
+
+Question:
+Which of the following statements is typically not true about a data warehouse (DWH)?
+
+Options:
+A) A data warehouse consolidates data from more than one source
+B) A data warehouse is based on relational database technology 
+C) A data warehouse stores structured, semi-structured and unstructured data 
+D) Transactional data is often stored in a data warehouse 
+
+Correct Answer:
+A data warehouse stores structured, semi-structured and unstructured data 
+
+============================================================
+END OF QUIZ MODULE
+============================================================
+
+
+============================================================
+MODULE: SQL
+CONTENT TYPE: Quiz Knowledge Base
+============================================================
+
+[QUIZ_BLOCK_1]
+
+Question:
+Which of the following statement is not a valid SQL type of JOIN?
+
+Options:
+A) INNER JOIN
+B) RIGHT INNER JOIN 
+C) FULL OUTER JOIN 
+D) LEFT JOIN 
+
+Correct Answer:
+RIGHT INNER JOIN 
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_2]
+
+Question:
+Which of the following SQL statements would return all records of the table “products” descending by price?
+
+Options:
+A) SELECT * FROM products ORDER price DESC
+B) SELECT * FROM products SORT BY price DESC 
+C) SELECT * FROM products SORT price DESC 
+D) SELECT * FROM products ORDER BY price DESC
+E) SELECT * FROM products SORT BY price 
+
+Correct Answer:
+SELECT * FROM products ORDER BY price DESC
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_3]
+
+Question:
+Which of the following SQL statements is guaranteed not to return any records of the table “products”? 
+
+Options:
+A) SELECT * FROM products ORDER BY price DESC 
+B) SELECT product, item_price FROM products 
+C) SELECT * FROM products SORT price DESC 
+D) SELECT ALL FROM products 
+
+Correct Answer:
+SELECT ALL FROM products
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_4]
+
+Question:
+Which of the following statement is a valid SQL type of JOIN? 
+
+Options:
+A) TOP JOIN 
+B) RIGHT INNER JOIN 
+C) LEFT JOIN 
+D) EXTERNAL JOIN  
+
+Correct Answer:
+LEFT JOIN 
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_5]
+
+Question:
+Which of the following SQL statements is guaranteed not to return any records of the table “products”? 
+
+Options:
+A) SELECT * FROM products ORDER BY price DESC 
+B) SELECT product, item_price FROM products 
+C) SELECT * FROM products SORT price DESC 
+D) SELECT ALL FROM products 
+
+Correct Answer:
+SELECT ALL FROM products 
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_6]
+
+Question:
+Which of the following SQL statements is returns records of the table “products” with a unit_price that is larger than 500? 
+
+Options:
+A) SELECT * FROM products WHERE unit_price > 500 
+B) SELECT * FROM products IF unit_price > 500 
+C) SELECT * FROM products WHERE unit_price < 500 
+D) SELECT * FROM products IF unit_price .LG. 500 
+
+Correct Answer:
+SELECT * FROM products WHERE unit_price > 500
+
+============================================================
+END OF QUIZ MODULE
+============================================================
+
+
+============================================================
+MODULE: Structuring Data
+CONTENT TYPE: Quiz Knowledge Base
+============================================================
+
+[QUIZ_BLOCK_1]
+
+Question:
+In an entity relationship (ER) model, two “information” objects (rectangular shape) are always connected via an “association” object (diamond shape)?
+
+Options:
+A) True
+B) False
+
+Correct Answer:
+True
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_2]
+
+Question:
+In an entity relationship (ER) model, an “information” object (rectangular shape) is always connected to an “attribute” object (oval shape) via an “association” object (diamond shape)?
+
+Options:
+A) True
+B) False
+
+Correct Answer:
+False
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_3]
+
+Question:
+The strength of a relational database is? 
+
+Options:
+A) The fact that all connected information is stored together in the same table, and this enables very fast queries to retrieve data 
+B) The fact that related data is stored in separate tables but can be flexibly queried together with JOIN-statements 
+C) The fact that the table structure can be used to very quickly identify relationships with the WHERE-statement 
+
+Correct Answer:
+The fact that related data is stored in separate tables but can be flexibly queried together with JOIN-statements 
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_4]
+
+Question:
+Every entity relationship (ER) model can be translated into a relational data model? 
+
+Options:
+A) True
+B) False 
+
+Correct Answer:
+True
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_5]
+
+Question:
+When translating an entity relationship (ER) model to a relational data model the cardinality of the data must be considered. This means that every entity must be represented by a separate table? 
+
+Options:
+A) True
+B) False
+
+Correct Answer:
+False
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_6]
+
+Question:
+A weakness of relational databases is? 
+
+Options:
+A) The fact that only relational data can be stored. If the stored tables are not “related” through primary and foreign keys, they can’t be stored at all.
+B) The fact that only data in a pre-defined structure can be stored. Later changes to this schema can be hard to implement. 
+C) The fact that a hard limit on the size of the stored data exists. For a relational database to work, all its data has to fit into the working memory (RAM) of the physical machine it is running on. 
+
+Correct Answer:
+The fact that only data in a pre-defined structure can be stored. Later changes to this schema can be hard to implement. 
+
+============================================================
+END OF QUIZ MODULE
+============================================================
+
+
+============================================================
+MODULE: Features & Labels
+CONTENT TYPE: Quiz Knowledge Base
+============================================================
+
+[QUIZ_BLOCK_1]
+
+Question:
+In the CCHBC dataset: What are likely labels (target values)? Tick all that apply!
+
+Options:
+A) The order volume 
+B) The week of the order 
+C) The number of sport events of a given week  
+D) The average income of the region of an order 
+E) The revenue of an order (volume * list-price – discount)  
+F) The number of pubs in a region 
+
+Correct Answers:
+The order volume , The revenue of an order (volume * list-price – discount) 
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_2]
+
+Question:
+The number of pubs in a region is a numerical variable. However, sometimes it makes sense to convert numerical variables into categories. Assume we have assigned classes to the number of pubs in the following way (by putting the numbers into bins):
+
+Low: 		< 20 pubs 
+
+Few: 		20 – 40 pubs (20 included, 40 excluded) 
+
+Quite many	40 – 60 pubs (40 included, 60 excluded)  
+
+Many 		> 60 pubs 
+
+We have also assigned Labels to the Classes:  
+
+Low: 	0 
+
+Few: 	1 
+
+Quite Many: 2 
+
+Many: 3 
+
+What would the one-hot encoded vector of a region with 55 pubs look like?
+
+Options:
+A)  [0, 0, 0, 0] 
+B)  [0, 1, 0, 0] 
+C)  [0, 0, 1, 0] 
+D)  [1, 0, 0, 0] 
+E)  [0, 0, 0, 1] 
+F)  [1, 0, 0, 1] 
+
+Correct Answer:
+[0, 0, 1, 0]
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_3]
+
+Question:
+Assume you have included weather data into the CCHBC dataset, for example the average temperature of a given week. Now you want to predict the volume of orders in a specific region using the weather / temperature data. You take the average volume of all weeks within a certain temperature, for example 20 degrees Celsius – and average the volume over all weeks with that temperature. You do that for alle temperatures. Then you predict the volume in the following way:  
+
+You take the average temperature of the week you are interested in (i.e. from a weather app) – and use the average volume of all weeks with the same temperature as your prediction.  
+
+Is this approach:
+
+Options:
+A) Traditional Computing 
+B) Machine Learning  
+
+Correct Answer:
+Traditional Computing
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_4]
+
+Question:
+In the CCHBC dataset: What are likely features (predictors)? Tick all that apply!
+
+Options:
+A) The order volume 
+B) The week of the order 
+C) The number of sport events of a given week  
+D) The average income of the region of an order 
+E) The revenue of an order (volume * list-price – discount)  
+F) The number of pubs in a region 
+G) Any of them could be features – it depends on the use-case
+
+Correct Answers:
+The week of the order , The number of sport events of a given week , The average income of the region of an order , The number of pubs in a region , Any of them could be features – it depends on the use-case
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_5]
+
+Question:
+The number of pubs in a region is a numerical variable. However, sometimes it makes sense to convert numerical variables into categories. Assume we have assigned classes to the number of pubs in the following way (by putting the numbers into bins):
+
+Low: 		< 20 pubs 
+
+Few: 		20 – 40 pubs (20 included, 40 excluded) 
+
+Quite many	40 – 60 pubs (40 included, 60 excluded)  
+
+Many 		60 – 80 pubs (60 included, 80 excluded) 
+
+Very Many	> 80 pubs 
+
+We have also assigned Labels to the Classes:  
+
+Low: 	0 
+
+Few: 	1 
+
+Quite Many: 2 
+
+Many: 3 
+
+Very Many: 4 
+
+What would the one-hot encoded vector of a region with 250 pubs look like?
+
+Options:
+A) [0, 0, 0, 0, 0] 
+B) [0, 1, 0, 0, 0] 
+C) [0, 0, 1, 0, 0] 
+D) [1, 0, 0, 0, 0] 
+E) [0, 0, 0, 1, 0]
+F) [1, 0, 0, 1, 0]
+G) [0, 0, 0, 0, 1]
+H) This vector does not exist 
+
+Correct Answer:
+[0, 0, 0, 0, 1]
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_6]
+
+Question:
+Assume you have included weather data into the CCHBC dataset, for example the average temperature of a given week. Now you want to predict the volume of orders in a specific region using the weather / temperature data. You take the average volume of all weeks within a certain temperature, for example 20 degrees Celsius – and average the volume over all weeks with that temperature. You do that for alle temperatures. Then you predict the volume in the following way:  
+
+You use the temperature data as a feature and the volume as the label – and train an Linear Regression Model. You then use this model to make predictions on unknown data.  
+
+Is this approach:
+
+Options:
+A) Traditional Computing 
+B) Machine Learning 
+
+Correct Answer:
+Machine Learning 
+
+============================================================
+END OF QUIZ MODULE
+============================================================
+
+
+============================================================
+MODULE: Measuring Success
+CONTENT TYPE: Quiz Knowledge Base
+============================================================
+
+Prediction Table:
+
+Customer_ID | True_Value | Prediction
+--------------------------------------
+1           | 100        | 108
+2           | 21         | 13
+3           | 417        | 501
+
+[QUIZ_BLOCK_1]
+
+Question:
+What is the mean absolute error of that prediction?
+
+Options:
+A) 100 
+B) 33,33333 
+C) -84 
+D) 84
+E) None of the above 
+
+Correct Answer:
+33,33333 
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_2]
+
+Question:
+What is the mean squared error of that prediction?  
+
+Options:
+A) 84 
+B) 7056  
+C) 2394,6666 
+D) 2352 
+E) None of the above 
+
+Correct Answer:
+2394,6666
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_3]
+
+Question:
+What is the accuracy of that prediction with an error margin of 20 percent? 
+
+Options:
+A) 33.3333 percent  
+B) 66.6666 percent 
+C) 100 percent 
+D) 0 percent  
+E) 0.25 percent  
+
+Correct Answer:
+33.3333 percent
+
+------------------------------------------------------------
+
+Prediction Table:
+
+Sample | True_Label | Prediction
+--------------------------------
+1      | Cat        | Dog
+2      | Dog        | Dog
+3      | Dog        | Dog
+4      | Cat        | Cat
+5      | Cat        | Dog
+6      | Cat        | Cat
+7      | Dog        | Cat
+8      | Cat        | Dog
+
+[QUIZ_BLOCK_4]
+
+Question:
+What is the accuracy of that prediction? 
+
+Options:
+A) 25 percent 
+B) 75 percent 
+C) 50 percent 
+D) 33.3333 percent 
+E) 66.6666 percent  
+
+Correct Answer:
+50 percent 
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_5]
+
+Question:
+How many true positives are there with respect to dogs?  
+
+Options:
+A) 1
+B) 2 
+C) 3
+D) 4
+E) 5
+
+Correct Answer:
+2
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_6]
+
+Question:
+How may true positives are there with respect to cats? 
+
+Options:
+A) 1
+B) 2 
+C) 3
+D) 4
+E) 5
+
+Correct Answer:
+2
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_7]
+
+Question:
+What would a false positive be with respect to dogs? 
+
+Options:
+A) A dog that is predicted as a cat 
+B) A cat that is predicted as a dog  
+
+Correct Answer:
+A cat that is predicted as a dog
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_8]
+
+Question:
+What is the precision with respect to dogs? 
+
+Options:
+A) 10 percent 
+B) 33.3333 percent 
+C) 40 Percent 
+D) 66.6666 percent 
+E) 25 percent 
+F) 100 percent 
+
+Correct Answer:
+40 Percent
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_9]
+
+Question:
+What is the precision with respect to cats?  
+
+Options:
+A) 10 percent 
+B) 33.3333 percent 
+C) 40 Percent 
+D) 66.6666 percent 
+E) 25 percent 
+F) 100 percent 
+
+Correct Answer:
+66.6666 percent 
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_10]
+
+Question:
+If the precision of your model is higher than the recall, you use precision as you success metric? 
+
+Options:
+A) True
+B) False
+
+Correct Answer:
+False
+
+------------------------------------------------------------
+
+Prediction Table:
+
+Customer_ID | True_Value | Prediction
+--------------------------------------
+1           | 150        | 158
+2           | 31         | 23
+3           | 407        | 491
+
+[QUIZ_BLOCK_11]
+
+Question:
+What is the mean absolute error of that prediction?  
+
+Options:
+A) 100 
+B) 33,33333 
+C) -84 
+D) 84 
+E) None of the above 
+
+Correct Answer:
+33,33333
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_12]
+
+Question:
+What is the mean squared error of that prediction?  
+
+Options:
+A) 84 
+B) 7056  
+C) 2394,6666 
+D) 2352 
+E) None of the above 
+
+Correct Answer:
+2394,6666
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_13]
+
+Question:
+What is the accuracy of that prediction with an error margin of 20 percent? 
+
+Options:
+A) 33.3333 percent  
+B) 66.6666 percent 
+C) 100 percent 
+D) 0 percent  
+E) 0.25 percent 
+
+Correct Answer:
+33.3333 percent
+
+------------------------------------------------------------
+
+Sample | True_Label | Prediction
+--------------------------------
+1      | Dog        | Cat
+2      | Cat        | Cat
+3      | Cat        | Cat
+4      | Dog        | Dog
+5      | Dog        | Cat
+6      | Dog        | Dog
+7      | Cat        | Dog
+8      | Dog        | Cat
+
+[QUIZ_BLOCK_14]
+
+Question:
+What is the accuracy of that prediction? 
+
+Options:
+A) 25 percent 
+B) 75 percent 
+C) 50 percent 
+D) 33.3333 percent 
+E) 66.6666 percent  
+
+Correct Answer:
+50 percent 
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_15]
+
+Question:
+How many true positives are there with respect to dogs?  
+
+Options:
+A) 1
+B) 2 
+C) 3
+D) 4
+E) 5
+
+Correct Answer:
+2
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_16]
+
+Question:
+How may true positives are there with respect to cats? 
+
+Options:
+A) 1
+B) 2 
+C) 3
+D) 4
+E) 5
+
+Correct Answer:
+2
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_17]
+
+Question:
+What would a false positive be with respect to cats? 
+
+Options:
+A) A dog that is predicted as a cat 
+B) A cat that is predicted as a dog  
+
+Correct Answer:
+A dog that is predicted as a cat 
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_18]
+
+Question:
+What is the precision with respect to cats?  
+
+Options:
+A) 10 percent 
+B) 33.3333 percent 
+C) 40 Percent 
+D) 66.6666 percent 
+E) 25 percent 
+F) 100 percent 
+
+Correct Answer:
+40 Percent
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_19]
+
+Question:
+What is the precision with respect to dogs? 
+
+Options:
+A) 10 percent 
+B) 33.3333 percent 
+C) 40 Percent 
+D) 66.6666 percent 
+E) 25 percent 
+F) 100 percent 
+
+Correct Answer:
+66.6666 percent
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_20]
+
+Question:
+If the recall of your model is higher than the precision, you use recall as you success metric?
+
+Options:
+A) True
+B) False
+
+Correct Answer:
+False
+
+
+============================================================
+END OF QUIZ MODULE
+============================================================
+
+
+============================================================
+MODULE: Problems with Data
+CONTENT TYPE: Quiz Knowledge Base
+============================================================
+
+[QUIZ_BLOCK_1]
+
+Question:
+Children do generally NOT like spinach. That’s why, for decades, children spat spinach at their mothers, as they were trying to feed them with the apparent iron-rich food. Some years ago, it was proven that in comparison to other nutrition, spinach does NOT contain a significantly higher concentration of iron. But the myths had survived for decades, even though it was due to a comma error, Gustav von Bunge, a Swiss Scientist, made in 1890 in his laboratory analysis of the iron content in food. He measured 35 milligrams per gram, whereas recent analysis shows that the true value is about 3 milligram per gram.  
+
+Which of the following is true?  
+
+Options:
+A) The wrong measurement is an outlier 
+B) The wrong measurement is an anomaly 
+C) Scientists should have challenged the wrong value much earlier 
+D) Children should not have eaten as much spinach as they did 
+
+Correct Answers:
+The wrong measurement is an outlier , Scientists should have challenged the wrong value much earlier
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_2]
+
+Question:
+Assume you are trying to predict order volumes with the CCHBC dataset. You recognize one value as an outlier: A customer has placed an order with a volume that is more than 10 times higher than his average order volume. What do you do?
+
+Options:
+A) As you are working on a Machine Learning Model, you leave the outlier in the dataset 
+B) You call the customer (or a domain expert within your company) and ask why this order is so big. Depending on the answer, you decide to take the value out or leave it in the dataset 
+C) You take the value out, as it is obviously an outlier 
+
+Correct Answer:
+You call the customer (or a domain expert within your company) and ask why this order is so big. Depending on the answer, you decide to take the value out or leave it in the dataset 
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_3]
+
+Question:
+If you have missing values, it is always a good approach to linearly extrapolate over the gap from the last recorded value to the next recorded value?
+
+Options:
+A) True
+B) False
+
+Correct Answer:
+False
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_4]
+
+Question:
+Collecting more data is generally the best approach to improve the performance of a data science model?
+
+Options:
+A) True
+B) False 
+
+Correct Answer:
+True
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_5]
+
+Question:
+Nan Values can sometimes contain information that is useful for a model?
+
+Options:
+A) True
+B) False 
+
+Correct Answer:
+True
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_6]
+
+Question:
+Children do generally NOT like spinach. That’s why, for decades, children spat spinach at their mothers, as they were trying to feed them with the apparent iron-rich food. Some years ago, it was proven that in comparison to other nutrition, spinach does NOT contain a significantly higher concentration of iron. But the myths had survived for decades, even though it was due to a comma error, Gustav von Bunge, a Swiss Scientist, made in 1890 in his laboratory analysis of the iron content in food. He measured 35 milligrams per gram, whereas recent analysis shows that the true value is about 3 milligram per gram.  
+
+Which of the following is true? 
+
+Options:
+A) The wrong measurement is not an outlier 
+B) The wrong measurement is not an anomaly 
+C) Scientists should not have used the assumed iron concentration, as it is an outlier and not an anomaly 
+D) Children should not have eaten as much spinach as they did 
+
+Correct Answers:
+The wrong measurement is not an anomaly , Scientists should not have used the assumed iron concentration, as it is an outlier and not an anomaly
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_7]
+
+Question:
+Assume you are trying to predict order volumes with the CCHBC dataset. You recognize one value as an outlier: A customer has placed an order with a volume that is more than 10 times higher than his average order volume. What do you do?
+
+Options:
+A) As you are working on a Machine Learning Model, you leave the outlier in the dataset  
+B) You take the value out, as it is obviously an outlier  
+C) You call the customer – and he tells you that there will be a big wedding in his pub. You then take the order out of the dataset, as big weddings are anomalous events and hence outliers
+D) You call the customer – and he tells you that there will be a big wedding in his pub. You then leave the value in the dataset, as big weddings are anomalous events and your ML-model is aimed at learning these anomalies  
+E) You call the customer - and he tells you that he accidentally added a 0 to the correct order volume. You then correct the order volume and leave the corrected value in your dataset.  
+F) You call the customer – and he tells you that he accidentally added a 0 to the correct order volume. You then take the order out of the dataset, as it is an outlier – and not an anomaly 
+
+Correct Answers:
+You call the customer – and he tells you that there will be a big wedding in his pub. You then leave the value in the dataset, as big weddings are anomalous events and your ML-model is aimed at learning these anomalies , You call the customer - and he tells you that he accidentally added a 0 to the correct order volume. You then correct the order volume and leave the corrected value in your dataset.
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_8]
+
+Question:
+If you have missing values, it is never a good approach to linearly extrapolate over the gap from the last recorded value to the next recorded value?
+
+Options:
+A) True
+B) False
+
+Correct Answer:
+False
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_9]
+
+Question:
+Collecting more data is generally the best approach to improve the performance of a data science model?
+
+Options:
+A) True
+B) False 
+
+Correct Answer:
+True
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_10]
+
+Question:
+Nan Values never contain information that is useful for a model?
+
+Options:
+A) True
+B) False 
+
+Correct Answer:
+False
+
+
+============================================================
+END OF QUIZ MODULE
+============================================================
+
+
+============================================================
+MODULE: Splitting Data
+CONTENT TYPE: Quiz Knowledge Base
+============================================================
+
+[QUIZ_BLOCK_1]
+
+Question:
+Assume you have a data set that is already split into Training-, Validation- and Test-Set. One of the sets has 15 percent of the data in it. Which Set is it likely to be? 
+
+Options:
+A) Training Set 
+B) Validation Set 
+C) Test Set 
+
+Correct Answers:
+Validation Set , Test Set
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_2]
+
+Question:
+When do you split your data in a stratified manner into a Training-, Validation- and Test-Set?
+
+Options:
+A) When I have lots of data  
+B) When I have great class imbalances, regardless of size of the data set 
+C) When I have little data, regardless of whether there are class imbalances 
+D) Always 
+E) None of the above 
+
+Correct Answers:
+When I have great class imbalances, regardless of size of the data set , When I have little data, regardless of whether there are class imbalances
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_3]
+
+Question:
+What are the implications of a learning curve, where the training- and validation-error are inline (parallel and close together) and still decreasing? 
+
+Options:
+A) I try to train my model longer to get better results  
+B) I am in an overfitting mode and stop training 
+C) I am in an overfitting mode and try to get more data (to avoid overfitting) 
+D) I am in an overfitting mode and try to augment my data to increase the variability 
+E) None of the above 
+
+Correct Answer:
+I try to train my model longer to get better results
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_4]
+
+Question:
+The model complexity must always be greater than the data complexity?
+
+Options:
+A) True
+B) False 
+
+Correct Answer:
+False
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_5]
+
+Question:
+Assume you have a data set that is already split into Training-, Validation- and Test-Set. One of the sets has 80 percent of the data in it. Which Set is it likely to be?
+
+Options:
+A) Training Set 
+B) Validation Set 
+C) Test Set 
+
+Correct Answer:
+Training Set
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_6]
+
+Question:
+When do you NOT have to split your data in a stratified manner into a Training-, Validation- and Test-Set? 
+
+Options:
+A) When I have lots of data and little class imbalances 
+B) When I have great class imbalances, regardless of size of the data set 
+C) When I have little data, regardless of whether there are class imbalances 
+D) Always 
+E) None of the above 
+
+Correct Answer:
+When I have lots of data and little class imbalances
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_7]
+
+Question:
+What are the implications of a learning curve, where the training- and validation-error are far apart and the training-error is decreasing but the validation-error is increasing? 
+
+Options:
+A) I try to train my model longer to get better results  
+B) I am in an overfitting mode and stop training 
+C) I am in an overfitting mode and try to get more data (to avoid overfitting) 
+D) I am in an overfitting mode and try to augment my data to increase the variability 
+E) None of the above 
+
+Correct Answers:
+I am in an overfitting mode and stop training , I am in an overfitting mode and try to get more data (to avoid overfitting) , I am in an overfitting mode and try to augment my data to increase the variability 
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_8]
+
+Question:
+The model complexity must match the data complexity?
+
+Options:
+A) True
+B) False 
+
+Correct Answer:
+True
+
+
+============================================================
+END OF QUIZ MODULE
+============================================================
+
+
+============================================================
+MODULE: Supervised & Unsupervised Learning
+CONTENT TYPE: Quiz Knowledge Base
+============================================================
+
+[QUIZ_BLOCK_1]
+
+Question:
+You are using the CCHBC dataset to predict the order volume of a certain customer. Are you applying:
+
+Options:
+A) A supervised algorithm  
+B) An unsupervised algorithm 
+C) There is too little information to tell 
+
+Correct Answer:
+There is too little information to tell 
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_2]
+
+Question:
+You are using the CCHBC dataset to predict the order volume of a certain customer in the next week. You train a model (i.e. a Neural Sequence Net) with input features like the date, the number of pubs in the region you are interested in, the mean income of the people in that region etc. – and with the known volume of past orders of that customer. Are you applying:   
+
+Options:
+A) A supervised algorithm  
+B) An unsupervised algorithm 
+C) There is too little information to tell 
+
+Correct Answer:
+A supervised algorithm 
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_3]
+
+Question:
+You are using the CCHBC dataset to predict the order volume of a certain customer in the next week. You train a model with input features like the date, the number of pubs in the region you are interested in, the mean income of the people in that region etc. and with the known volume. Your model is grouping all orders into clusters. Are you applying:  
+
+Options:
+A) A supervised algorithm  
+B) An unsupervised algorithm 
+C) There is too little information to tell 
+
+Correct Answer:
+An unsupervised algorithm 
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_4]
+
+Question:
+Machine Learning is all about minimizing Loss Functions?
+
+Options:
+A) True
+B) False 
+
+Correct Answer:
+True
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_5]
+
+Question:
+From a mathematical point of view, Machine Learning is a Form of Intelligence?
+
+Options:
+A) True
+B) False 
+
+Correct Answer:
+False
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_6]
+
+Question:
+Unsupervised Methods compare the True Output with the Predictions of a model and try to minimize the error?
+
+Options:
+A) True
+B) False 
+
+Correct Answer:
+False
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_7]
+
+Question:
+Unsupervised Methods compare the Result (i.e., of a grouping of the input) with the Input – and try to minimize the Loss Function? 
+
+Options:
+A) True
+B) False 
+
+Correct Answer:
+True
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_8]
+
+Question:
+Which of the following approaches applies a supervised algorithm?  
+
+Options:
+A) You are using the CCHBC dataset to predict the order volume of a certain customer. 
+B) You are using the CCHBC dataset to predict the order volume of a certain customer in the next week. You train a model (i.e. a Neural Sequence Net) with input features like the date, the number of pubs in the region you are interested in, the mean income of the people in that region etc. – and with the known volume of past orders of that customer. 
+C) You are using the CCHBC dataset to predict the order volume of a certain customer in the next week. You train a model with input features like the date, the number of pubs in the region you are interested in, the mean income of the people in that region etc. and with the known volume. Your model is grouping all orders into clusters 
+
+Correct Answer:
+You are using the CCHBC dataset to predict the order volume of a certain customer in the next week. You train a model (i.e. a Neural Sequence Net) with input features like the date, the number of pubs in the region you are interested in, the mean income of the people in that region etc. – and with the known volume of past orders of that customer.
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_9]
+
+Question:
+Which of the following approaches applies an unsupervised algorithm?  
+
+Options:
+A) You are using the CCHBC dataset to predict the order volume of a certain customer.   
+B) You are using the CCHBC dataset to predict the order volume of a certain customer in the next week. You train a model (i.e. a Neural Sequence Net) with input features like the date, the number of pubs in the region you are interested in, the mean income of the people in that region etc. – and with the known volume of past orders of that customer. 
+C) You are using the CCHBC dataset to predict the order volume of a certain customer in the next week. You train a model with input features like the date, the number of pubs in the region you are interested in, the mean income of the people in that region etc. and with the known volume. Your model is grouping all orders into clusters 
+
+Correct Answer:
+You are using the CCHBC dataset to predict the order volume of a certain customer in the next week. You train a model with input features like the date, the number of pubs in the region you are interested in, the mean income of the people in that region etc. and with the known volume. Your model is grouping all orders into clusters
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_10]
+
+Question:
+Loss Functions make Machine Learning more efficient – but they are not really necessary?
+
+Options:
+A) True
+B) False 
+
+Correct Answer:
+False
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_11]
+
+Question:
+From a mathematical point of view, Machine Learning is not a Form of Intelligence?
+
+Options:
+A) True
+B) False 
+
+Correct Answer:
+True
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_12]
+
+Question:
+Supervised Methods compare the True Output with the Predictions of a model and try to minimize the error?
+
+Options:
+A) True
+B) False 
+
+Correct Answer:
+True
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_13]
+
+Question:
+Supervised Methods compare the Result (i.e., of a grouping of the input) with the Input – and try to minimize the Loss Function? 
+
+Options:
+A) True
+B) False 
+
+Correct Answer:
+False
+
+
+============================================================
+END OF QUIZ MODULE
+============================================================
+
+
+============================================================
+MODULE: What is Data
+CONTENT TYPE: Quiz Knowledge Base
+============================================================
+
+What data type would you assign to the examples covered in the Video:  
+
+[QUIZ_BLOCK_1]
+
+Question:
+Hieroglyphs
+
+Options:
+A) Structured Data  
+B) Unstructured Data 
+C) Structure Based Data 
+
+Correct Answer:
+Unstructured Data
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_2]
+
+Question:
+Crime Rate in Germany (for several years)  
+
+Options:
+A) Structured Data  
+B) Unstructured Data 
+C) Structure Based Data 
+
+Correct Answer:
+Structure Based Data 
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_3]
+
+Question:
+X-Ray Images 
+
+Options:
+A) Structured Data  
+B) Unstructured Data 
+C) Structure Based Data 
+
+Correct Answer:
+Unstructured Data
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_4]
+
+Question:
+Google Revenue 
+
+Options:
+A) Structured Data  
+B) Unstructured Data 
+C) Structure Based Data 
+
+Correct Answer:
+Structure Based Data
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_5]
+
+Question:
+Red Pixels in 645 Artworks of Albrecht Durer 
+
+Options:
+A) Structured Data  
+B) Unstructured Data 
+C) Structure Based Data 
+
+Correct Answer:
+Structured Data 
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_6]
+
+Question:
+Moon Calendar (assume that moon phases are ordered according to ascending dates)  
+
+Options:
+A) Structured Data  
+B) Unstructured Data 
+C) Structure Based Data 
+
+Correct Answer:
+Structure Based Data 
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_7]
+
+Question:
+Sexual Partner Network 
+
+Options:
+A) Structured Data  
+B) Unstructured Data 
+C) Structure Based Data 
+
+Correct Answer:
+Structure Based Data 
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_8]
+
+Question:
+Deep Earthquake Distribution (assume that data is in tabular form, i.e. position, strength, depth and other features)   
+
+Options:
+A) Structured Data  
+B) Unstructured Data 
+C) Structure Based Data 
+
+Correct Answer:
+Structured Data
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_9]
+
+Question:
+Age Pyramid 
+
+Options:
+A) Structured Data  
+B) Unstructured Data 
+C) Structure Based Data 
+
+Correct Answer:
+Structured Data 
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_10]
+
+Question:
+Temperature Curve(s) 
+
+Options:
+A) Structured Data  
+B) Unstructured Data 
+C) Structure Based Data 
+
+Correct Answer:
+Structure Based Data 
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_11]
+
+Question:
+Which of the examples from the Video would you classify as “Structured Data”? Tick all that apply!  
+
+Options:
+A) Hieroglyphs   
+B) Crime Rate in Germany 
+C) X-Ray Images 
+D) Google Revenue 
+E) Red Pixels from 645 Artworks of Albrecht Durer 
+F) Moon Calendar (assume that moon phases are ordered according to ascending dates)  
+G) Sexual Partner Network 
+H) Deep Earthquake Distribution (assume that data is in tabular form, i.e. position, strength, depth and other features) 
+I) Age Pyramid 
+J) Temperature Curves 
+
+
+Correct Answers:
+Red Pixels from 645 Artworks of Albrecht Durer , Deep Earthquake Distribution (assume that data is in tabular form, i.e. position, strength, depth and other features) , Age Pyramid
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_12]
+
+Question:
+Which of the examples from the Video would you classify as “Structure Based Data”? Tick all that apply! 
+
+Options:
+A) Hieroglyphs   
+B) Crime Rate in Germany 
+C) X-Ray Images 
+D) Google Revenue 
+E) Red Pixels from 645 Artworks of Albrecht Durer 
+F) Moon Calendar (assume that moon phases are ordered according to ascending dates)  
+G) Sexual Partner Network 
+H) Deep Earthquake Distribution (assume that data is in tabular form, i.e. position, strength, depth and other features) 
+I) Age Pyramid 
+J) Temperature Curves 
+
+
+Correct Answers:
+Crime Rate in Germany , Google Revenue , Moon Calendar (assume that moon phases are ordered according to ascending dates) , Sexual Partner Network , Temperature Curves
+
+------------------------------------------------------------
+
+[QUIZ_BLOCK_13]
+
+Question:
+Which of the examples from the Video would you classify as “Unstructured Data”? Tick all that apply! 
+
+Options:
+A) Hieroglyphs   
+B) Crime Rate in Germany 
+C) X-Ray Images 
+D) Google Revenue 
+E) Red Pixels from 645 Artworks of Albrecht Durer 
+F) Moon Calendar (assume that moon phases are ordered according to ascending dates)  
+G) Sexual Partner Network 
+H) Deep Earthquake Distribution (assume that data is in tabular form, i.e. position, strength, depth and other features) 
+I) Age Pyramid 
+J) Temperature Curves 
+
+
+Correct Answers:
+Hieroglyphs , X-Ray Images
+
+
+============================================================
+END OF QUIZ MODULE
+============================================================

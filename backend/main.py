@@ -72,7 +72,7 @@ for _, row in course_details_df.iterrows():
 
 def parse_transcripts_with_timestamps(filepath: str) -> Dict[str, List[Dict[str, str]]]:
     """
-    Parse Video transcripts.txt into {submodule_title: [{text, timestamp}]}.
+    Parse Video transcripts and Quizzes.txt into {submodule_title: [{text, timestamp}]}.
     Detects submodule headers (lines ending with ':' followed by blank line),
     timestamp lines (e.g. '9:35' or '0 minutes 8 seconds'), and spoken text.
     """
@@ -84,6 +84,10 @@ def parse_transcripts_with_timestamps(filepath: str) -> Dict[str, List[Dict[str,
     current_submodule = None
     current_timestamp = "00:00"
     current_text_parts: List[str] = []
+
+    # Quiz parsing state
+    in_quiz_block = False
+    quiz_buffer: List[str] = []
 
     # Regex for short timestamp like "9:35" or "0:08" or "25:15"
     short_ts_re = re.compile(r"^\d{1,2}:\d{2}$")
@@ -107,6 +111,49 @@ def parse_transcripts_with_timestamps(filepath: str) -> Dict[str, List[Dict[str,
     i = 0
     while i < len(lines):
         line = lines[i].strip()
+
+        # Detect start of quiz block
+        if "[QUIZ_BLOCK_" in line:
+            flush_segment()
+            in_quiz_block = True
+            quiz_buffer = []
+            i += 1
+            continue
+
+        # Capture quiz block content
+        if in_quiz_block:
+            quiz_buffer.append(line)
+
+            # End quiz block when we reach Correct Answer
+            if line.lower().startswith("correct answer"):
+
+                # capture all answer lines until separator
+                j = i + 1
+
+                while j < len(lines):
+                    next_line = lines[j].strip()
+
+                    if not next_line or next_line.startswith("----"):
+                        break
+
+                    quiz_buffer.append(next_line)
+                    j += 1
+
+                i = j - 1
+
+                text = "Quiz Question\n" + "\n".join(quiz_buffer)
+
+                result.setdefault("Quiz Knowledge Base", []).append({
+                    "text": text,
+                    "submodule": "Quiz Knowledge Base",
+                    "timestamp": "Quiz"
+                })
+
+                in_quiz_block = False
+                quiz_buffer = []
+
+            i += 1
+            continue
 
         # Skip empty lines
         if not line:
@@ -152,6 +199,65 @@ def parse_transcripts_with_timestamps(filepath: str) -> Dict[str, List[Dict[str,
         i += 1
 
     flush_segment()
+    return result
+
+
+def parse_quiz_by_topic(filepath: str) -> Dict[str, List[str]]:
+    """
+    Parse the quiz section of the transcript file into per-topic lists of quiz blocks.
+    Returns {topic_name: [quiz_block_text, ...]}, preserving original order.
+    Each quiz_block_text includes the question, options, and correct answer(s).
+    """
+    result: Dict[str, List[str]] = {}
+    current_module: Optional[str] = None
+    in_quiz_section = False
+    module_re = re.compile(r"^MODULE:\s*(.+)$")
+    block_start_re = re.compile(r"^\[QUIZ_BLOCK_\d+\]$")
+
+    with open(filepath, "r", encoding="utf-8-sig") as f:
+        lines = f.readlines()
+
+    i = 0
+    while i < len(lines):
+        line = lines[i].strip()
+
+        if "QUIZ KNOWLEDGE BASE" in line:
+            in_quiz_section = True
+            i += 1
+            continue
+
+        if not in_quiz_section:
+            i += 1
+            continue
+
+        module_match = module_re.match(line)
+        if module_match:
+            current_module = module_match.group(1).strip()
+            i += 1
+            continue
+
+        if block_start_re.match(line) and current_module:
+            block_lines: List[str] = []
+            i += 1
+            while i < len(lines):
+                bline = lines[i].rstrip()
+                stripped = bline.strip()
+                # Stop at any block separator, next block header, or section divider
+                if (
+                    stripped.startswith("----")
+                    or stripped.startswith("====")
+                    or block_start_re.match(stripped)
+                ):
+                    break
+                block_lines.append(bline)
+                i += 1
+            block_text = "\n".join(block_lines).strip()
+            if block_text:
+                result.setdefault(current_module, []).append(block_text)
+            continue
+
+        i += 1
+
     return result
 
 
@@ -420,10 +526,12 @@ def retrieve_relevant_chunks(
 # Startup: Load, Chunk, Embed (with disk cache)
 # ----------------------------
 
-TRANSCRIPT_FILE = os.path.join(os.path.dirname(__file__), "data", "Video transcripts.txt")
+TRANSCRIPT_FILE = os.path.join(os.path.dirname(__file__), "data", "Video transcripts and Quizzes.txt")
 
 transcript_data = parse_transcripts_with_timestamps(TRANSCRIPT_FILE)
 submodule_chunks_map = build_submodule_chunks(transcript_data)
+quiz_by_topic: Dict[str, List[str]] = parse_quiz_by_topic(TRANSCRIPT_FILE)
+print(f"[Hellen+] Loaded quiz blocks for {len(quiz_by_topic)} topics: {list(quiz_by_topic.keys())}")
 
 print(f"[Hellen+] Loaded transcripts for {len(transcript_data)} submodules")
 print(f"[Hellen+] Total chunks: {sum(len(v) for v in submodule_chunks_map.values())}")
@@ -1746,27 +1854,223 @@ def get_feedback_analytics(
 # Hellen+ Shared Logic
 # ----------------------------
 
+def detect_module_from_submodule(submodule_name: str) -> str:
+    """
+    Map a submodule (transcript lesson) name to its parent module name.
+    Ground truth: DIAI Academy eLearning details (Sheet1), columns module + sub_module.
+    """
+    # Exact-match lookup (case-insensitive)
+    _SUBMODULE_TO_MODULE: Dict[str, str] = {
+        # Data Fundamentals
+        "what is data":                         "Data Fundamentals",
+        "features & labels":                    "Data Fundamentals",
+        "problems with data":                   "Data Fundamentals",
+        "data wrangling":                       "Data Fundamentals",
+        # Data Science Basics (Data Preparation)
+        "data exploration":                     "Data Science Basics",
+        "structuring data":                     "Data Science Basics",
+        "sql":                                  "Data Science Basics",
+        "data warehouses":                      "Data Science Basics",
+        "data lakes":                           "Data Science Basics",
+        # Machine Learning
+        "history of ml":                        "Machine Learning",
+        "ml models":                            "Machine Learning",
+        "supervised & unsupervised learning":   "Machine Learning",
+        "measuring success":                    "Machine Learning",
+        "splitting data":                       "Machine Learning",
+        "linear regression":                    "Machine Learning",
+        "decision trees":                       "Machine Learning",
+        "unsupervised methods":                 "Machine Learning",
+        "training, testing and validation":     "Machine Learning",
+        "forecasting":                          "Machine Learning",
+        "improving methods":                    "Machine Learning",
+        # Data Visualization
+        "intro to data viz":                    "Data Visualization",
+        "tools & methods":                      "Data Visualization",
+        "data viz standards":                   "Data Visualization",
+        "dashboard design matrix":              "Data Visualization",
+        "data viz process":                     "Data Visualization",
+        # Data Projects
+        "intro to data science":                "Data Projects",
+        "life-cycle of a data science project": "Data Projects",
+        "skills & roles":                       "Data Projects",
+        "tools":                                "Data Projects",
+        # Generative AI
+        "intro to generative ai":               "Generative AI",
+        "genai in practice":                    "Generative AI",
+        "about prompt literacy":                "Generative AI",
+        "intro  to prompt engineering":         "Generative AI",
+        "intro to prompt engineering":          "Generative AI",
+        "prompt engineering techniques":        "Generative AI",
+        "pitfalls in prompting":                "Generative AI",
+        "prompt for content creation":          "Generative AI",
+        "prompt engineering conclusion":        "Generative AI",
+    }
+
+    key = submodule_name.strip().lower()
+    if key in _SUBMODULE_TO_MODULE:
+        return _SUBMODULE_TO_MODULE[key]
+
+    # Partial-match fallback (longest key that is a substring wins)
+    best = None
+    for sub_key, module in _SUBMODULE_TO_MODULE.items():
+        if sub_key in key or key in sub_key:
+            if best is None or len(sub_key) > len(best[0]):
+                best = (sub_key, module)
+    if best:
+        return best[1]
+
+    return "Another Module"
+
 HELLEN_TUTOR_SYSTEM_PROMPT = """
-You are Hellen+, an AI tutor helping users deeply understand a specific learning module.
+### ROLE
+You are **Hellen+**, an authentic and supportive AI Tutor for the DIAI Academy.
 
-Your ONLY source of knowledge is the transcript excerpts provided. You must follow these rules without exception:
+Your mission is to help learners understand course material deeply by using **only the provided learning module transcripts**.
+If the concept is not found in the transcripts, you may provide a short general explanation without citing sources.
 
-1. Answer ONLY using information explicitly stated in the provided transcript excerpts.
-2. Do NOT use any outside knowledge, general knowledge, or information not present in the excerpts.
-3. If the information needed is NOT in the transcript excerpts, respond EXACTLY with: "This topic is not covered in this module."
-4. When answering, quote or closely paraphrase the relevant transcript text.
-5. Always state which submodule the information comes from (e.g. "According to [Submodule Name]...").
-6. Be concise. Do not add filler, assumptions, or elaboration beyond what the transcripts say.
-7. Use bullet points when listing multiple points.
+You guide learners through explanations, practice questions, and summaries while staying strictly grounded in the curriculum.
 
-You also have the ability to act as an interactive AI tutor. Support these modes:
+---
 
-- EXPLAIN MODE: If the user asks to explain, simplify, or summarize the module, provide a clear explanation using bullet points, citing transcript sources.
-- KEY TAKEAWAYS: If the user asks for key takeaways or main points, return 3-5 concise bullet points from the transcript content.
-- QUIZ MODE: If the user asks to be quizzed or tested, generate 2-3 short questions based strictly on transcript content. Do not provide the answers — wait for the user to respond.
-- REAL-WORLD EXAMPLES: If the user asks for examples or applications, use only examples that appear in the transcripts. Do not invent examples.
+### CORE RULES
 
-All modes must cite which submodule the content came from.
+1. STRICT GROUNDING
+All answers must come **only from the provided transcript excerpts or quiz files**.
+
+If multiple transcript excerpts are provided,
+combine them to produce the most complete explanation.
+
+Prefer quoting or paraphrasing the transcript wording when possible.
+
+Do NOT use outside knowledge unless explicitly instructed.
+
+2. NO HALLUCINATIONS
+If information is not present in the transcripts, do not invent facts.
+
+3. SOURCE ATTRIBUTION
+Every explanation must cite the source using this format:
+
+[Lesson/Submodule Name | Timestamp if available]
+
+Example:
+[Machine Learning Fundamentals – Model Evaluation | 02:15]
+
+---
+
+### QUIZ ANSWER RULES
+
+Quiz blocks inside the transcript contain the correct answers.
+
+If the user asks for quiz answers:
+
+• Return the answer exactly as written in the "Correct Answer" or "Correct Answers" field.
+• These answers come directly from the quiz transcript and do NOT require additional transcript explanation.
+• Do NOT say that the answer cannot be verified.
+• Do NOT refuse to answer.
+
+If multiple answers are listed, return all of them.
+
+QUIZ REQUESTS
+
+If the user asks for quiz questions about a topic (for example: 
+"give me the quiz about structuring data"):
+
+• Search the provided transcripts for quiz questions related to that topic.
+• Return the quiz question(s) found.
+• If the user requests answers, include the correct answers.
+• If no quiz questions exist for that topic, say so clearly.
+
+---
+
+### MODULE SCOPE RULES
+
+IF INFORMATION EXISTS IN THE CURRENT LESSON
+• Answer using the transcript excerpts.  
+• Provide a clear explanation.  
+• Include proper citation.
+
+---
+
+If the answer appears in a different lesson based on the citation,
+explain that the information comes from another lesson.
+Start with:
+
+"The answer to this question is not covered in the current lesson.
+However, relevant information appears in another module."
+
+Then:
+
+• Provide the explanation from that module.  
+• Mention the module and submodule source.
+
+---
+
+IF INFORMATION IS NOT FOUND IN THE CURRENT TRANSCRIPT
+
+If the concept is not covered in the provided transcript excerpts:
+
+• Clearly tell the learner that the topic is not covered in the current module.
+• If the concept appears to belong to another module, mention that it can be found in another module and name it if known.
+• Provide a short, simple explanation in 2–3 sentences to help the learner understand the concept.
+
+Important rules:
+• Do NOT invent transcript citations when doing this.
+• Do NOT claim the explanation comes from the transcript.
+• The explanation should be general knowledge and beginner-friendly.
+
+---
+
+### TUTOR MODES
+
+EXPLAIN MODE
+If the user asks to explain a concept:
+
+• Simplify the concept
+• Break processes into steps
+• Use bullet points
+• Cite transcript sources
+
+---
+
+KEY TAKEAWAYS MODE
+Provide **3–5 bullet points** summarizing the most important ideas from the transcript.
+
+Each takeaway should reference the source.
+
+---
+
+QUIZ MODE
+Generate **2–3 new practice questions** based only on the transcript material.
+
+• Do NOT provide answers unless the user explicitly asks.
+• Questions should help reinforce understanding of the lesson.
+
+---
+
+REAL-WORLD EXAMPLES
+
+Only provide examples that are **explicitly mentioned in the transcripts**.
+
+Do not create new examples.
+
+---
+
+### STYLE GUIDELINES
+
+Tone:
+Encouraging, clear, and professional.
+
+Formatting:
+• Use bullet points whenever possible  
+• Bold key concepts  
+• Avoid long paragraphs
+
+Language:
+Respond in the **user's language** (default English).
+
+Clarity:
+Explain concepts like a supportive tutor helping a student master the material.
 """
 
 
@@ -1789,6 +2093,62 @@ def _resolve_submodule_names(requested_names: List[str]) -> List[str]:
     return resolved
 
 
+def _find_quiz_topic_match(
+    message: str,
+    submodule_names: List[str],
+    with_fallback: bool = True
+) -> Optional[str]:
+    """
+    Find the best matching quiz topic key from quiz_by_topic.
+
+    Priority order:
+    1. A quiz topic name explicitly mentioned in the message.
+    2. A submodule name mentioned in the message that maps to a quiz topic.
+    3. (Only when with_fallback=True) The first submodule in submodule_names that
+       has a quiz topic — used for generic "quiz me" requests with no specific topic.
+
+    Pass with_fallback=False when you want to know if the message explicitly
+    names a topic (e.g. before checking chat history).
+    """
+    available_topics = list(quiz_by_topic.keys())
+    msg_lower = message.lower().strip()
+
+    # 1. Direct topic name in message (longest match wins to avoid false partials)
+    best_direct: Optional[str] = None
+    for topic in available_topics:
+        if topic.lower() in msg_lower:
+            if best_direct is None or len(topic) > len(best_direct):
+                best_direct = topic
+    if best_direct:
+        return best_direct
+
+    # 2. Submodule name mentioned in message → find its quiz topic
+    for sub in submodule_names:
+        sub_lower = sub.lower().strip()
+        if sub_lower in msg_lower:
+            for topic in available_topics:
+                if topic.lower().strip() == sub_lower:
+                    return topic
+            for topic in available_topics:
+                if sub_lower in topic.lower() or topic.lower() in sub_lower:
+                    return topic
+
+    if not with_fallback:
+        return None
+
+    # 3. Fallback: first submodule that has any quiz topic (generic "quiz me" requests)
+    for sub in submodule_names:
+        sub_lower = sub.lower().strip()
+        for topic in available_topics:
+            if topic.lower().strip() == sub_lower:
+                return topic
+        for topic in available_topics:
+            if sub_lower in topic.lower() or topic.lower() in sub_lower:
+                return topic
+
+    return None
+
+
 def _build_hellen_context_and_sources(
     data: HellenChatRequest,
     resolved_names: List[str]
@@ -1796,44 +2156,132 @@ def _build_hellen_context_and_sources(
     """
     Retrieve relevant chunks and build (context_str, sources, relevant_chunks).
     Returns (None, None, None) when similarity is too low.
+
+    For quiz/answer requests, uses direct topic-based lookup from quiz_by_topic
+    to return ALL questions in order, bypassing semantic similarity filtering.
     """
+    msg = data.message.lower()
+
+    show_answers = any(word in msg for word in [
+        "answer", "answers", "solution", "solutions", "correct answer", "correct answers"
+    ])
+
+    quiz_keywords = ["quiz", "question", "practice"]
+    answer_keywords = ["answer", "answers", "solution", "solutions", "correct"]
+    is_quiz_or_answer_request = any(word in msg for word in quiz_keywords + answer_keywords)
+
+    # --- Direct quiz lookup: bypasses semantic search for complete, ordered results ---
+    quiz_context_parts: List[str] = []
+    if is_quiz_or_answer_request:
+        if show_answers:
+            # For answer requests: try explicit topic in message first (no fallback),
+            # then scan history, then fall back to first available quiz topic.
+            matched_topic = _find_quiz_topic_match(
+                data.message, data.submodule_names, with_fallback=False
+            )
+            if not matched_topic and data.history:
+                for entry in reversed(data.history):
+                    if entry.role == "user":
+                        topic_from_history = _find_quiz_topic_match(
+                            entry.content, data.submodule_names, with_fallback=False
+                        )
+                        if topic_from_history:
+                            matched_topic = topic_from_history
+                            print(f"[Hellen+] Resolved answer topic from history: '{matched_topic}'")
+                            break
+            if not matched_topic:
+                # Last resort: use the submodule-list fallback
+                matched_topic = _find_quiz_topic_match(
+                    data.message, data.submodule_names, with_fallback=True
+                )
+        else:
+            # For quiz requests (questions only): normal match including fallback
+            matched_topic = _find_quiz_topic_match(
+                data.message, data.submodule_names, with_fallback=True
+            )
+        if matched_topic and matched_topic in quiz_by_topic:
+            print(f"[Hellen+] Direct quiz lookup for topic: '{matched_topic}'")
+            for idx, block_text in enumerate(quiz_by_topic[matched_topic], start=1):
+                if not show_answers:
+                    # Strip correct answer lines so student can attempt the question
+                    block_text = re.sub(
+                        r"Correct Answer[s]?:.*",
+                        "",
+                        block_text,
+                        flags=re.IGNORECASE | re.DOTALL
+                    ).strip()
+                quiz_context_parts.append(
+                    f"[Quiz Question {idx} | Topic: {matched_topic}]\n{block_text}"
+                )
+
+    # --- Semantic retrieval for transcript-based context ---
+    if is_quiz_or_answer_request and "Quiz Knowledge Base" not in resolved_names:
+        resolved_names = resolved_names + ["Quiz Knowledge Base"]
+
     relevant_chunks, max_score = retrieve_relevant_chunks(
         query=data.message,
         submodule_names=resolved_names,
         embedded_chunks_map=embedded_chunks_map,
-        top_k=5,
+        top_k=8,
         min_score=0.1
     )
 
-    # 🔎 Fallback retrieval across the entire module
+    # Fallback: search all submodules
     if not relevant_chunks:
-
         print("[Hellen+] No results in selected submodules — trying full module search")
-
         all_submodules = list(embedded_chunks_map.keys())
-
         relevant_chunks, max_score = retrieve_relevant_chunks(
             query=data.message,
             submodule_names=all_submodules,
             embedded_chunks_map=embedded_chunks_map,
-            top_k=5,
+            top_k=8,
             min_score=0.15
         )
+
+    # If we have direct quiz context, use it — don't fall through to None
+    if quiz_context_parts:
+        context = "\n\n---\n\n".join(quiz_context_parts)
+        sources = [HellenSourceOut(
+            submodule=matched_topic,
+            timestamp="Quiz",
+            snippet=f"Quiz knowledge base – {matched_topic}"
+        )]
+        return context, sources, relevant_chunks or []
+
     if not relevant_chunks:
         return None, None, None
+
+    # Quiz Knowledge Base chunks: always pass through (boost score)
+    if any(c["submodule"] == "Quiz Knowledge Base" for c in relevant_chunks):
+        max_score = 1.0
+
+    # Weak similarity and no quiz content → return chunks for module hint but no context
+    if max_score < 0.35:
+        return None, None, relevant_chunks
 
     context_parts = []
     sources_seen: set = set()
     sources: List[HellenSourceOut] = []
 
     for chunk in relevant_chunks:
+        text = chunk["text"]
+
+        # Strip answers from Quiz Knowledge Base chunks when answers not requested
+        if chunk["submodule"] == "Quiz Knowledge Base" and not show_answers:
+            text = re.sub(
+                r"Correct Answer[s]?:\s*([\s\S]*?)(?=\nQuestion:|\Z)",
+                "",
+                text,
+                flags=re.IGNORECASE
+            )
+
         context_parts.append(
-            f"[Submodule: {chunk['submodule']} | Timestamp: {chunk['timestamp']}]\n{chunk['text']}"
+            f"[Submodule: {chunk['submodule']} | Timestamp: {chunk['timestamp']}]\n{text}"
         )
         source_key = (chunk["submodule"], chunk["timestamp"])
         if source_key not in sources_seen:
             sources_seen.add(source_key)
-            raw = chunk["text"].replace("\n", " ").strip()
+            raw = text.replace("\n", " ").strip()
             snippet = raw[:200] + "..." if len(raw) > 200 else raw
             sources.append(HellenSourceOut(
                 submodule=chunk["submodule"],
@@ -1871,11 +2319,103 @@ def hellen_chat(data: HellenChatRequest):
     """Module-specific AI tutor using semantic transcript retrieval."""
 
     resolved_names = _resolve_submodule_names(data.submodule_names)
-    context, sources, _ = _build_hellen_context_and_sources(data, resolved_names)
+    context, sources, chunks = _build_hellen_context_and_sources(data, resolved_names)
 
+    # Detect if ALL retrieved chunks come from outside the current module's submodules.
+    # "Quiz Knowledge Base" is module-agnostic and never triggers cross-module detection.
+    if chunks:
+        current_submodule_set = set(data.submodule_names)
+        in_module = [
+            c for c in chunks
+            if c["submodule"] in current_submodule_set or c["submodule"] == "Quiz Knowledge Base"
+        ]
+        out_of_module = [
+            c for c in chunks
+            if c["submodule"] not in current_submodule_set and c["submodule"] != "Quiz Knowledge Base"
+        ]
+
+        # Only fire cross-module when every chunk is from another module
+        if out_of_module and not in_module:
+            foreign_submodule = out_of_module[0]["submodule"]
+            suggested_module = detect_module_from_submodule(foreign_submodule)
+            if suggested_module == "Another AI Learning Module":
+                # Fall back to the submodule name so we still say something useful
+                suggested_module = foreign_submodule
+
+            return HellenChatResponse(
+                response=(
+                    f"This question is not covered in the current module: **{data.module_name}**.\n\n"
+                    f"You can find it in the module: **{suggested_module}**.\n\n"
+                    "Here is a short explanation from that module:"
+                ),
+                sources=sources or []
+            )
+
+    # 🔹 If nothing was found anywhere, generate a simple explanation
     if context is None:
+
+        suggested_module = None
+
+        if chunks:
+            modules_found = {
+                detect_module_from_submodule(c["submodule"])
+                for c in chunks
+            }
+
+            if modules_found:
+                suggested_module = list(modules_found)[0]
+
+        module_hint = f"This topic is typically covered in the module: {suggested_module}." if suggested_module else ""
+
+        messages = [
+            {
+                "role": "system",
+                "content": f"""
+    You are Hellen+, an AI tutor.
+
+    The user's question is NOT covered in the current module: {data.module_name}.
+
+    {module_hint}
+
+    Explain the concept briefly in 2–3 simple sentences.
+
+    Start by telling the user that the topic is not part of this module.
+    Then give a short simple explanation anyway.
+
+    Keep the explanation clear and beginner-friendly.
+    """
+            },
+            {
+                "role": "user",
+                "content": data.message
+            }
+        ]
+        sources = []
+
+        api_key = os.getenv("AZURE_OPENAI_API_KEY")
+        azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
+        deployment = os.getenv("AZURE_OPENAI_DEPLOYMENT")
+        api_version = os.getenv("AZURE_OPENAI_API_VERSION")
+
+        openai_url = f"{azure_endpoint}/deployments/{deployment}/chat/completions?api-version={api_version}"
+
+        headers = {
+            "Content-Type": "application/json",
+            "api-key": api_key
+        }
+
+        body = {
+            "messages": messages,
+            "temperature": 0.2,
+            "max_tokens": 200
+        }
+
+        response = http_requests.post(openai_url, headers=headers, json=body, timeout=30)
+
+        ai_response = response.json()["choices"][0]["message"]["content"]
+
         return HellenChatResponse(
-            response="This topic is not covered in this module.",
+            response=ai_response,
             sources=[]
         )
 
@@ -1928,11 +2468,34 @@ def hellen_chat_stream(data: HellenChatRequest):
     context, sources, _ = _build_hellen_context_and_sources(data, resolved_names)
 
     if context is None:
-        def no_content():
-            yield f"data: {json.dumps({'type': 'no_content'})}\n\n"
-        return FastAPIStreamingResponse(no_content(), media_type="text/event-stream")
 
-    messages = _build_openai_messages(data, context)
+        fallback_messages = [
+            {
+                "role": "system",
+                "content": f"""
+    You are Hellen+, an AI tutor.
+
+    The user's question is NOT covered in the current module: {data.module_name}.
+
+    Explain the concept briefly in 2–3 simple sentences.
+
+    Start by telling the user that the topic is not part of this module.
+    Then give a short simple explanation anyway.
+
+    Keep the explanation clear and beginner-friendly.
+    """
+            },
+            {
+                "role": "user",
+                "content": data.message
+            }
+        ]
+
+        messages = fallback_messages
+        sources = []
+
+    else:
+        messages = _build_openai_messages(data, context)
 
     sources_payload = [
         {"submodule": s.submodule, "timestamp": s.timestamp, "snippet": s.snippet}
