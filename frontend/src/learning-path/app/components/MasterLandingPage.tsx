@@ -48,7 +48,7 @@ export function MasterLandingPage({ onSelectLearningPath, onSelectAIAdventure }:
                   AI Adventure
                 </h2>
                 <p className="text-sm text-gray-600 leading-relaxed">
-                  This isn't a lecture—it's a game. Jump into a 30-minute interactive mission and discover your AI advantage.
+                  This isn't a lecture - it's a game. Jump into bite-sized interactive scenarios and experience Agentic AI in action.
                 </p>
               </div>
             </div>
