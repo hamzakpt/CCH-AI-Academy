@@ -118,3 +118,14 @@ class Scenario(Base):
     hidden = Column(Integer, default=0)  # Boolean stored as int - hidden scenarios not shown in frontend
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class ScenarioRating(Base):
+    __tablename__ = "scenario_ratings"
+
+    id = Column(Integer, primary_key=True, index=True)
+    scenario_id = Column(String, ForeignKey("scenarios.id"), nullable=False)
+    username = Column(String, nullable=False)  # User who submitted the rating
+    rating = Column(Integer, nullable=False)  # 1-5 stars
+    comment = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)

@@ -511,7 +511,7 @@ export default function App() {
           <main className="flex-1 overflow-y-auto">
             <div className="max-w-7xl mx-auto p-4 h-full">
               {currentScreen === 'ai-selection' && (
-                <ScenarioSelection onScenarioSelect={handleScenarioSelect} onBackToHome={handleAIAdventureBackToHome} />
+                <ScenarioSelection onScenarioSelect={handleScenarioSelect} onBackToHome={handleAIAdventureBackToHome} userEmail={userEmail} />
               )}
               {currentScreen === 'ai-comparison' && selectedScenario && (
                 <OldVsNewComparison

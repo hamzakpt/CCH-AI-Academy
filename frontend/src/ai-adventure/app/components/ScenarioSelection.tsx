@@ -2,7 +2,7 @@ import { Card, CardContent } from '@ai-adventure/app/components/ui/card';
 import { Button } from '@ai-adventure/app/components/ui/button';
 import { Badge } from '@ai-adventure/app/components/ui/badge';
 import { Scenario } from '@ai-adventure/app/types/scenario';
-import { fetchScenarios } from '@ai-adventure/app/services/scenariosApi';
+import { fetchScenarios, fetchAllRatings, submitRating, RatingSummary } from '@ai-adventure/app/services/scenariosApi';
 import { Clock, ArrowRight, ArrowLeft, Users, Factory, DollarSign, Scale, Laptop, TrendingUp, Sparkles, Lightbulb, X, CheckCircle, Flame, Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import hellenIcon from '/hellen-logo-transparent-background.png';
@@ -14,15 +14,16 @@ import { motion, AnimatePresence } from 'motion/react';
 interface ScenarioSelectionProps {
   onScenarioSelect: (scenario: Scenario, mode: 'learn' | 'apply') => void;
   onBackToHome?: () => void;
+  userEmail?: string;
 }
 
 interface ScenarioRating {
   averageRating: number;
   totalRatings: number;
-  userRatings: { rating: number; comment: string }[];
+  userRatings: { rating: number; comment: string; createdAt?: string }[];
 }
 
-export function ScenarioSelection({ onScenarioSelect, onBackToHome }: ScenarioSelectionProps) {
+export function ScenarioSelection({ onScenarioSelect, onBackToHome, userEmail }: ScenarioSelectionProps) {
   const functions = ['Commercial', 'Supply Chain', 'Finance', 'HR', 'Other'] as const;
   const [scenarios, setScenarios] = useState<Scenario[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -35,41 +36,78 @@ export function ScenarioSelection({ onScenarioSelect, onBackToHome }: ScenarioSe
   const [showSuggestModal, setShowSuggestModal] = useState(false);
   const [suggestion, setSuggestion] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmittingRating, setIsSubmittingRating] = useState(false);
 
-  // Fetch scenarios from API on mount
+  // Fetch scenarios and ratings from API on mount
   useEffect(() => {
-    async function loadScenarios() {
+    async function loadData() {
       try {
         setIsLoading(true);
         setError(null);
-        const data = await fetchScenarios();
-        setScenarios(data);
+
+        // Fetch scenarios and ratings in parallel
+        const [scenariosData, ratingsData] = await Promise.all([
+          fetchScenarios(),
+          fetchAllRatings()
+        ]);
+
+        setScenarios(scenariosData);
+
+        // Convert API ratings to local format
+        const ratingsMap: Record<string, ScenarioRating> = {};
+        for (const [scenarioId, summary] of Object.entries(ratingsData.ratings)) {
+          ratingsMap[scenarioId] = {
+            averageRating: summary.averageRating,
+            totalRatings: summary.totalRatings,
+            userRatings: summary.ratings.map(r => ({
+              rating: r.rating,
+              comment: r.comment || '',
+              createdAt: r.createdAt
+            }))
+          };
+        }
+        setRatings(ratingsMap);
       } catch (err) {
-        console.error('Failed to fetch scenarios:', err);
+        console.error('Failed to fetch data:', err);
         setError('Failed to load scenarios. Please try again.');
       } finally {
         setIsLoading(false);
       }
     }
-    loadScenarios();
+    loadData();
   }, []);
 
-  const handleRatingSubmit = (scenarioId: string, rating: number, comment: string) => {
-    setRatings(prev => {
-      const currentRating = prev[scenarioId] || { averageRating: 0, totalRatings: 0, userRatings: [] };
-      const newUserRatings = [...currentRating.userRatings, { rating, comment }];
-      const totalRatings = newUserRatings.length;
-      const averageRating = newUserRatings.reduce((sum, r) => sum + r.rating, 0) / totalRatings;
-      
-      return {
-        ...prev,
-        [scenarioId]: {
-          averageRating,
-          totalRatings,
-          userRatings: newUserRatings
-        }
-      };
-    });
+  const handleRatingSubmit = async (scenarioId: string, rating: number, comment: string) => {
+    const username = userEmail || 'anonymous';
+
+    try {
+      setIsSubmittingRating(true);
+
+      // Submit rating to API
+      await submitRating(scenarioId, username, rating, comment);
+
+      // Update local state optimistically
+      setRatings(prev => {
+        const currentRating = prev[scenarioId] || { averageRating: 0, totalRatings: 0, userRatings: [] };
+        const newUserRatings = [...currentRating.userRatings, { rating, comment, createdAt: new Date().toISOString() }];
+        const totalRatings = newUserRatings.length;
+        const averageRating = newUserRatings.reduce((sum, r) => sum + r.rating, 0) / totalRatings;
+
+        return {
+          ...prev,
+          [scenarioId]: {
+            averageRating: Math.round(averageRating * 10) / 10,
+            totalRatings,
+            userRatings: newUserRatings
+          }
+        };
+      });
+    } catch (err) {
+      console.error('Failed to submit rating:', err);
+      // Could show an error toast here
+    } finally {
+      setIsSubmittingRating(false);
+    }
   };
 
   const handleSuggestionSubmit = () => {

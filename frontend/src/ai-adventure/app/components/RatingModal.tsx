@@ -1,26 +1,36 @@
 import { useState } from 'react';
-import { X, Star, MessageSquare } from 'lucide-react';
+import { X, Star, MessageSquare, Loader2 } from 'lucide-react';
 import { Button } from '@ai-adventure/app/components/ui/button';
 
 interface RatingModalProps {
   scenarioId: string;
   scenarioTitle?: string;
-  existingComments: { rating: number; comment: string }[];
+  existingComments: { rating: number; comment: string; createdAt?: string }[];
   onClose: () => void;
-  onSubmit: (scenarioId: string, rating: number, comment: string) => void;
+  onSubmit: (scenarioId: string, rating: number, comment: string) => void | Promise<void>;
+  isSubmitting?: boolean;
 }
 
-export function RatingModal({ scenarioId, scenarioTitle = 'Scenario', existingComments, onClose, onSubmit }: RatingModalProps) {
+export function RatingModal({ scenarioId, scenarioTitle = 'Scenario', existingComments, onClose, onSubmit, isSubmitting = false }: RatingModalProps) {
   const [selectedRating, setSelectedRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [comment, setComment] = useState('');
+  const [localSubmitting, setLocalSubmitting] = useState(false);
 
-  const handleSubmit = () => {
-    if (selectedRating > 0) {
-      onSubmit(scenarioId, selectedRating, comment);
-      onClose();
+  const handleSubmit = async () => {
+    if (selectedRating > 0 && !localSubmitting) {
+      setLocalSubmitting(true);
+      try {
+        await onSubmit(scenarioId, selectedRating, comment);
+        onClose();
+      } catch {
+        // Error handling can be added here
+        setLocalSubmitting(false);
+      }
     }
   };
+
+  const submitting = isSubmitting || localSubmitting;
 
   const renderStars = (rating: number) => {
     return (
@@ -107,20 +117,28 @@ export function RatingModal({ scenarioId, scenarioTitle = 'Scenario', existingCo
         <div className="flex gap-3 mb-6">
           <Button
             onClick={onClose}
+            disabled={submitting}
             className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700"
           >
             Cancel
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={selectedRating === 0}
+            disabled={selectedRating === 0 || submitting}
             className={`flex-1 ${
-              selectedRating === 0
+              selectedRating === 0 || submitting
                 ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 : 'bg-[#E41E2B] hover:bg-[#DC0008] text-white'
             }`}
           >
-            Submit Rating
+            {submitting ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                Submitting...
+              </>
+            ) : (
+              'Submit Rating'
+            )}
           </Button>
         </div>
 

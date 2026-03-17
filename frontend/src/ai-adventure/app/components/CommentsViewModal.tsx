@@ -5,6 +5,7 @@ interface Comment {
   rating: number;
   comment: string;
   timestamp?: Date;
+  createdAt?: string;
 }
 
 interface CommentsViewModalProps {
@@ -78,7 +79,11 @@ export function CommentsViewModal({ scenarioId, scenarioTitle = 'Scenario', comm
                   <div className="flex items-center justify-between mb-2">
                     {renderStars(item.rating)}
                     <span className="text-xs text-gray-500">
-                      {item.timestamp ? new Date(item.timestamp).toLocaleDateString() : 'Recently'}
+                      {item.createdAt
+                        ? new Date(item.createdAt).toLocaleDateString()
+                        : item.timestamp
+                        ? new Date(item.timestamp).toLocaleDateString()
+                        : 'Recently'}
                     </span>
                   </div>
                   {item.comment && (

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
@@ -87,6 +87,37 @@ class ScenarioOut(BaseModel):
 
 
 # ----------------------------
+# Rating Pydantic Models
+# ----------------------------
+
+class RatingCreate(BaseModel):
+    scenarioId: str
+    username: str
+    rating: int  # 1-5
+    comment: Optional[str] = None
+
+
+class RatingOut(BaseModel):
+    id: int
+    scenarioId: str
+    username: str
+    rating: int
+    comment: Optional[str] = None
+    createdAt: str
+
+
+class RatingSummary(BaseModel):
+    scenarioId: str
+    averageRating: float
+    totalRatings: int
+    ratings: List[RatingOut]
+
+
+class AllRatingsSummary(BaseModel):
+    ratings: Dict[str, RatingSummary]
+
+
+# ----------------------------
 # Helper Functions
 # ----------------------------
 
@@ -122,6 +153,123 @@ def get_scenarios(db: Session = Depends(get_db)):
     scenarios = db.query(models.Scenario).all()
     return [_scenario_to_out(s) for s in scenarios]
 
+
+# ----------------------------
+# Rating Endpoints (must be before /{scenario_id} to avoid route conflicts)
+# ----------------------------
+
+@router.get("/ratings", response_model=AllRatingsSummary)
+def get_all_ratings(db: Session = Depends(get_db)):
+    """Get rating summaries for all scenarios."""
+    from sqlalchemy import func
+
+    # Get all ratings grouped by scenario
+    ratings_data = db.query(
+        models.ScenarioRating.scenario_id,
+        func.avg(models.ScenarioRating.rating).label('avg_rating'),
+        func.count(models.ScenarioRating.id).label('total')
+    ).group_by(models.ScenarioRating.scenario_id).all()
+
+    # Build summary dict
+    summaries: Dict[str, RatingSummary] = {}
+
+    for scenario_id, avg_rating, total in ratings_data:
+        # Get individual ratings for this scenario
+        ratings = db.query(models.ScenarioRating).filter(
+            models.ScenarioRating.scenario_id == scenario_id
+        ).order_by(models.ScenarioRating.created_at.desc()).all()
+
+        summaries[scenario_id] = RatingSummary(
+            scenarioId=scenario_id,
+            averageRating=round(float(avg_rating), 1),
+            totalRatings=total,
+            ratings=[
+                RatingOut(
+                    id=r.id,
+                    scenarioId=r.scenario_id,
+                    username=r.username,
+                    rating=r.rating,
+                    comment=r.comment,
+                    createdAt=r.created_at.isoformat()
+                )
+                for r in ratings
+            ]
+        )
+
+    return AllRatingsSummary(ratings=summaries)
+
+
+@router.post("/ratings", response_model=RatingOut)
+def submit_rating(data: RatingCreate, db: Session = Depends(get_db)):
+    """Submit a rating for a scenario."""
+    # Verify scenario exists
+    scenario = db.query(models.Scenario).filter(models.Scenario.id == data.scenarioId).first()
+    if not scenario:
+        raise HTTPException(status_code=404, detail="Scenario not found")
+
+    # Validate rating is 1-5
+    if data.rating < 1 or data.rating > 5:
+        raise HTTPException(status_code=400, detail="Rating must be between 1 and 5")
+
+    # Create rating
+    rating = models.ScenarioRating(
+        scenario_id=data.scenarioId,
+        username=data.username,
+        rating=data.rating,
+        comment=data.comment
+    )
+    db.add(rating)
+    db.commit()
+    db.refresh(rating)
+
+    return RatingOut(
+        id=rating.id,
+        scenarioId=rating.scenario_id,
+        username=rating.username,
+        rating=rating.rating,
+        comment=rating.comment,
+        createdAt=rating.created_at.isoformat()
+    )
+
+
+@router.get("/ratings/{scenario_id}", response_model=RatingSummary)
+def get_scenario_ratings(scenario_id: str, db: Session = Depends(get_db)):
+    """Get all ratings for a specific scenario."""
+    # Verify scenario exists
+    scenario = db.query(models.Scenario).filter(models.Scenario.id == scenario_id).first()
+    if not scenario:
+        raise HTTPException(status_code=404, detail="Scenario not found")
+
+    # Get all ratings for this scenario
+    ratings = db.query(models.ScenarioRating).filter(
+        models.ScenarioRating.scenario_id == scenario_id
+    ).order_by(models.ScenarioRating.created_at.desc()).all()
+
+    # Calculate average
+    total_ratings = len(ratings)
+    average_rating = sum(r.rating for r in ratings) / total_ratings if total_ratings > 0 else 0
+
+    return RatingSummary(
+        scenarioId=scenario_id,
+        averageRating=round(average_rating, 1),
+        totalRatings=total_ratings,
+        ratings=[
+            RatingOut(
+                id=r.id,
+                scenarioId=r.scenario_id,
+                username=r.username,
+                rating=r.rating,
+                comment=r.comment,
+                createdAt=r.created_at.isoformat()
+            )
+            for r in ratings
+        ]
+    )
+
+
+# ----------------------------
+# Scenario CRUD Endpoints
+# ----------------------------
 
 @router.get("/{scenario_id}", response_model=ScenarioOut)
 def get_scenario(scenario_id: str, db: Session = Depends(get_db)):
