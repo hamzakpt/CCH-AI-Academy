@@ -9,9 +9,10 @@ type GamePhase = 'phase1' | 'phase2' | 'summary';
 
 interface GameFlowProps {
   onBack?: () => void;
+  userEmail: string;
 }
 
-export function GameFlow({ onBack }: GameFlowProps) {
+export function GameFlow({ onBack, userEmail }: GameFlowProps) {
   const [currentPhase, setCurrentPhase] = useState<GamePhase>('phase1');
 
   return (
@@ -51,7 +52,7 @@ export function GameFlow({ onBack }: GameFlowProps) {
               exit={{ opacity: 0 }}
               className="h-full"
             >
-              <FinalSummary onBack={onBack} />
+              <FinalSummary onBack={onBack} scenarioId="supply-chain-1" scenarioTitle="Supply Chain Risk Simulation" userEmail={userEmail} />
             </motion.div>
           )}
         </AnimatePresence>

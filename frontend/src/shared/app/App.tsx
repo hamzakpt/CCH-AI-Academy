@@ -533,19 +533,19 @@ export default function App() {
         </div>
       )}
       {currentScreen === 'ai-promo-game' && (
-        <GameFlow onBack={handleAIAdventureBackToSelection} />
+        <GameFlow onBack={handleAIAdventureBackToSelection} userEmail={userEmail} />
       )}
       {currentScreen === 'ai-supply-chain-game' && (
-        <SupplyChainGameFlow onBack={handleAIAdventureBackToSelection} />
+        <SupplyChainGameFlow onBack={handleAIAdventureBackToSelection} userEmail={userEmail} />
       )}
       {currentScreen === 'ai-finance-game' && (
-        <FinanceGameFlow onBack={handleAIAdventureBackToSelection} />
+        <FinanceGameFlow onBack={handleAIAdventureBackToSelection} userEmail={userEmail} />
       )}
       {currentScreen === 'ai-hr-game' && (
-        <HRGame onBack={handleAIAdventureBackToSelection} />
+        <HRGame onBack={handleAIAdventureBackToSelection} userEmail={userEmail} />
       )}
       {currentScreen === 'ai-legal-game' && (
-        <LegalGameFlow onBack={handleAIAdventureBackToSelection} />
+        <LegalGameFlow onBack={handleAIAdventureBackToSelection} userEmail={userEmail} />
       )}
     </div>
   );

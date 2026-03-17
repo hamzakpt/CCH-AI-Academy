@@ -1,6 +1,8 @@
 import { TrendingDown, Clock, Zap, Shield, CheckCircle, Home, Star, Lightbulb, X, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { RatingModal } from '@ai-adventure/app/components/RatingModal';
+import { submitRating, fetchScenarioRatings } from '@ai-adventure/app/services/scenariosApi';
 
 function MetricCard({ label, manual, agentic, icon }: { label: string; manual: string; agentic: string; icon: React.ReactNode }) {
   return (
@@ -27,22 +29,41 @@ function MetricCard({ label, manual, agentic, icon }: { label: string; manual: s
   );
 }
 
-export function FinalSummary({ onBack }: { onBack?: () => void } = {}) {
+interface FinalSummaryProps {
+  onBack?: () => void;
+  scenarioId: string;
+  scenarioTitle?: string;
+  userEmail: string;
+}
+
+export function FinalSummary({ onBack, scenarioId, scenarioTitle = 'Supply Chain Risk Simulation', userEmail }: FinalSummaryProps) {
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [showSuggestModal, setShowSuggestModal] = useState(false);
-  const [rating, setRating] = useState(0);
-  const [hoveredStar, setHoveredStar] = useState(0);
   const [suggestion, setSuggestion] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [existingComments, setExistingComments] = useState<{ rating: number; comment: string; createdAt?: string }[]>([]);
+  const [isSubmittingRating, setIsSubmittingRating] = useState(false);
 
-  const handleRatingSubmit = () => {
-    // Handle rating submission
-    setSubmitted(true);
-    setTimeout(() => {
-      setShowRatingModal(false);
-      setSubmitted(false);
-      setRating(0);
-    }, 2000);
+  useEffect(() => {
+    if (scenarioId) {
+      fetchScenarioRatings(scenarioId)
+        .then(data => {
+          setExistingComments(data.ratings.map(r => ({ rating: r.rating, comment: r.comment || '', createdAt: r.createdAt })));
+        })
+        .catch(() => setExistingComments([]));
+    }
+  }, [scenarioId]);
+
+  const handleRatingSubmit = async (_scenarioId: string, rating: number, comment: string) => {
+    setIsSubmittingRating(true);
+    try {
+      await submitRating(scenarioId, userEmail, rating, comment);
+      // Refresh comments after submission
+      const data = await fetchScenarioRatings(scenarioId);
+      setExistingComments(data.ratings.map(r => ({ rating: r.rating, comment: r.comment || '', createdAt: r.createdAt })));
+    } finally {
+      setIsSubmittingRating(false);
+    }
   };
 
   const handleSuggestionSubmit = () => {
@@ -229,73 +250,16 @@ export function FinalSummary({ onBack }: { onBack?: () => void } = {}) {
         </motion.div>
 
         {/* Rating Modal */}
-        <AnimatePresence>
-          {showRatingModal && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-              onClick={() => !submitted && setShowRatingModal(false)}
-            >
-              <motion.div
-                initial={{ scale: 0.9, y: 20 }}
-                animate={{ scale: 1, y: 0 }}
-                exit={{ scale: 0.9, y: 20 }}
-                onClick={(e) => e.stopPropagation()}
-                className="bg-white rounded-xl p-8 max-w-md w-full shadow-2xl relative"
-              >
-                {!submitted ? (
-                  <>
-                    <button
-                      onClick={() => setShowRatingModal(false)}
-                      className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
-                    >
-                      <X className="w-6 h-6" />
-                    </button>
-                    
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Rate This Simulation</h3>
-                    <p className="text-gray-600 mb-6">How valuable was this learning experience?</p>
-                    
-                    <div className="flex justify-center gap-2 mb-8">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <button
-                          key={star}
-                          onClick={() => setRating(star)}
-                          onMouseEnter={() => setHoveredStar(star)}
-                          onMouseLeave={() => setHoveredStar(0)}
-                          className="transition-transform hover:scale-110"
-                        >
-                          <Star
-                            className={`w-12 h-12 ${
-                              star <= (hoveredStar || rating)
-                                ? 'fill-yellow-400 text-yellow-400'
-                                : 'text-gray-300'
-                            }`}
-                          />
-                        </button>
-                      ))}
-                    </div>
-                    
-                    <button
-                      onClick={handleRatingSubmit}
-                      disabled={rating === 0}
-                      className="w-full bg-[#E41E2B] hover:bg-red-700 text-white px-6 py-3 rounded-lg font-bold transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
-                    >
-                      Submit Rating
-                    </button>
-                  </>
-                ) : (
-                  <div className="text-center py-4">
-                    <CheckCircle className="w-16 h-16 text-green-600 mx-auto mb-4" />
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Thank you!</h3>
-                    <p className="text-gray-600">Your feedback helps us improve.</p>
-                  </div>
-                )}
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {showRatingModal && (
+          <RatingModal
+            scenarioId={scenarioId}
+            scenarioTitle={scenarioTitle}
+            existingComments={existingComments}
+            onClose={() => setShowRatingModal(false)}
+            onSubmit={handleRatingSubmit}
+            isSubmitting={isSubmittingRating}
+          />
+        )}
 
         {/* Suggest Scenario Modal */}
         <AnimatePresence>
