@@ -5,19 +5,21 @@ import { UserGrowthPage } from './analytics/UserGrowthPage';
 import { UserEngagementPage } from './analytics/UserEngagementPage';
 import { PerUserAnalyticsPage } from './analytics/PerUserAnalyticsPage';
 import { UserFeedbackPage } from './analytics/UserFeedbackPage';
+import { ScenariosPage } from './scenarios/ScenariosPage';
 
 interface AdminDashboardProps {
   onLogout: () => void;
   apiBase: string;
 }
 
-type Tab = 'growth' | 'engagement' | 'per-user' | 'feedback';
+type Tab = 'growth' | 'engagement' | 'per-user' | 'feedback' | 'scenarios';
 
 const TABS: { key: Tab; label: string }[] = [
   { key: 'growth', label: 'User Base Growth' },
   { key: 'engagement', label: 'User Engagement' },
   { key: 'per-user', label: 'Per User Analytics' },
   { key: 'feedback', label: 'User Feedback' },
+  { key: 'scenarios', label: 'Scenarios' },
 ];
 
 export function AdminDashboard({ onLogout, apiBase }: AdminDashboardProps) {
@@ -146,6 +148,9 @@ export function AdminDashboard({ onLogout, apiBase }: AdminDashboardProps) {
         )}
         {activeTab === 'feedback' && (
           <UserFeedbackPage key={`feedback-${refreshKey}`} apiBase={apiBase} filterFunction={filterFunction} filterLevel={filterLevel} />
+        )}
+        {activeTab === 'scenarios' && (
+          <ScenariosPage key={`scenarios-${refreshKey}`} apiBase={apiBase} />
         )}
 
         <footer className="pt-8 pb-4 text-center">
