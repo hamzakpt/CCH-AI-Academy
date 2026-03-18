@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Plus, BookOpen, Calendar, TrendingUp, LogOut, Star, MessageSquare, Send, Pencil, Check } from 'lucide-react';
+import { Plus, BookOpen, Calendar, TrendingUp, LogOut, Star, MessageSquare, Send, Pencil, Check, Brain } from 'lucide-react';
 import { useSound } from '@learning-path/utils/sounds';
 import hellenLogo from '@learning-path/assets/hellen-logo-transparent-background.png';
 import type { UserProfile, SavedLearningPath } from '@learning-path/app/types';
 import { API_BASE } from '@shared/config/api';
+import { GuidedHellenModal } from './GuidedHellenModal';
 
 export type { SavedLearningPath };
 
@@ -74,6 +75,7 @@ export function LearningPathsDashboard({
   onBackToHome
 }: LearningPathsDashboardProps) {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const [isGuidedHellenOpen, setIsGuidedHellenOpen] = useState(false);
   const { playClick, playTyping } = useSound();
 
   const [progressMap, setProgressMap] = useState<Record<string, number>>({});
@@ -265,6 +267,21 @@ export function LearningPathsDashboard({
               </div>
             </div>
             <div className="flex items-center gap-3">
+
+            {/* Guided Hellen+ Brain Button */}
+            <div className="relative group">
+              <button
+                onClick={() => { playClick(); setIsGuidedHellenOpen(true); }}
+                className="w-10 h-10 bg-gradient-to-br from-[#6D28D9] to-[#4F46E5] text-white rounded-full flex items-center justify-center hover:opacity-90 active:scale-95 transition-all shadow-md"
+                aria-label="Guided Hellen+"
+              >
+                <Brain className="w-5 h-5" />
+              </button>
+              <div className="pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1.5 bg-gray-900 text-white text-xs font-medium rounded-lg whitespace-nowrap opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-150 shadow-lg">
+                Guided Hellen+
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-900" />
+              </div>
+            </div>
 
             <button
               onClick={handleBackHome}
@@ -552,6 +569,12 @@ export function LearningPathsDashboard({
           </div>
         )}
       </div>
+
+      <GuidedHellenModal
+        isOpen={isGuidedHellenOpen}
+        onClose={() => setIsGuidedHellenOpen(false)}
+        onCreateLearningPath={() => { setIsGuidedHellenOpen(false); onCreateNew(); }}
+      />
     </div>
   );
 }

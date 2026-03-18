@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 import models
 from ai.openai_service import generate_learning_recommendation
 from ai.course_loader import parse_rating
+from ai.guided_hellen_service import generate_guided_message
 import json
 import pandas as pd
 import re
@@ -660,6 +661,12 @@ class HellenChatRequest(BaseModel):
     module_name: str
     submodule_names: List[str]
     message: str
+    history: Optional[List[HellenHistoryMessage]] = None
+
+class HellenPracticeRequest(BaseModel):
+    module_name: str
+    submodule_names: List[str]
+    user_response: Optional[str] = None   # None triggers the session-opening question
     history: Optional[List[HellenHistoryMessage]] = None
 
 class HellenSourceOut(BaseModel):
@@ -2567,3 +2574,297 @@ def hellen_chat_stream(data: HellenChatRequest):
             "X-Accel-Buffering": "no"
         }
     )
+
+
+# ----------------------------
+# Hellen+ Guided Practice Endpoint
+# ----------------------------
+
+def _build_practice_messages(data: HellenPracticeRequest, context: Optional[str]) -> List[Dict]:
+    """
+    Build OpenAI messages for a continuous, adaptive Socratic practice session.
+    The session has no fixed length — it continues until the learner closes the modal.
+    """
+    history = data.history or []
+    completed_exchanges = sum(1 for m in history if m.role == "user")
+
+    context_section = f"""
+---
+MODULE TRANSCRIPT EXCERPTS (your sole knowledge base — draw all questions and examples from here):
+{context}
+---""" if context else ""
+
+    # Opening turn gets a specific instruction; all later turns use the adaptive guidance.
+    if completed_exchanges == 0:
+        turn_instruction = (
+            "SESSION START.\n"
+            "Write one warm, encouraging sentence welcoming the learner to this open-ended practice session "
+            "(do not ask if they are ready — just begin).\n"
+            "Then ask ONE broad, non-threatening question that probes what they already know or have heard "
+            "about the main topic of this module."
+        )
+    else:
+        # Every ~4 completed exchanges, prompt the AI to offer a brief progress summary
+        # before the next question (the AI decides whether it's appropriate).
+        summary_nudge = (
+            "\nNOTE: You have had several exchanges with this learner. "
+            "If it feels natural, briefly summarise what they have understood so far "
+            "(1 sentence) before asking your next question. Do this only if the conversation "
+            "has covered enough ground to make it meaningful — not every turn."
+        ) if completed_exchanges > 0 and completed_exchanges % 4 == 0 else ""
+
+        turn_instruction = (
+            "ONGOING SESSION — choose your next move by reading the full conversation history above.\n"
+            "\n"
+            "Decide which of the following best fits the learner's current state:\n"
+            "\n"
+            "  A) DEEPEN  — The learner grasped the last concept. Ask a follow-up that goes one level deeper "
+            "(add nuance, ask for comparison with a related idea, or ask for an application).\n"
+            "\n"
+            "  B) CLARIFY — The learner's answer was partially correct or vague. "
+            "Reinforce what was right, gently correct the gap, then ask a refined version of the same question.\n"
+            "\n"
+            "  C) SCAFFOLD — The learner showed confusion or said 'I don't know'. "
+            "Normalise it, provide a small hint, and ask a simpler, more guided version of the same question.\n"
+            "\n"
+            "  D) ADVANCE — The learner has solid understanding of the current concept cluster. "
+            "Transition naturally to the next related concept in the module.\n"
+            "\n"
+            "Choose ONE of the above and respond accordingly. "
+            "Never jump to an unrelated concept — transitions must follow the natural concept "
+            f"progression within {data.module_name}."
+            f"{summary_nudge}"
+        )
+
+    system_prompt = f"""You are Hellen+, an AI tutor conducting a continuous, open-ended Socratic practice session.
+This session has NO fixed length — it continues as long as the learner keeps engaging.
+
+MODULE: {data.module_name}{context_section}
+
+════════════════════════════════════════
+YOUR ROLE
+════════════════════════════════════════
+You are a supportive mentor. Your job is to guide the learner toward understanding through questions
+and carefully scaffolded hints — not lectures. Draw out their thinking; do not replace it.
+
+════════════════════════════════════════
+RESPONSE FORMULA (every turn without exception)
+════════════════════════════════════════
+  1. ACKNOWLEDGE — One sentence recognising the learner's attempt (even if wrong or incomplete).
+  2. EVALUATE    — Reinforce what was correct, or gently correct a misunderstanding (1-3 sentences).
+  3. CONNECT     — Link their answer to the broader concept being explored (1 sentence).
+  4. QUESTION    — Ask exactly ONE follow-up question.
+
+Keep the total response under 130 words. Do not skip any step.
+
+════════════════════════════════════════
+CONCEPT CONTINUITY
+════════════════════════════════════════
+Build understanding gradually — do NOT jump between unrelated topics.
+Explore each concept in enough depth before moving on.
+
+Example of good step-by-step progression:
+  What is a model? → What does it take as input? → What does it output?
+  → Why does data quality matter? → How is the model trained? → How is it evaluated?
+
+Avoid skipping levels:
+  What is a model? → Neural networks → Overfitting  ← BAD
+
+════════════════════════════════════════
+KNOWLEDGE GAP DETECTION
+════════════════════════════════════════
+Monitor the conversation history for signs of struggle:
+  • Repeated "I don't know" or vague non-answers
+  • Incorrect explanations of the same concept across multiple turns
+  • Answers that miss the key idea entirely
+
+When you detect a knowledge gap:
+  1. Do NOT move forward to a new concept.
+  2. Revisit the concept from a simpler angle.
+  3. Provide a short clarification or analogy (1-2 sentences).
+  4. Ask a guiding question that helps rebuild understanding from a foundation.
+
+════════════════════════════════════════
+HANDLING "I DON'T KNOW"
+════════════════════════════════════════
+Never just re-ask the same question. Instead:
+  1. "That's completely okay — let's approach it differently."
+  2. Offer a small hint or bridging analogy (never the full answer).
+  3. Ask a simpler, more concrete version of the question.
+
+Example:
+  Learner: "I don't know what a model is."
+  Hellen+: "Totally fine — let's build up to it.
+             Think of a model as something that learns patterns from examples, like recognising spam emails.
+             If a model studied thousands of spam emails, what do you think it would start to notice about them?"
+
+════════════════════════════════════════
+REINFORCEMENT
+════════════════════════════════════════
+When the learner answers correctly or partially correctly:
+  • Name what they got right explicitly before moving on.
+  • Connect it to the module concept in one sentence.
+  • Example: "Exactly right — and that connection between data quality and model accuracy is central to this module."
+
+Vary your affirmations — do not repeat the same phrase every turn:
+  "Nice." / "Exactly." / "That's a solid explanation." / "Good thinking." /
+  "You've got the right idea." / "That's a great way to put it." / "Spot on."
+
+════════════════════════════════════════
+ADAPTIVE DIFFICULTY
+════════════════════════════════════════
+Continuously re-read the conversation history and calibrate:
+
+  Learner seems confused or hesitant →
+    Simplify. Ask foundational questions. Add hints. Stay on basics.
+
+  Learner gives accurate, confident answers →
+    Increase depth. Ask for comparisons, edge cases, or real-world applications.
+    Explore the concept from a different angle before moving on.
+
+════════════════════════════════════════
+PERIODIC PROGRESS SUMMARIES
+════════════════════════════════════════
+After the learner has demonstrated understanding of several related ideas,
+offer a brief 1-sentence summary of what they have covered before your next question.
+Example: "Great progress — you've shown a solid grasp of what a model is and how it uses data."
+Do this only when it feels natural and genuinely earned, not as a ritual after every exchange.
+
+════════════════════════════════════════
+MODULE BOUNDARIES
+════════════════════════════════════════
+Stay strictly within the content of "{data.module_name}".
+If the learner asks about another module or an unrelated topic, acknowledge their curiosity briefly
+and gently redirect: "That's an interesting area — let's stay with {data.module_name} for now.
+Getting this foundation solid will make that topic easier to understand later."
+
+════════════════════════════════════════
+TONE
+════════════════════════════════════════
+Be warm, patient, and genuinely curious about the learner's thinking.
+Sound like a real mentor — not a test examiner.
+Never be judgmental. Normalise confusion. Celebrate effort as much as correctness.
+
+════════════════════════════════════════
+CURRENT TURN INSTRUCTION
+════════════════════════════════════════
+{turn_instruction}"""
+
+    messages: List[Dict] = [{"role": "system", "content": system_prompt}]
+    for entry in history[-20:]:
+        messages.append({"role": entry.role, "content": entry.content})
+
+    if data.user_response is not None:
+        messages.append({"role": "user", "content": data.user_response})
+    else:
+        messages.append({"role": "user", "content": "Please start the practice session."})
+
+    return messages
+
+
+@app.post("/hellen-practice-stream")
+def hellen_practice_stream(data: HellenPracticeRequest):
+    """
+    Continuous adaptive Socratic practice mode for Hellen+.
+    Sessions run indefinitely until the learner closes the modal.
+
+    SSE events (same protocol as /hellen-chat-stream):
+      data: {"type": "token",  "content": "..."}
+      data: {"type": "done"}
+      data: {"type": "error",  "detail": "..."}
+    """
+    resolved_names = _resolve_submodule_names(data.submodule_names)
+
+    # Reuse the existing context-retrieval pipeline with the module name as query
+    proxy_req = HellenChatRequest(
+        module_name=data.module_name,
+        submodule_names=data.submodule_names,
+        message=data.user_response or data.module_name,
+        history=data.history,
+    )
+    context_result, _, _ = _build_hellen_context_and_sources(proxy_req, resolved_names)
+
+    messages = _build_practice_messages(data, context_result)
+
+    api_key = os.getenv("AZURE_OPENAI_API_KEY")
+    azure_endpoint = os.getenv("AZURE_OPENAI_ENDPOINT")
+    deployment = os.getenv("AZURE_OPENAI_DEPLOYMENT")
+    api_version = os.getenv("AZURE_OPENAI_API_VERSION")
+    openai_url = f"{azure_endpoint}/deployments/{deployment}/chat/completions?api-version={api_version}"
+
+    headers = {"Content-Type": "application/json", "api-key": api_key}
+    body = {
+        "messages": messages,
+        "temperature": 0.7,
+        "max_tokens": 600,
+        "stream": True,
+    }
+
+    def event_stream():
+        try:
+            with http_requests.post(
+                openai_url, headers=headers, json=body, stream=True, timeout=60
+            ) as resp:
+                if resp.status_code != 200:
+                    yield f"data: {json.dumps({'type': 'error', 'detail': f'Azure OpenAI error {resp.status_code}'})}\n\n"
+                    return
+
+                for raw_line in resp.iter_lines():
+                    if not raw_line:
+                        continue
+                    line = raw_line.decode("utf-8") if isinstance(raw_line, bytes) else raw_line
+                    if not line.startswith("data: "):
+                        continue
+                    payload = line[6:]
+                    if payload.strip() == "[DONE]":
+                        break
+                    try:
+                        chunk_data = json.loads(payload)
+                        delta = chunk_data["choices"][0].get("delta", {})
+                        token = delta.get("content", "")
+                        if token:
+                            yield f"data: {json.dumps({'type': 'token', 'content': token})}\n\n"
+                    except (json.JSONDecodeError, KeyError, IndexError):
+                        continue
+
+        except Exception as e:
+            yield f"data: {json.dumps({'type': 'error', 'detail': str(e)})}\n\n"
+            return
+
+        yield f"data: {json.dumps({'type': 'done'})}\n\n"
+
+    return FastAPIStreamingResponse(
+        event_stream(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
+
+
+# ----------------------------
+# Guided Hellen+ Endpoint
+# ----------------------------
+
+class GuidedHellenRequest(BaseModel):
+    topic: str
+    subtopic: str
+    answers: List[str]
+    step: int
+
+
+@app.post("/guided-hellen/next-question")
+def guided_hellen_next_question(data: GuidedHellenRequest):
+    """
+    Generate the next micro-teaching message for the Guided Hellen+ onboarding flow.
+    Called for steps 3, 4, and 5 only (steps 1–2 are handled on the frontend).
+    """
+    if data.step < 3 or data.step > 5:
+        raise HTTPException(status_code=400, detail="step must be 3, 4, or 5")
+
+    message = generate_guided_message(
+        topic=data.topic,
+        subtopic=data.subtopic,
+        previous_answers=data.answers,
+        step=data.step,
+    )
+    return {"message": message}
+

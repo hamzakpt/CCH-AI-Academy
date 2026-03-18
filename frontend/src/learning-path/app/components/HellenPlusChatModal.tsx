@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
-import { X, Send, User, Clock, BookOpen, ChevronDown, ChevronUp } from 'lucide-react';
+import { X, Send, User, Clock, BookOpen, ChevronDown, ChevronUp, Brain } from 'lucide-react';
 import hellenLogo from '@learning-path/assets/a1c07c8833c1385f9acba9acb24b2ea7df9be827.png';
 import hellenLogoTransparent from '@learning-path/assets/hellen-logo-transparent-background.png';
 import { useSound } from '@learning-path/utils/sounds';
 import ReactMarkdown from "react-markdown";
 import { API_BASE } from '@shared/config/api';
+import { HellenPlusPracticeModal } from './HellenPlusPracticeModal';
+import { GuidedHellenModal } from './GuidedHellenModal';
 
 interface HellenPlusChatModalProps {
     isOpen: boolean;
@@ -45,6 +47,9 @@ export function HellenPlusChatModal({ isOpen, onClose, moduleName, submoduleName
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);
     const [expandedSnippets, setExpandedSnippets] = useState<Set<string>>(new Set());
+    const [isPracticeOpen, setIsPracticeOpen] = useState(false);
+    const [isGuidedHellenOpen, setIsGuidedHellenOpen] = useState(false);
+    const [showGuidedPromo, setShowGuidedPromo] = useState(true);
     const chatHistoryRef = useRef<HistoryEntry[]>([]);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -61,6 +66,7 @@ export function HellenPlusChatModal({ isOpen, onClose, moduleName, submoduleName
             setInput('');
             setIsTyping(false);
             setExpandedSnippets(new Set());
+            setShowGuidedPromo(true);
             chatHistoryRef.current = [];
             setTimeout(() => inputRef.current?.focus(), 100);
         }
@@ -248,7 +254,7 @@ export function HellenPlusChatModal({ isOpen, onClose, moduleName, submoduleName
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl h-[700px] flex flex-col overflow-hidden">
+            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl h-[700px] flex flex-col overflow-visible relative">
 
                 {/* Header */}
                 <div className="bg-gradient-to-r from-[#F40009] to-[#DC0012] text-white p-4 flex items-center justify-between flex-shrink-0">
@@ -372,7 +378,26 @@ export function HellenPlusChatModal({ isOpen, onClose, moduleName, submoduleName
 
                 {/* Input */}
                 <div className="p-4 border-t border-gray-200 bg-white flex-shrink-0">
-                    <div className="flex gap-3">
+                    <div className="flex gap-2 items-center">
+                        {/* Practice button — left of the typing bar */}
+                        <div className="relative group flex-shrink-0">
+                            <button
+                                onClick={() => { playClick(); setIsPracticeOpen(true); }}
+                                className="w-11 h-11 bg-gradient-to-br from-[#6D28D9] to-[#4F46E5] text-white rounded-full flex items-center justify-center hover:opacity-90 active:scale-95 transition-all shadow-md"
+                                aria-label="Practice With Hellen+"
+                            >
+                                <Brain className="w-5 h-5" />
+                            </button>
+                            {/* Tooltip */}
+                            <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 
+                            px-3 py-1.5 bg-gray-900 text-white text-xs font-medium rounded-lg whitespace-nowrap 
+                            opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 
+                            transition-all duration-150 shadow-lg">
+                                Practice With Hellen+
+                                <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900" />
+                            </div>
+                        </div>
+
                         <input
                             ref={inputRef}
                             type="text"
@@ -398,7 +423,79 @@ export function HellenPlusChatModal({ isOpen, onClose, moduleName, submoduleName
                         Answers based on video transcripts only • Streaming • Follow-up questions supported
                     </p>
                 </div>
+
+                {/* Guided Hellen+ Feature Showcase Overlay */}
+                {showGuidedPromo && (
+                    <div className="absolute inset-0 rounded-3xl bg-white/60 backdrop-blur-sm flex flex-col items-center justify-center z-10 p-6 animate-in fade-in zoom-in-95 duration-300">
+                        <div className="w-full max-w-sm bg-gradient-to-br from-[#6D28D9] to-[#4F46E5] rounded-3xl p-6 text-white shadow-2xl flex flex-col items-center text-center">
+                            {/* Brain icon */}
+                            <div className="w-16 h-16 bg-white/15 rounded-2xl flex items-center justify-center mb-4">
+                                <Brain className="w-9 h-9 text-white" />
+                            </div>
+
+                            {/* Title */}
+                            <h2 className="text-lg font-bold mb-2 leading-snug">
+                                Introducing Guided Hellen+
+                            </h2>
+
+                            {/* Description */}
+                            <p className="text-sm text-white/85 leading-relaxed mb-4">
+                                Want to truly understand what you're learning? Guided Hellen+ helps you explore topics step-by-step, test your understanding, and build deeper knowledge through interactive learning.
+                            </p>
+
+                            {/* Bullet points */}
+                            <ul className="text-sm text-white/90 space-y-1.5 mb-5 self-start w-full">
+                                <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 bg-white/70 rounded-full flex-shrink-0" />Step-by-step guided explanations</li>
+                                <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 bg-white/70 rounded-full flex-shrink-0" />Follow-up questions to test understanding</li>
+                                <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 bg-white/70 rounded-full flex-shrink-0" />Deeper exploration of any topic</li>
+                            </ul>
+
+                            {/* Arrow indicator */}
+                            <div className="flex flex-col items-center mb-4 text-white/70 text-xs gap-1">
+                                <span>Find it in the dashboard</span>
+                                <svg className="w-5 h-5 animate-bounce" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M12 5v14M5 12l7 7 7-7" />
+                                </svg>
+                                <div className="flex items-center gap-1.5">
+                                    <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
+                                        <Brain className="w-3.5 h-3.5" />
+                                    </div>
+                                    <span>Brain icon on the dashboard</span>
+                                </div>
+                            </div>
+
+                            {/* CTA buttons */}
+                            <button
+                                onClick={() => { playClick(); setShowGuidedPromo(false); setIsGuidedHellenOpen(true); }}
+                                className="w-full py-2.5 bg-white text-[#6D28D9] font-semibold text-sm rounded-xl hover:bg-white/90 active:scale-[0.98] transition-all shadow-md mb-2"
+                            >
+                                Start Guided Learning
+                            </button>
+                            <button
+                                onClick={() => { playClick(); setShowGuidedPromo(false); }}
+                                className="w-full py-2 text-white/75 text-sm hover:text-white transition-colors"
+                            >
+                                Continue to Chat
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
+
+            {/* Guided practice modal — rendered above the chat modal */}
+            <HellenPlusPracticeModal
+                isOpen={isPracticeOpen}
+                onClose={() => setIsPracticeOpen(false)}
+                moduleName={moduleName}
+                submoduleNames={submoduleNames}
+            />
+
+            {/* Guided Hellen+ modal */}
+            <GuidedHellenModal
+                isOpen={isGuidedHellenOpen}
+                onClose={() => setIsGuidedHellenOpen(false)}
+                onCreateLearningPath={() => setIsGuidedHellenOpen(false)}
+            />
         </div>
     );
 }
