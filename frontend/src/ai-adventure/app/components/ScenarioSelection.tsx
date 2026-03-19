@@ -2,7 +2,7 @@ import { Card, CardContent } from '@ai-adventure/app/components/ui/card';
 import { Button } from '@ai-adventure/app/components/ui/button';
 import { Badge } from '@ai-adventure/app/components/ui/badge';
 import { Scenario } from '@ai-adventure/app/types/scenario';
-import { fetchScenarios, fetchAllRatings, submitRating, RatingSummary } from '@ai-adventure/app/services/scenariosApi';
+import { fetchScenarios, fetchAllRatings, submitRating, submitSuggestion, RatingSummary } from '@ai-adventure/app/services/scenariosApi';
 import { Clock, ArrowRight, ArrowLeft, Users, Factory, DollarSign, Scale, Laptop, TrendingUp, Sparkles, Lightbulb, X, CheckCircle, Flame, Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import hellenIcon from '/hellen-logo-transparent-background.png';
@@ -110,14 +110,25 @@ export function ScenarioSelection({ onScenarioSelect, onBackToHome, userEmail }:
     }
   };
 
-  const handleSuggestionSubmit = () => {
-    // Handle suggestion submission
-    setSubmitted(true);
-    setTimeout(() => {
-      setShowSuggestModal(false);
-      setSubmitted(false);
-      setSuggestion('');
-    }, 2000);
+  const [isSubmittingSuggestion, setIsSubmittingSuggestion] = useState(false);
+
+  const handleSuggestionSubmit = async () => {
+    if (suggestion.trim().length < 20) return;
+
+    setIsSubmittingSuggestion(true);
+    try {
+      await submitSuggestion(userEmail || 'anonymous', suggestion.trim());
+      setSubmitted(true);
+      setTimeout(() => {
+        setShowSuggestModal(false);
+        setSubmitted(false);
+        setSuggestion('');
+      }, 2000);
+    } catch (error) {
+      console.error('Failed to submit suggestion:', error);
+    } finally {
+      setIsSubmittingSuggestion(false);
+    }
   };
 
   const getDifficultyColor = (difficulty: string) => {
@@ -502,10 +513,10 @@ export function ScenarioSelection({ onScenarioSelect, onBackToHome, userEmail }:
                   
                   <button
                     onClick={handleSuggestionSubmit}
-                    disabled={suggestion.trim().length < 20}
+                    disabled={suggestion.trim().length < 20 || isSubmittingSuggestion}
                     className="w-full bg-[#E41E2B] hover:bg-red-700 text-white px-6 py-3 rounded-lg font-bold transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
                   >
-                    Submit Suggestion
+                    {isSubmittingSuggestion ? 'Submitting...' : 'Submit Suggestion'}
                   </button>
                 </>
               ) : (

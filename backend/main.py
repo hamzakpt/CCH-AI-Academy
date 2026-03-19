@@ -8,8 +8,7 @@ from database import engine
 import models
 from core import state
 from services import transcript_service, embedding_service
-from routes import auth_routes, learning_path_routes, analytics_routes, hellen_routes
-from routers import scenarios
+from routes import auth_routes, learning_path_routes, analytics_routes, hellen_routes, scenarios
 
 load_dotenv()
 

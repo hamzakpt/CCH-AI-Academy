@@ -129,3 +129,15 @@ class ScenarioRating(Base):
     rating = Column(Integer, nullable=False)  # 1-5 stars
     comment = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class ScenarioSuggestion(Base):
+    __tablename__ = "scenario_suggestions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, nullable=False)  # User who submitted the suggestion
+    suggestion = Column(Text, nullable=False)  # The suggestion text
+    status = Column(String, default="pending")  # pending, reviewed, implemented, rejected
+    admin_notes = Column(Text, nullable=True)  # Admin notes/feedback
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

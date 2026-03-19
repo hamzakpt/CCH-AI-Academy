@@ -161,3 +161,94 @@ export async function fetchAllRatings(): Promise<AllRatings> {
 
   return response.json();
 }
+
+
+// ----------------------------
+// Suggestion Types
+// ----------------------------
+
+export interface SuggestionOut {
+  id: number;
+  username: string;
+  suggestion: string;
+  status: string;
+  adminNotes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SuggestionListOut {
+  suggestions: SuggestionOut[];
+  total: number;
+}
+
+
+// ----------------------------
+// Suggestion API Functions
+// ----------------------------
+
+// Submit a new scenario suggestion
+export async function submitSuggestion(
+  username: string,
+  suggestion: string
+): Promise<SuggestionOut> {
+  const response = await fetch(`${API_BASE}/scenarios/suggestions`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ username, suggestion })
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to submit suggestion: ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+// Get all suggestions (admin only)
+export async function fetchSuggestions(status?: string): Promise<SuggestionListOut> {
+  const url = status
+    ? `${API_BASE}/scenarios/suggestions?status=${status}`
+    : `${API_BASE}/scenarios/suggestions`;
+
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch suggestions: ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+// Update a suggestion (admin only)
+export async function updateSuggestion(
+  suggestionId: number,
+  data: { status?: string; adminNotes?: string }
+): Promise<SuggestionOut> {
+  const response = await fetch(`${API_BASE}/scenarios/suggestions/${suggestionId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to update suggestion: ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+// Delete a suggestion (admin only)
+export async function deleteSuggestion(suggestionId: number): Promise<void> {
+  const response = await fetch(`${API_BASE}/scenarios/suggestions/${suggestionId}`, {
+    method: 'DELETE'
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to delete suggestion: ${response.statusText}`);
+  }
+}

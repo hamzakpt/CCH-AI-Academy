@@ -118,6 +118,35 @@ class AllRatingsSummary(BaseModel):
 
 
 # ----------------------------
+# Suggestion Pydantic Models
+# ----------------------------
+
+class SuggestionCreate(BaseModel):
+    username: str
+    suggestion: str
+
+
+class SuggestionOut(BaseModel):
+    id: int
+    username: str
+    suggestion: str
+    status: str
+    adminNotes: Optional[str] = None
+    createdAt: str
+    updatedAt: str
+
+
+class SuggestionUpdate(BaseModel):
+    status: Optional[str] = None  # pending, reviewed, implemented, rejected
+    adminNotes: Optional[str] = None
+
+
+class SuggestionListOut(BaseModel):
+    suggestions: List[SuggestionOut]
+    total: int
+
+
+# ----------------------------
 # Helper Functions
 # ----------------------------
 
@@ -265,6 +294,121 @@ def get_scenario_ratings(scenario_id: str, db: Session = Depends(get_db)):
             for r in ratings
         ]
     )
+
+
+# ----------------------------
+# Suggestion Endpoints
+# ----------------------------
+
+@router.post("/suggestions", response_model=SuggestionOut)
+def submit_suggestion(data: SuggestionCreate, db: Session = Depends(get_db)):
+    """Submit a new scenario suggestion."""
+    if len(data.suggestion.strip()) < 20:
+        raise HTTPException(status_code=400, detail="Suggestion must be at least 20 characters")
+
+    suggestion = models.ScenarioSuggestion(
+        username=data.username,
+        suggestion=data.suggestion.strip(),
+        status="pending"
+    )
+    db.add(suggestion)
+    db.commit()
+    db.refresh(suggestion)
+
+    return SuggestionOut(
+        id=suggestion.id,
+        username=suggestion.username,
+        suggestion=suggestion.suggestion,
+        status=suggestion.status,
+        adminNotes=suggestion.admin_notes,
+        createdAt=suggestion.created_at.isoformat(),
+        updatedAt=suggestion.updated_at.isoformat()
+    )
+
+
+@router.get("/suggestions", response_model=SuggestionListOut)
+def get_suggestions(
+    status: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
+    """Get all suggestions (admin endpoint)."""
+    query = db.query(models.ScenarioSuggestion)
+
+    if status:
+        query = query.filter(models.ScenarioSuggestion.status == status)
+
+    suggestions = query.order_by(models.ScenarioSuggestion.created_at.desc()).all()
+
+    return SuggestionListOut(
+        suggestions=[
+            SuggestionOut(
+                id=s.id,
+                username=s.username,
+                suggestion=s.suggestion,
+                status=s.status,
+                adminNotes=s.admin_notes,
+                createdAt=s.created_at.isoformat(),
+                updatedAt=s.updated_at.isoformat()
+            )
+            for s in suggestions
+        ],
+        total=len(suggestions)
+    )
+
+
+@router.put("/suggestions/{suggestion_id}", response_model=SuggestionOut)
+def update_suggestion(
+    suggestion_id: int,
+    data: SuggestionUpdate,
+    db: Session = Depends(get_db)
+):
+    """Update a suggestion status and admin notes (admin endpoint)."""
+    suggestion = db.query(models.ScenarioSuggestion).filter(
+        models.ScenarioSuggestion.id == suggestion_id
+    ).first()
+
+    if not suggestion:
+        raise HTTPException(status_code=404, detail="Suggestion not found")
+
+    if data.status is not None:
+        valid_statuses = ["pending", "reviewed", "implemented", "rejected"]
+        if data.status not in valid_statuses:
+            raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {valid_statuses}")
+        suggestion.status = data.status
+
+    if data.adminNotes is not None:
+        suggestion.admin_notes = data.adminNotes
+
+    db.commit()
+    db.refresh(suggestion)
+
+    return SuggestionOut(
+        id=suggestion.id,
+        username=suggestion.username,
+        suggestion=suggestion.suggestion,
+        status=suggestion.status,
+        adminNotes=suggestion.admin_notes,
+        createdAt=suggestion.created_at.isoformat(),
+        updatedAt=suggestion.updated_at.isoformat()
+    )
+
+
+@router.delete("/suggestions/{suggestion_id}")
+def delete_suggestion(
+    suggestion_id: int,
+    db: Session = Depends(get_db)
+):
+    """Delete a suggestion (admin endpoint)."""
+    suggestion = db.query(models.ScenarioSuggestion).filter(
+        models.ScenarioSuggestion.id == suggestion_id
+    ).first()
+
+    if not suggestion:
+        raise HTTPException(status_code=404, detail="Suggestion not found")
+
+    db.delete(suggestion)
+    db.commit()
+    return {"message": "Suggestion deleted successfully"}
 
 
 # ----------------------------

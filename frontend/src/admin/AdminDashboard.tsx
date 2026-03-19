@@ -6,13 +6,14 @@ import { UserEngagementPage } from './analytics/UserEngagementPage';
 import { PerUserAnalyticsPage } from './analytics/PerUserAnalyticsPage';
 import { UserFeedbackPage } from './analytics/UserFeedbackPage';
 import { ScenariosPage } from './scenarios/ScenariosPage';
+import { SuggestionsPage } from './scenarios/SuggestionsPage';
 
 interface AdminDashboardProps {
   onLogout: () => void;
   apiBase: string;
 }
 
-type Tab = 'growth' | 'engagement' | 'per-user' | 'feedback' | 'scenarios';
+type Tab = 'growth' | 'engagement' | 'per-user' | 'feedback' | 'scenarios' | 'suggestions';
 
 const TABS: { key: Tab; label: string }[] = [
   { key: 'growth', label: 'User Base Growth' },
@@ -20,6 +21,7 @@ const TABS: { key: Tab; label: string }[] = [
   { key: 'per-user', label: 'Per User Analytics' },
   { key: 'feedback', label: 'User Feedback' },
   { key: 'scenarios', label: 'Scenarios' },
+  { key: 'suggestions', label: 'Suggestions' },
 ];
 
 export function AdminDashboard({ onLogout, apiBase }: AdminDashboardProps) {
@@ -151,6 +153,9 @@ export function AdminDashboard({ onLogout, apiBase }: AdminDashboardProps) {
         )}
         {activeTab === 'scenarios' && (
           <ScenariosPage key={`scenarios-${refreshKey}`} apiBase={apiBase} />
+        )}
+        {activeTab === 'suggestions' && (
+          <SuggestionsPage key={`suggestions-${refreshKey}`} apiBase={apiBase} />
         )}
 
         <footer className="pt-8 pb-4 text-center">
