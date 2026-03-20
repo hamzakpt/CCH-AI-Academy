@@ -21,11 +21,12 @@ from sqlalchemy import desc
 from typing import Optional
 from datetime import datetime, timedelta
 from collections import defaultdict
+import json
 
 import models
 from database import get_db
 from schemas import UserRatingRequest
-from utils.helpers import compute_path_ratings, ADMIN_USERNAMES
+from utils.helpers import compute_path_ratings, ADMIN_USERNAMES, _parse_json
 
 router = APIRouter(tags=["analytics"])
 
@@ -109,7 +110,7 @@ def get_user_summary(username: str, db: Session = Depends(get_db)):
 # ----------------------------
 
 @router.get("/ratings/learning-path/{path_id}")
-def get_learning_path_ratings(path_id: int, db: Session = Depends(get_db)):
+def get_learning_path_ratings(path_id: str, db: Session = Depends(get_db)):
     """Get per-part average ratings for a single learning path."""
     path = db.query(models.LearningPath).filter(
         models.LearningPath.id == path_id
@@ -118,7 +119,7 @@ def get_learning_path_ratings(path_id: int, db: Session = Depends(get_db)):
     if not path:
         raise HTTPException(status_code=404, detail="Learning path not found")
 
-    return compute_path_ratings(path.ai_summary)
+    return compute_path_ratings(_parse_json(path.ai_summary))
 
 
 @router.get("/ratings/user/{username}")
@@ -131,7 +132,7 @@ def get_user_ratings(username: str, db: Session = Depends(get_db)):
 
     result = {}
     for lp in paths:
-        part_ratings = compute_path_ratings(lp.ai_summary)
+        part_ratings = compute_path_ratings(_parse_json(lp.ai_summary))
         if part_ratings:
             all_ratings = list(part_ratings.values())
             result[str(lp.id)] = round(sum(all_ratings) / len(all_ratings), 1)

@@ -16,6 +16,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from typing import List
+import json
 
 import models
 from database import get_db
@@ -29,7 +30,7 @@ from schemas import (
     ProgressOut,
     RenameRequest,
 )
-from utils.helpers import parse_time_available, adapt_to_time, course_links_map
+from utils.helpers import parse_time_available, adapt_to_time, course_links_map, _to_json, _parse_json
 from ai.openai_service import generate_learning_recommendation
 
 router = APIRouter(tags=["learning-paths"])
@@ -72,7 +73,7 @@ def create_or_get_draft(data: UsernameRequest, db: Session = Depends(get_db)):
 
 
 @router.post("/learning-path/{path_id}/response")
-def save_response(path_id: int, response: ResponseCreate, db: Session = Depends(get_db)):
+def save_response(path_id: str, response: ResponseCreate, db: Session = Depends(get_db)):
 
     existing = db.query(models.Response).filter(
         models.Response.learning_path_id == path_id,
@@ -119,7 +120,7 @@ def get_draft(username: str, db: Session = Depends(get_db)):
 
 @router.post("/learning-path/{path_id}/complete")
 def complete_learning_path(
-    path_id: int,
+    path_id: str,
     request: CompleteRequest,
     db: Session = Depends(get_db)
 ):
@@ -221,7 +222,7 @@ Additional Context:
 
     # 4. Save results
     path.recommended_path = "AI Generated Path"
-    path.ai_summary = ai_result
+    path.ai_summary = _to_json(ai_result)
 
     total_submodules = sum(
         len(module["submodules"])
@@ -243,7 +244,7 @@ Additional Context:
 
 @router.patch("/learning-path/{path_id}/rename")
 def rename_learning_path(
-    path_id: int,
+    path_id: str,
     data: RenameRequest,
     db: Session = Depends(get_db)
 ):
@@ -268,11 +269,26 @@ def get_learning_paths(username: str, db: Session = Depends(get_db)):
         models.LearningPath.status == "completed"
     ).order_by(desc(models.LearningPath.created_at)).all()
 
-    return paths
+    # Deserialize JSON fields
+    result = []
+    for p in paths:
+        result.append(LearningPathOut(
+            id=p.id,
+            name=p.name,
+            created_at=p.created_at,
+            job_function=p.job_function,
+            experience=p.experience,
+            time_available=p.time_available,
+            interests=p.interests,
+            recommended_path=p.recommended_path,
+            ai_summary=_parse_json(p.ai_summary),
+            total_submodules=p.total_submodules
+        ))
+    return result
 
 
 @router.get("/learning-path/{path_id}", response_model=LearningPathOut)
-def get_learning_path_by_id(path_id: int, db: Session = Depends(get_db)):
+def get_learning_path_by_id(path_id: str, db: Session = Depends(get_db)):
 
     path = db.query(models.LearningPath).filter(
         models.LearningPath.id == path_id,
@@ -282,7 +298,18 @@ def get_learning_path_by_id(path_id: int, db: Session = Depends(get_db)):
     if not path:
         raise HTTPException(status_code=404, detail="Learning path not found")
 
-    return path
+    return LearningPathOut(
+        id=path.id,
+        name=path.name,
+        created_at=path.created_at,
+        job_function=path.job_function,
+        experience=path.experience,
+        time_available=path.time_available,
+        interests=path.interests,
+        recommended_path=path.recommended_path,
+        ai_summary=_parse_json(path.ai_summary),
+        total_submodules=path.total_submodules
+    )
 
 
 @router.post("/progress")
@@ -294,13 +321,13 @@ def save_progress(data: ProgressSaveRequest, db: Session = Depends(get_db)):
     ).first()
 
     if existing:
-        existing.progress_json = data.progress_json
+        existing.progress_json = _to_json(data.progress_json)
         existing.overall_progress = data.overall_progress
     else:
         new_progress = models.LearningProgress(
             username=data.username,
             learning_path_id=data.learning_path_id,
-            progress_json=data.progress_json,
+            progress_json=_to_json(data.progress_json),
             overall_progress=data.overall_progress
         )
         db.add(new_progress)
@@ -311,7 +338,7 @@ def save_progress(data: ProgressSaveRequest, db: Session = Depends(get_db)):
 
 
 @router.get("/progress", response_model=ProgressOut)
-def get_progress(username: str, learning_path_id: int, db: Session = Depends(get_db)):
+def get_progress(username: str, learning_path_id: str, db: Session = Depends(get_db)):
 
     progress = db.query(models.LearningProgress).filter(
         models.LearningProgress.username == username,
@@ -324,4 +351,7 @@ def get_progress(username: str, learning_path_id: int, db: Session = Depends(get
             "overall_progress": 0
         }
 
-    return progress
+    return ProgressOut(
+        progress_json=_parse_json(progress.progress_json),
+        overall_progress=progress.overall_progress
+    )

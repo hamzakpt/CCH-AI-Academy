@@ -1,6 +1,9 @@
 import os
-
 from dotenv import load_dotenv
+
+# Load .env BEFORE any other imports that use env vars
+load_dotenv()
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -9,8 +12,6 @@ import models
 from core import state
 from services import transcript_service, embedding_service
 from routes import auth_routes, learning_path_routes, analytics_routes, hellen_routes, scenarios
-
-load_dotenv()
 
 # ----------------------------
 # DB table creation

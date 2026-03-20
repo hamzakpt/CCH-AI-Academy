@@ -1,7 +1,19 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Text, JSON, Float
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Text, Float
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from database import Base
+import uuid
+import json
+
+
+def generate_uuid():
+    return str(uuid.uuid4())
+
+
+# Custom JSON serialization for Databricks compatibility
+# Databricks doesn't support native JSON columns, so we store as Text
+# and serialize/deserialize in Python
+
 
 class User(Base):
     __tablename__ = "users"
@@ -11,10 +23,11 @@ class User(Base):
 
     learning_paths = relationship("LearningPath", back_populates="user")
 
+
 class LearningPath(Base):
     __tablename__ = "learning_paths"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(String, primary_key=True, default=generate_uuid, index=True)
     name = Column(String)
     created_at = Column(DateTime, default=datetime.utcnow)
 
@@ -26,7 +39,7 @@ class LearningPath(Base):
     interests = Column(Text, nullable=True)
 
     recommended_path = Column(String, nullable=True)
-    ai_summary = Column(JSON, nullable=True)
+    ai_summary = Column(Text, nullable=True)  # JSON stored as text
 
     total_submodules = Column(Integer, default=0)
 
@@ -38,9 +51,9 @@ class LearningPath(Base):
 class Response(Base):
     __tablename__ = "responses"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(String, primary_key=True, default=generate_uuid, index=True)
 
-    learning_path_id = Column(Integer, ForeignKey("learning_paths.id"))
+    learning_path_id = Column(String, ForeignKey("learning_paths.id"))
 
     question_id = Column(String)
     selected_option = Column(String, nullable=True)
@@ -48,22 +61,24 @@ class Response(Base):
 
     learning_path = relationship("LearningPath", back_populates="responses")
 
+
 class LearningProgress(Base):
     __tablename__ = "learning_progress"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(String, primary_key=True, default=generate_uuid, index=True)
 
     username = Column(String, ForeignKey("users.username"), nullable=False)
-    learning_path_id = Column(Integer, ForeignKey("learning_paths.id"), nullable=False)
+    learning_path_id = Column(String, ForeignKey("learning_paths.id"), nullable=False)
 
-    progress_json = Column(JSON, nullable=False)
+    progress_json = Column(Text, nullable=False)  # JSON stored as text
     overall_progress = Column(Integer, default=0)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
 
 class UserSession(Base):
     __tablename__ = "user_sessions"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(String, primary_key=True, default=generate_uuid, index=True)
     username = Column(String, ForeignKey("users.username"), nullable=False)
 
     login_time = Column(DateTime, default=datetime.utcnow)
@@ -73,10 +88,10 @@ class UserSession(Base):
 class ScreenActivity(Base):
     __tablename__ = "screen_activity"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(String, primary_key=True, default=generate_uuid, index=True)
 
     username = Column(String, ForeignKey("users.username"), nullable=False)
-    session_id = Column(Integer, ForeignKey("user_sessions.id"), nullable=False)
+    session_id = Column(String, ForeignKey("user_sessions.id"), nullable=False)
 
     screen_name = Column(String, nullable=False)
 
@@ -88,9 +103,9 @@ class ScreenActivity(Base):
 class UserRating(Base):
     __tablename__ = "user_ratings"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(String, primary_key=True, default=generate_uuid, index=True)
     username = Column(String, ForeignKey("users.username"), nullable=False)
-    learning_path_id = Column(Integer, ForeignKey("learning_paths.id"), nullable=False)
+    learning_path_id = Column(String, ForeignKey("learning_paths.id"), nullable=False)
     rating = Column(Float, nullable=False)  # 1.0 - 5.0
     comment = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -109,10 +124,10 @@ class Scenario(Base):
     difficulty = Column(String, nullable=False)  # Beginner, Intermediate, Advanced
     estimated_time = Column(String, nullable=False)
     old_way_time = Column(String, nullable=True)
-    old_way_steps = Column(JSON, nullable=True)  # List of strings
-    steps = Column(JSON, nullable=False)  # List of AgentStep objects
-    benefits = Column(JSON, nullable=False)  # {timeSaved, impactMetric}
-    learning_modules = Column(JSON, nullable=False)  # List of strings
+    old_way_steps = Column(Text, nullable=True)  # JSON: List of strings
+    steps = Column(Text, nullable=False)  # JSON: List of AgentStep objects
+    benefits = Column(Text, nullable=False)  # JSON: {timeSaved, impactMetric}
+    learning_modules = Column(Text, nullable=False)  # JSON: List of strings
     flagship = Column(Integer, default=0)  # Boolean stored as int
     active = Column(Integer, default=0)  # Boolean stored as int (replaces start_here)
     hidden = Column(Integer, default=0)  # Boolean stored as int - hidden scenarios not shown in frontend
@@ -123,7 +138,7 @@ class Scenario(Base):
 class ScenarioRating(Base):
     __tablename__ = "scenario_ratings"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(String, primary_key=True, default=generate_uuid, index=True)
     scenario_id = Column(String, ForeignKey("scenarios.id"), nullable=False)
     username = Column(String, nullable=False)  # User who submitted the rating
     rating = Column(Integer, nullable=False)  # 1-5 stars
@@ -134,7 +149,7 @@ class ScenarioRating(Base):
 class ScenarioSuggestion(Base):
     __tablename__ = "scenario_suggestions"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(String, primary_key=True, default=generate_uuid, index=True)
     username = Column(String, nullable=False)  # User who submitted the suggestion
     suggestion = Column(Text, nullable=False)  # The suggestion text
     status = Column(String, default="pending")  # pending, reviewed, implemented, rejected

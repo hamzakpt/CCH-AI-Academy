@@ -17,7 +17,7 @@ class ResponseCreate(BaseModel):
 
 
 class LearningPathOut(BaseModel):
-    id: int
+    id: str  # UUID string
     name: str
     created_at: Optional[datetime]
     job_function: Optional[str]
@@ -33,7 +33,7 @@ class LearningPathOut(BaseModel):
 
 
 class DraftOut(BaseModel):
-    id: int
+    id: Optional[str]  # UUID string, optional for when no draft exists
     responses: List[ResponseCreate]
 
     class Config:
@@ -61,7 +61,7 @@ class RenameRequest(BaseModel):
 
 class ProgressSaveRequest(BaseModel):
     username: str
-    learning_path_id: int
+    learning_path_id: str  # UUID string
     progress_json: Dict[str, bool]
     overall_progress: int
 
@@ -83,12 +83,12 @@ class SessionStartRequest(BaseModel):
 
 
 class SessionEndRequest(BaseModel):
-    session_id: int
+    session_id: str  # UUID string
 
 
 class ActivityLogRequest(BaseModel):
     username: str
-    session_id: int
+    session_id: str  # UUID string
     screen_name: str
     enter_time: datetime
     exit_time: datetime
@@ -101,7 +101,7 @@ class ActivityLogRequest(BaseModel):
 
 class UserRatingRequest(BaseModel):
     username: str
-    learning_path_id: int
+    learning_path_id: str  # UUID string
     rating: float  # 1.0 - 5.0
     comment: Optional[str] = None
 

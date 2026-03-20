@@ -2,12 +2,23 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./learning.db")
+# Databricks connection settings (from environment variables)
+DATABRICKS_SERVER_HOSTNAME = os.getenv("DATABRICKS_SERVER_HOSTNAME")
+DATABRICKS_HTTP_PATH = os.getenv("DATABRICKS_HTTP_PATH")
+DATABRICKS_ACCESS_TOKEN = os.getenv("DATABRICKS_ACCESS_TOKEN")
+DATABRICKS_CATALOG = os.getenv("DATABRICKS_CATALOG")
+DATABRICKS_SCHEMA = os.getenv("DATABRICKS_SCHEMA")
 
+DATABASE_URL = (
+    f"databricks://token:{DATABRICKS_ACCESS_TOKEN}@{DATABRICKS_SERVER_HOSTNAME}"
+    f"?http_path={DATABRICKS_HTTP_PATH}"
+    f"&catalog={DATABRICKS_CATALOG}"
+    f"&schema={DATABRICKS_SCHEMA}"
+)
 engine = create_engine(
     DATABASE_URL,
-    connect_args={"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {},
-    pool_pre_ping=True
+    pool_pre_ping=True,
+    echo=False,
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

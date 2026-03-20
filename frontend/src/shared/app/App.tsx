@@ -93,7 +93,7 @@ export default function App() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         username: userEmail,
-        session_id: Number(sessionId),
+        session_id: sessionId,
         screen_name: currentScreen,
         enter_time: enterTime.toISOString(),
         exit_time: enterTime.toISOString(),
@@ -113,7 +113,7 @@ export default function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           username: userEmail,
-          session_id: Number(sessionId),
+          session_id: sessionId,
           screen_name: currentScreen,
           enter_time: enterTime.toISOString(),
           exit_time: exitTime.toISOString(),

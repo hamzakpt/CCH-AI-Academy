@@ -3,23 +3,11 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 
-from database import SessionLocal
+from database import get_db
+from utils.helpers import _to_json, _parse_json
 import models
 
 router = APIRouter(prefix="/scenarios", tags=["scenarios"])
-
-
-# ----------------------------
-# Database Dependency
-# ----------------------------
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
 
 # ----------------------------
 # Pydantic Models
@@ -98,7 +86,7 @@ class RatingCreate(BaseModel):
 
 
 class RatingOut(BaseModel):
-    id: int
+    id: str  # UUID string
     scenarioId: str
     username: str
     rating: int
@@ -127,7 +115,7 @@ class SuggestionCreate(BaseModel):
 
 
 class SuggestionOut(BaseModel):
-    id: int
+    id: str  # UUID string
     username: str
     suggestion: str
     status: str
@@ -162,10 +150,10 @@ def _scenario_to_out(scenario: models.Scenario) -> ScenarioOut:
         difficulty=scenario.difficulty,
         estimatedTime=scenario.estimated_time,
         oldWayTime=scenario.old_way_time,
-        oldWaySteps=scenario.old_way_steps,
-        steps=scenario.steps,
-        benefits=scenario.benefits,
-        learningModules=scenario.learning_modules,
+        oldWaySteps=_parse_json(scenario.old_way_steps),
+        steps=_parse_json(scenario.steps),
+        benefits=_parse_json(scenario.benefits),
+        learningModules=_parse_json(scenario.learning_modules),
         flagship=bool(scenario.flagship),
         active=bool(scenario.active),
         hidden=bool(scenario.hidden)
@@ -358,7 +346,7 @@ def get_suggestions(
 
 @router.put("/suggestions/{suggestion_id}", response_model=SuggestionOut)
 def update_suggestion(
-    suggestion_id: int,
+    suggestion_id: str,
     data: SuggestionUpdate,
     db: Session = Depends(get_db)
 ):
@@ -395,7 +383,7 @@ def update_suggestion(
 
 @router.delete("/suggestions/{suggestion_id}")
 def delete_suggestion(
-    suggestion_id: int,
+    suggestion_id: str,
     db: Session = Depends(get_db)
 ):
     """Delete a suggestion (admin endpoint)."""
@@ -445,10 +433,10 @@ def create_scenario(
         difficulty=data.difficulty,
         estimated_time=data.estimatedTime,
         old_way_time=data.oldWayTime,
-        old_way_steps=data.oldWaySteps,
-        steps=[step.model_dump() for step in data.steps],
-        benefits=data.benefits.model_dump(),
-        learning_modules=data.learningModules,
+        old_way_steps=_to_json(data.oldWaySteps),
+        steps=_to_json([step.model_dump() for step in data.steps]),
+        benefits=_to_json(data.benefits.model_dump()),
+        learning_modules=_to_json(data.learningModules),
         flagship=1 if data.flagship else 0,
         active=1 if data.active else 0,
         hidden=1 if data.hidden else 0
@@ -478,10 +466,10 @@ def update_scenario(
     scenario.difficulty = data.difficulty
     scenario.estimated_time = data.estimatedTime
     scenario.old_way_time = data.oldWayTime
-    scenario.old_way_steps = data.oldWaySteps
-    scenario.steps = [step.model_dump() for step in data.steps]
-    scenario.benefits = data.benefits.model_dump()
-    scenario.learning_modules = data.learningModules
+    scenario.old_way_steps = _to_json(data.oldWaySteps)
+    scenario.steps = _to_json([step.model_dump() for step in data.steps])
+    scenario.benefits = _to_json(data.benefits.model_dump())
+    scenario.learning_modules = _to_json(data.learningModules)
     scenario.flagship = 1 if data.flagship else 0
     scenario.active = 1 if data.active else 0
     scenario.hidden = 1 if data.hidden else 0
@@ -871,10 +859,10 @@ def seed_scenarios(db: Session = Depends(get_db)):
             difficulty=scenario_data["difficulty"],
             estimated_time=scenario_data["estimated_time"],
             old_way_time=scenario_data.get("old_way_time"),
-            old_way_steps=scenario_data.get("old_way_steps"),
-            steps=scenario_data["steps"],
-            benefits=scenario_data["benefits"],
-            learning_modules=scenario_data["learning_modules"],
+            old_way_steps=_to_json(scenario_data.get("old_way_steps")),
+            steps=_to_json(scenario_data["steps"]),
+            benefits=_to_json(scenario_data["benefits"]),
+            learning_modules=_to_json(scenario_data["learning_modules"]),
             flagship=scenario_data.get("flagship", 0),
             active=scenario_data.get("active", 0),
             hidden=scenario_data.get("hidden", 0)

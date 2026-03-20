@@ -9,6 +9,7 @@ Includes:
 - Shared constants (ADMIN_USERNAMES, CSV-based lookups)
 """
 import os
+import json
 import pandas as pd
 from typing import Dict, Optional
 
@@ -297,3 +298,23 @@ def compute_path_ratings(ai_summary) -> Dict:
             result[path_name] = round(sum(ratings) / len(ratings), 1)
 
     return result
+
+def _parse_json(value):
+    """Parse JSON string to Python object, return as-is if already parsed or None."""
+    if value is None:
+        return None
+    if isinstance(value, (dict, list)):
+        return value
+    try:
+        return json.loads(value)
+    except (json.JSONDecodeError, TypeError):
+        return value
+
+
+def _to_json(value):
+    """Convert Python object to JSON string for storage."""
+    if value is None:
+        return None
+    if isinstance(value, str):
+        return value
+    return json.dumps(value)
