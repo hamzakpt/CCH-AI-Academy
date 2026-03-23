@@ -313,6 +313,40 @@ const REQUIRED_SCENARIO_KEYS = ['id', 'title', 'function', 'description', 'probl
 const OPTIONAL_SCENARIO_KEYS = ['oldWayTime', 'oldWaySteps', 'flagship', 'active', 'hidden'];
 const ALL_SCENARIO_KEYS = new Set([...REQUIRED_SCENARIO_KEYS, ...OPTIONAL_SCENARIO_KEYS]);
 
+// Known icon component names that should be converted to strings
+const KNOWN_ICONS = ['Users', 'ShieldCheck', 'AlertTriangle', 'DollarSign', 'Scale', 'FileText', 'TrendingUp', 'Package', 'Settings', 'Target', 'Factory', 'Laptop', 'Camera', 'Search', 'HelpCircle'];
+
+/**
+ * Convert JavaScript object notation (from Figma/code) to valid JSON.
+ * Handles: unquoted keys, single quotes, bare identifiers like `icon: Users`
+ */
+function parseJsObjectToJson(input: string): string {
+  let result = input.trim();
+
+  // Remove trailing comma before closing brackets (common in JS)
+  result = result.replace(/,(\s*[}\]])/g, '$1');
+
+  // Replace bare icon identifiers with quoted strings (e.g., `icon: Users` -> `icon: "Users"`)
+  for (const icon of KNOWN_ICONS) {
+    // Match: key: IconName (not already quoted)
+    const iconRegex = new RegExp(`(:\\s*)${icon}(\\s*[,}\\]])`, 'g');
+    result = result.replace(iconRegex, `$1"${icon}"$2`);
+  }
+
+  // Replace single quotes with double quotes
+  // But be careful with apostrophes inside strings
+  result = result.replace(/'/g, '"');
+
+  // Add quotes around unquoted keys
+  // Match: word followed by colon (not inside a string)
+  result = result.replace(/(\{|\,)\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*:/g, '$1"$2":');
+
+  // Handle the first key in the object (no comma before it)
+  result = result.replace(/^\s*\{\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*:/g, '{"$1":');
+
+  return result;
+}
+
 const REQUIRED_STEP_KEYS = ['id', 'title', 'description', 'tools', 'dataUsed', 'successCriteria', 'requiresHITL', 'duration'];
 const OPTIONAL_STEP_KEYS = ['hitlMessage', 'hitlActionContent'];
 const ALL_STEP_KEYS = new Set([...REQUIRED_STEP_KEYS, ...OPTIONAL_STEP_KEYS]);
@@ -513,6 +547,31 @@ export function ScenarioEditModal({ scenario, onClose, onSave }: Props) {
     } catch {
       setJsonError('Invalid JSON syntax');
       setJsonValidation({ valid: false, errors: [], warnings: [] });
+    }
+  };
+
+  const handleParseJsObject = () => {
+    try {
+      // First try to parse as-is (maybe it's already valid JSON)
+      JSON.parse(jsonText);
+      // Already valid JSON, no conversion needed
+      return;
+    } catch {
+      // Not valid JSON, try to convert from JS object notation
+    }
+
+    try {
+      const converted = parseJsObjectToJson(jsonText);
+      // Try to parse the converted result
+      const parsed = JSON.parse(converted);
+      // Format it nicely
+      const formatted = JSON.stringify(parsed, null, 2);
+      setJsonText(formatted);
+      setJsonError(null);
+      const validation = validateScenarioJson(parsed);
+      setJsonValidation(validation);
+    } catch (err) {
+      setJsonError('Could not parse as JavaScript object. Check syntax.');
     }
   };
 
@@ -721,9 +780,20 @@ export function ScenarioEditModal({ scenario, onClose, onSave }: Props) {
                     spellCheck={false}
                   />
                 </div>
-                <p className="text-xs text-gray-500">
-                  Paste or edit the full scenario JSON. Schema validation checks required fields and types.
-                </p>
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-gray-500">
+                    Paste or edit the full scenario JSON. Schema validation checks required fields and types.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleParseJsObject}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition-colors"
+                    title="Convert JavaScript object notation (from Figma) to valid JSON"
+                  >
+                    <FileJson className="w-3.5 h-3.5" />
+                    Parse JS Object
+                  </button>
+                </div>
               </div>
             ) : (
               /* Form Editor */
